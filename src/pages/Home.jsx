@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Flame, Zap, ArrowRight, Coins, Star } from 'lucide-react';
 import ContestCard from '../components/contests/ContestCard';
 
-const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Američki nogomet', 'Hokej', 'MMA'];
+const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
 
 export default function Home() {
   const { tokenBalance } = useOutletContext();

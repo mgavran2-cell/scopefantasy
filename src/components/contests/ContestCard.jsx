@@ -7,7 +7,7 @@ const sportEmoji = {
   'Nogomet': '⚽',
   'Košarka': '🏀',
   'Tenis': '🎾',
-  'Američki nogomet': '🏈',
+  'Formula 1': '🏎️',
   'Hokej': '🏒',
   'MMA': '🥊',
 };
@@ -16,7 +16,7 @@ const sportGradient = {
   'Nogomet': 'from-violet-600/15 to-purple-500/5',
   'Košarka': 'from-purple-600/15 to-violet-500/5',
   'Tenis': 'from-fuchsia-600/15 to-purple-500/5',
-  'Američki nogomet': 'from-violet-700/15 to-indigo-500/5',
+  'Formula 1': 'from-red-600/15 to-violet-500/5',
   'Hokej': 'from-purple-600/15 to-blue-500/5',
   'MMA': 'from-fuchsia-700/15 to-violet-500/5',
 };
