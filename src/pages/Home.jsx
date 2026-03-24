@@ -34,42 +34,41 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-10">
           <motion.div 
             initial={{ opacity: 0, y: 30 }} 
             animate={{ opacity: 1, y: 0 }}
-            className="text-center max-w-2xl mx-auto"
+            className="text-center max-w-3xl mx-auto"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/25 mb-6">
               <Flame className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">Besplatno za igranje</span>
+              <span className="text-xs font-bold text-primary tracking-widest uppercase">Besplatno za igranje</span>
             </div>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight mb-4">
-              Izgradi svoj{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">
-                streak
+            <h1 className="font-display font-black uppercase text-5xl sm:text-8xl leading-none tracking-tight mb-4">
+              <span className="text-white">IZGRADI</span><br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-fuchsia-400">
+                STREAK
               </span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-lg mx-auto">
+            <p className="text-base text-muted-foreground mb-8 max-w-lg mx-auto">
               Predvidi statistike igrača, osvoji tokene i popni se na ljestvicu. Besplatno zauvijek.
             </p>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-3">
               <Link
                 to="/natjecanja"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/25"
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-primary text-white font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/30"
               >
-                <Zap className="w-5 h-5" />
-                Igraj Sada
+                <Zap className="w-4 h-4" />
+                IGRAJ SADA
               </Link>
               <Link
                 to="/kupnja-tokena"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary text-secondary-foreground font-bold hover:bg-secondary/80 transition-all"
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white/8 border border-white/10 text-white font-bold text-sm hover:bg-white/12 transition-all"
               >
-                <Coins className="w-5 h-5 text-accent" />
+                <Coins className="w-4 h-4 text-primary" />
                 Kupi Tokene
               </Link>
             </div>
@@ -80,16 +79,16 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-10"
+            className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-12"
           >
             {[
               { label: 'Aktivna natjecanja', value: contests.filter(c => c.status === 'active').length, icon: Trophy },
               { label: 'Tvoji tokeni', value: tokenBalance?.toLocaleString() ?? 0, icon: Coins },
               { label: 'Nagradni fond', value: contests.reduce((s, c) => s + (c.prize_pool || 0), 0).toLocaleString(), icon: Star },
             ].map((stat, i) => (
-              <div key={i} className="text-center p-3 rounded-xl bg-card border border-border/50">
+              <div key={i} className="text-center p-4 rounded-2xl bg-white/4 border border-white/8">
                 <stat.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
-                <p className="text-xl font-black">{stat.value}</p>
+                <p className="text-xl font-display font-black">{stat.value}</p>
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -99,15 +98,15 @@ export default function Home() {
 
       {/* Sport filters */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-6">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-2">
           {sportFilters.map(sport => (
             <button
               key={sport}
               onClick={() => setActiveSport(sport)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap tracking-wide uppercase transition-all ${
                 activeSport === sport
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10'
               }`}
             >
               {sport}

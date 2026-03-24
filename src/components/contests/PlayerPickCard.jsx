@@ -38,8 +38,8 @@ export default function PlayerPickCard({ player, selected, onSelect, index = 0 }
           onClick={() => onSelect(player.name, 'over')}
           className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
             isOver
-              ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
-              : 'bg-secondary hover:bg-primary/10 hover:text-primary text-muted-foreground'
+              ? 'bg-primary text-white shadow-lg shadow-primary/30'
+              : 'bg-secondary hover:bg-primary/15 hover:text-primary text-muted-foreground'
           }`}
         >
           <TrendingUp className="w-4 h-4" />

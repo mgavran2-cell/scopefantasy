@@ -23,9 +23,9 @@ export default function Navbar({ tokenBalance }) {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-black text-sm">FS</span>
+                <span className="text-white font-display font-black text-sm">FS</span>
               </div>
-              <span className="font-extrabold text-lg tracking-tight hidden sm:block">FantasyStreak</span>
+              <span className="font-display font-black text-xl tracking-wide hidden sm:block">FANTASYSTREAK</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
@@ -36,10 +36,10 @@ export default function Navbar({ tokenBalance }) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
                       isActive 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                        ? 'bg-primary/15 text-primary' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -52,10 +52,10 @@ export default function Navbar({ tokenBalance }) {
             <div className="flex items-center gap-3">
               <Link 
                 to="/kupnja-tokena"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:bg-accent/20 transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/25 hover:bg-primary/25 transition-all"
               >
-                <Coins className="w-4 h-4 text-accent" />
-                <span className="font-bold text-accent text-sm">{tokenBalance?.toLocaleString() ?? 0}</span>
+                <Coins className="w-4 h-4 text-primary" />
+                <span className="font-bold text-primary text-sm">{tokenBalance?.toLocaleString() ?? 0}</span>
               </Link>
               <button 
                 className="md:hidden p-2 rounded-lg hover:bg-secondary"

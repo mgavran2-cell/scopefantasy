@@ -13,12 +13,12 @@ const sportEmoji = {
 };
 
 const sportGradient = {
-  'Nogomet': 'from-green-500/20 to-emerald-500/5',
-  'Košarka': 'from-orange-500/20 to-amber-500/5',
-  'Tenis': 'from-yellow-500/20 to-lime-500/5',
-  'Američki nogomet': 'from-red-500/20 to-rose-500/5',
-  'Hokej': 'from-blue-500/20 to-cyan-500/5',
-  'MMA': 'from-purple-500/20 to-pink-500/5',
+  'Nogomet': 'from-violet-600/15 to-purple-500/5',
+  'Košarka': 'from-purple-600/15 to-violet-500/5',
+  'Tenis': 'from-fuchsia-600/15 to-purple-500/5',
+  'Američki nogomet': 'from-violet-700/15 to-indigo-500/5',
+  'Hokej': 'from-purple-600/15 to-blue-500/5',
+  'MMA': 'from-fuchsia-700/15 to-violet-500/5',
 };
 
 export default function ContestCard({ contest, index = 0 }) {
@@ -48,7 +48,7 @@ export default function ContestCard({ contest, index = 0 }) {
               contest.status === 'active' 
                 ? 'bg-primary/20 text-primary' 
                 : contest.status === 'upcoming'
-                ? 'bg-accent/20 text-accent'
+                ? 'bg-white/10 text-white/70'
                 : 'bg-muted text-muted-foreground'
             }`}>
               {contest.status === 'active' ? '🔴 Uživo' : contest.status === 'upcoming' ? 'Uskoro' : 'Završeno'}

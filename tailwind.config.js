@@ -6,6 +6,7 @@ module.exports = {
   	extend: {
       fontFamily: {
         inter: ['var(--font-inter)'],
+        display: ['var(--font-display)'],
       },
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -74,8 +75,8 @@ module.exports = {
   				to: { height: '0' }
   			},
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 20px hsl(142 72% 50% / 0.3)' },
-          '50%': { boxShadow: '0 0 40px hsl(142 72% 50% / 0.6)' }
+          '0%, 100%': { boxShadow: '0 0 20px hsl(262 83% 65% / 0.3)' },
+          '50%': { boxShadow: '0 0 50px hsl(262 83% 65% / 0.7)' }
         }
   		},
   		animation: {
