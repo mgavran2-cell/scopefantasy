@@ -1,33 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { User, Coins, Trophy, Target, TrendingUp, LogOut, ArrowRight } from 'lucide-react';
+import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
+
+const statusConfig = {
+  active:  { label: 'Aktivno',      color: 'bg-accent/20 text-accent' },
+  won:     { label: 'Osvojeno',     color: 'bg-primary/20 text-primary' },
+  lost:    { label: 'Izgubljeno',   color: 'bg-destructive/20 text-destructive' },
+  partial: { label: 'Djelomično',   color: 'bg-muted text-muted-foreground' },
+};
 
 export default function Profile() {
   const { tokenBalance } = useOutletContext();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ total: 0, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 });
-  const [transactions, setTransactions] = useState([]);
+  const [picks, setPicks] = useState([]);
+  const [contests, setContests] = useState({});
   const [loading, setLoading] = useState(true);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [activeTab, setActiveTab] = useState('history');
+  const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useEffect(() => { loadProfile(); }, []);
 
   const loadProfile = async () => {
-    const [me, picks, txns] = await Promise.all([
+    const [me, picksData, contestsData] = await Promise.all([
       base44.auth.me(),
-      base44.entities.Pick.list('-created_date', 100),
-      base44.entities.TokenTransaction.list('-created_date', 20),
+      base44.entities.Pick.list('-created_date', 50),
+      base44.entities.Contest.list('-created_date', 100),
     ]);
     setUser(me);
-    setTransactions(txns);
+    setPicks(picksData);
 
-    const s = { total: picks.length, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 };
-    picks.forEach(p => {
+    const contestMap = {};
+    contestsData.forEach(c => { contestMap[c.id] = c; });
+    setContests(contestMap);
+
+    const s = { total: picksData.length, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 };
+    picksData.forEach(p => {
       if (p.status === 'won') s.won++;
       if (p.status === 'lost') s.lost++;
       s.tokensWon += (p.tokens_won || 0);
@@ -37,8 +50,14 @@ export default function Profile() {
     setLoading(false);
   };
 
-  const handleLogout = () => {
-    base44.auth.logout();
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.auth.updateMe({ avatar_url: file_url });
+    setUser(prev => ({ ...prev, avatar_url: file_url }));
+    setUploadingAvatar(false);
   };
 
   if (loading) {
@@ -50,41 +69,54 @@ export default function Profile() {
   }
 
   const winRate = stats.total > 0 ? ((stats.won / stats.total) * 100).toFixed(1) : 0;
-
-  const txnConfig = {
-    purchase: { label: 'Kupnja', color: 'text-primary', icon: '+' },
-    entry: { label: 'Ulaz', color: 'text-destructive', icon: '' },
-    win: { label: 'Nagrada', color: 'text-primary', icon: '+' },
-    bonus: { label: 'Bonus', color: 'text-accent', icon: '+' },
-    refund: { label: 'Povrat', color: 'text-primary', icon: '+' },
-  };
+  const netProfit = stats.tokensWon - stats.tokensSpent;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      {/* Profile header */}
+      {/* Profile Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center">
-            <span className="text-2xl font-black text-primary-foreground">
-              {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
-            </span>
+        <div className="flex items-center gap-5 mb-6">
+          {/* Avatar */}
+          <div className="relative group">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-primary to-fuchsia-500 flex items-center justify-center">
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl font-black text-white">
+                  {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"
+            >
+              {uploadingAvatar
+                ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <Camera className="w-5 h-5 text-white" />
+              }
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           </div>
+
           <div>
             <h1 className="text-2xl font-black">{user?.full_name || 'Igrač'}</h1>
             <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <p className="text-xs text-muted-foreground mt-1">Član od {moment(user?.created_date).format('MMMM YYYY.')}</p>
           </div>
         </div>
 
         {/* Token balance */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-6">
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-primary/10 to-fuchsia-500/5 border border-primary/20 mb-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Stanje tokena</p>
-              <p className="text-4xl font-black text-accent">{tokenBalance?.toLocaleString()}</p>
+              <p className="text-4xl font-black text-primary">{tokenBalance?.toLocaleString()}</p>
             </div>
             <Link
               to="/kupnja-tokena"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:opacity-90 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
             >
               <Coins className="w-4 h-4" />
               Kupi Tokene
@@ -93,12 +125,12 @@ export default function Profile() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Igre', value: stats.total, icon: Target },
-            { label: 'Pobjede', value: stats.won, icon: Trophy },
-            { label: 'Win Rate', value: `${winRate}%`, icon: TrendingUp },
-            { label: 'Zarađeno', value: stats.tokensWon.toLocaleString(), icon: Coins },
+            { label: 'Odigrano', value: stats.total, icon: Target, color: 'text-muted-foreground' },
+            { label: 'Pobjede', value: stats.won, icon: Trophy, color: 'text-primary' },
+            { label: 'Win Rate', value: `${winRate}%`, icon: TrendingUp, color: 'text-accent' },
+            { label: 'Neto zarada', value: (netProfit >= 0 ? '+' : '') + netProfit.toLocaleString(), icon: Coins, color: netProfit >= 0 ? 'text-primary' : 'text-destructive' },
           ].map((s, i) => (
             <motion.div
               key={i}
@@ -107,40 +139,145 @@ export default function Profile() {
               transition={{ delay: i * 0.05 }}
               className="p-4 rounded-2xl bg-card border border-border/50 text-center"
             >
-              <s.icon className="w-5 h-5 mx-auto mb-2 text-primary" />
-              <p className="text-xl font-black">{s.value}</p>
+              <s.icon className={`w-5 h-5 mx-auto mb-2 ${s.color}`} />
+              <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
               <p className="text-xs text-muted-foreground">{s.label}</p>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
-      {/* Transactions */}
-      <div className="mb-8">
-        <h2 className="text-lg font-bold mb-4">Zadnje transakcije</h2>
-        {transactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nema transakcija</p>
-        ) : (
-          <div className="space-y-2">
-            {transactions.map((tx, i) => {
-              const cfg = txnConfig[tx.type] || txnConfig.entry;
-              return (
-                <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50">
-                  <div>
-                    <p className="text-sm font-semibold">{cfg.label}</p>
-                    <p className="text-xs text-muted-foreground">{tx.description || ''} · {moment(tx.created_date).format('DD.MM. HH:mm')}</p>
-                  </div>
-                  <span className={`font-bold text-sm ${cfg.color}`}>
-                    {cfg.icon}{Math.abs(tx.amount).toLocaleString()}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+      {/* Tabs */}
+      <div className="flex gap-2 mb-5">
+        {[
+          { key: 'history', label: 'Povijest natjecanja' },
+          { key: 'stats', label: 'Statistika' },
+        ].map(t => (
+          <button
+            key={t.key}
+            onClick={() => setActiveTab(t.key)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              activeTab === t.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <Button variant="outline" className="w-full rounded-xl" onClick={handleLogout}>
+      {/* Contest History */}
+      {activeTab === 'history' && (
+        <div className="space-y-3 mb-8">
+          {picks.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Trophy className="w-12 h-12 mx-auto mb-3 opacity-20" />
+              <p>Još nisi sudjelovao ni u jednom natjecanju</p>
+            </div>
+          ) : picks.map((pick, i) => {
+            const contest = contests[pick.contest_id];
+            const sc = statusConfig[pick.status] || statusConfig.active;
+            const correct = pick.correct_picks || 0;
+            const total = pick.total_picks || pick.selections?.length || 0;
+            return (
+              <motion.div
+                key={pick.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className="rounded-2xl border border-border/50 bg-card p-4"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-bold text-sm">{contest?.title || 'Natjecanje'}</h3>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      {moment(pick.created_date).format('DD.MM.YYYY HH:mm')}
+                    </div>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${sc.color}`}>{sc.label}</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs mt-3">
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                    <span>{correct}/{total} točnih</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Coins className="w-3.5 h-3.5 text-accent" />
+                    <span>-{pick.tokens_spent}</span>
+                  </div>
+                  {pick.tokens_won > 0 && (
+                    <div className="flex items-center gap-1 font-bold text-primary">
+                      <Trophy className="w-3.5 h-3.5" />
+                      <span>+{pick.tokens_won}</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Detailed Stats */}
+      {activeTab === 'stats' && (
+        <div className="space-y-4 mb-8">
+          <div className="rounded-2xl bg-card border border-border/50 p-5">
+            <h3 className="font-bold mb-4">Statistika uspješnosti</h3>
+            <div className="space-y-3">
+              {[
+                { label: 'Ukupno odigrano', value: stats.total },
+                { label: 'Pobjede', value: stats.won },
+                { label: 'Porazi', value: stats.lost },
+                { label: 'Win rate', value: `${winRate}%` },
+              ].map((row, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                  <span className="text-sm text-muted-foreground">{row.label}</span>
+                  <span className="font-bold text-sm">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-card border border-border/50 p-5">
+            <h3 className="font-bold mb-4">Statistika tokena</h3>
+            <div className="space-y-3">
+              {[
+                { label: 'Ukupno potrošeno', value: stats.tokensSpent.toLocaleString(), color: 'text-destructive' },
+                { label: 'Ukupno zarađeno', value: stats.tokensWon.toLocaleString(), color: 'text-primary' },
+                { label: 'Neto zarada', value: (netProfit >= 0 ? '+' : '') + netProfit.toLocaleString(), color: netProfit >= 0 ? 'text-primary' : 'text-destructive' },
+                { label: 'Trenutno stanje', value: tokenBalance?.toLocaleString(), color: 'text-accent' },
+              ].map((row, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                  <span className="text-sm text-muted-foreground">{row.label}</span>
+                  <span className={`font-bold text-sm ${row.color}`}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Win rate bar */}
+          <div className="rounded-2xl bg-card border border-border/50 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold">Win Rate</h3>
+              <span className="text-2xl font-black text-primary">{winRate}%</span>
+            </div>
+            <div className="h-3 rounded-full bg-secondary overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${winRate}%` }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+                className="h-full rounded-full bg-gradient-to-r from-primary to-fuchsia-400"
+              />
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground mt-2">
+              <span>{stats.won} pobjeda</span>
+              <span>{stats.lost} poraza</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Button variant="outline" className="w-full rounded-xl" onClick={() => base44.auth.logout()}>
         <LogOut className="w-4 h-4 mr-2" />
         Odjava
       </Button>
