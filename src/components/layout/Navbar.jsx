@@ -23,9 +23,9 @@ export default function Navbar({ tokenBalance }) {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-white font-display font-black text-sm">FS</span>
+                <span className="text-white font-display font-black text-sm">SF</span>
               </div>
-              <span className="font-display font-black text-xl tracking-wide hidden sm:block">FANTASYSTREAK</span>
+              <span className="font-display font-black text-xl tracking-wide hidden sm:block">SCOPEFANTASY</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
