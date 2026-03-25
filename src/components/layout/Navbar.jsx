@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, BarChart2 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -8,6 +8,7 @@ const navItems = [
   { path: '/natjecanja', label: 'Natjecanja', icon: Trophy },
   { path: '/moji-odabiri', label: 'Moji Odabiri', icon: ListChecks },
   { path: '/ljestvica', label: 'Ljestvica', icon: Users },
+  { path: '/dashboard', label: 'Dashboard', icon: BarChart2 },
   { path: '/profil', label: 'Profil', icon: User },
 ];
 

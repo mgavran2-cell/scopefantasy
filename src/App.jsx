@@ -13,6 +13,7 @@ import MyPicks from './pages/MyPicks';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import BuyTokens from './pages/BuyTokens';
+import Dashboard from './pages/Dashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
         <Route path="/ljestvica" element={<Leaderboard />} />
         <Route path="/profil" element={<Profile />} />
         <Route path="/kupnja-tokena" element={<BuyTokens />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
