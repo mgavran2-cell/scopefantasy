@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, BarChart2 } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -51,14 +52,15 @@ export default function Navbar({ tokenBalance }) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link 
+              <NotificationBell />
+              <Link
                 to="/kupnja-tokena"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/25 hover:bg-primary/25 transition-all"
               >
                 <Coins className="w-4 h-4 text-primary" />
                 <span className="font-bold text-primary text-sm">{tokenBalance?.toLocaleString() ?? 0}</span>
               </Link>
-              <button 
+              <button
                 className="md:hidden p-2 rounded-lg hover:bg-secondary"
                 onClick={() => setMobileOpen(!mobileOpen)}
               >

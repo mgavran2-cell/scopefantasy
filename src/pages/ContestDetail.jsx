@@ -6,6 +6,7 @@ import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
+import { notifyUser } from '../hooks/useNotifications';
 import moment from 'moment';
 
 export default function ContestDetail() {
@@ -92,6 +93,16 @@ export default function ContestDetail() {
     });
 
     await loadBalance();
+
+    // Notify user entry confirmed
+    await notifyUser(
+      user.email,
+      'pick_finished',
+      `Ulaz potvrđen: ${contest.title}`,
+      `Tvoji odabiri su zaprimljeni. Čekaj rezultate natjecanja!`,
+      { contest_id: contest.id }
+    );
+
     toast.success('Odabiri uspješno poslani!');
     navigate('/moji-odabiri');
   };
