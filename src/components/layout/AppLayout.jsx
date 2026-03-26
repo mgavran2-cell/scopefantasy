@@ -2,9 +2,14 @@ import { Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import { base44 } from '@/api/base44Client';
+import { useNotificationWatcher } from '../../hooks/useNotificationWatcher';
+import BrowserNotifBanner from './BrowserNotifBanner';
 
 export default function AppLayout() {
   const [tokenBalance, setTokenBalance] = useState(0);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useNotificationWatcher(currentUser);
 
   useEffect(() => {
     loadBalance();
@@ -23,12 +28,14 @@ export default function AppLayout() {
       await base44.auth.updateMe(updates);
     }
     const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
+    setCurrentUser(fresh);
     setTokenBalance(fresh?.token_balance ?? 1000);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar tokenBalance={tokenBalance} />
+      <BrowserNotifBanner />
       <main className="pt-16">
         <Outlet context={{ tokenBalance, setTokenBalance, loadBalance }} />
       </main>

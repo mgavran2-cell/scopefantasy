@@ -10,6 +10,7 @@ const typeConfig = {
   pick_lost:     { icon: Bell,   color: 'text-destructive', bg: 'bg-destructive/15' },
   pick_finished: { icon: Bell,   color: 'text-muted-foreground', bg: 'bg-muted' },
   reward:        { icon: Trophy, color: 'text-yellow-400',  bg: 'bg-yellow-400/15' },
+  friend_win:    { icon: Trophy, color: 'text-fuchsia-400', bg: 'bg-fuchsia-400/15' },
 };
 
 export default function NotificationBell() {
