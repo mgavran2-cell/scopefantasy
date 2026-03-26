@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import ReferralSection from '../components/profile/ReferralSection';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
@@ -152,6 +153,7 @@ export default function Profile() {
         {[
           { key: 'history', label: 'Povijest natjecanja' },
           { key: 'stats', label: 'Statistika' },
+          { key: 'referral', label: '🎁 Referali' },
         ].map(t => (
           <button
             key={t.key}
@@ -255,7 +257,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Win rate bar */}
           <div className="rounded-2xl bg-card border border-border/50 p-5">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold">Win Rate</h3>
@@ -274,6 +275,13 @@ export default function Profile() {
               <span>{stats.lost} poraza</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Referral tab */}
+      {activeTab === 'referral' && (
+        <div className="mb-8">
+          <ReferralSection user={user} tokenBalance={tokenBalance} loadBalance={loadBalance} />
         </div>
       )}
 

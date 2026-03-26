@@ -12,11 +12,18 @@ export default function AppLayout() {
 
   const loadBalance = async () => {
     const user = await base44.auth.me();
-    setTokenBalance(user?.token_balance || 1000); // New users get 1000 tokens
+    const updates = {};
     if (!user?.token_balance && user?.token_balance !== 0) {
-      await base44.auth.updateMe({ token_balance: 1000 });
-      setTokenBalance(1000);
+      updates.token_balance = 1000;
     }
+    if (!user?.referral_code) {
+      updates.referral_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+    if (Object.keys(updates).length > 0) {
+      await base44.auth.updateMe(updates);
+    }
+    const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
+    setTokenBalance(fresh?.token_balance ?? 1000);
   };
 
   return (
