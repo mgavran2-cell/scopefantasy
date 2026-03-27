@@ -19,6 +19,7 @@ import Store from './pages/Store';
 import TeamStats from './pages/TeamStats';
 import Predictor from './pages/Predictor';
 import DailyChallengePage from './pages/DailyChallengePage';
+import WalletPage from './pages/Wallet';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
         <Route path="/statistika" element={<TeamStats />} />
         <Route path="/predictor" element={<Predictor />} />
         <Route path="/izazovi" element={<DailyChallengePage />} />
+        <Route path="/novcanik" element={<WalletPage />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
