@@ -1,0 +1,65 @@
+{
+  "name": "ChallengeProgress",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string"
+    },
+    "current_count": {
+      "type": "number",
+      "default": 0
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "reward_claimed": {
+      "type": "boolean",
+      "default": false
+    },
+    "date": {
+      "type": "string",
+      "description": "YYYY-MM-DD"
+    }
+  },
+  "required": [
+    "user_email",
+    "challenge_id",
+    "date"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

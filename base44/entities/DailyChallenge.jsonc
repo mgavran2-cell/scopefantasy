@@ -1,0 +1,61 @@
+{
+  "name": "DailyChallenge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "picks_count",
+        "correct_picks",
+        "sport_picks",
+        "win_contest"
+      ]
+    },
+    "sport": {
+      "type": "string"
+    },
+    "target_count": {
+      "type": "number"
+    },
+    "reward_tokens": {
+      "type": "number"
+    },
+    "active_date": {
+      "type": "string",
+      "description": "YYYY-MM-DD format, leave empty for permanent"
+    },
+    "icon": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "target_count",
+    "reward_tokens"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
