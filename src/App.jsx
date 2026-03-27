@@ -16,6 +16,7 @@ import BuyTokens from './pages/BuyTokens';
 import Dashboard from './pages/Dashboard';
 import SocialFeed from './pages/SocialFeed';
 import Store from './pages/Store';
+import TeamStats from './pages/TeamStats';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -54,6 +55,7 @@ const AuthenticatedApp = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/feed" element={<SocialFeed />} />
         <Route path="/trgovina" element={<Store />} />
+        <Route path="/statistika" element={<TeamStats />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
