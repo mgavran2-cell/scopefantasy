@@ -40,12 +40,48 @@ export function useNotificationWatcher(currentUser) {
       }
     });
 
-    // 3. Watch Contests → notify when new contest goes active
+    // 3. Watch Picks → notify when pick is resolved (won/lost)
+    const seenPickStatuses = {};
+    const unsubPick = base44.entities.Pick.subscribe(async (event) => {
+      if (event.type !== 'update') return;
+      const pick = event.data;
+      if (pick.user_email !== currentUser.email) return;
+      const prev = seenPickStatuses[pick.id];
+      seenPickStatuses[pick.id] = pick.status;
+      if (prev === pick.status) return; // no change
+
+      if (pick.status === 'won') {
+        await notifyUser(
+          currentUser.email,
+          'pick_won',
+          `🏆 Pick pobijedio!`,
+          `Točnih odabira: ${pick.correct_picks}/${pick.total_picks} · Zarada: +${pick.tokens_won} tokena`,
+          { pick_id: pick.id }
+        );
+      } else if (pick.status === 'lost') {
+        await notifyUser(
+          currentUser.email,
+          'pick_lost',
+          `❌ Pick izgubljen`,
+          `Točnih odabira: ${pick.correct_picks}/${pick.total_picks}`,
+          { pick_id: pick.id }
+        );
+      } else if (pick.status === 'partial') {
+        await notifyUser(
+          currentUser.email,
+          'pick_finished',
+          `⚡ Djelomičan rezultat`,
+          `Točnih odabira: ${pick.correct_picks}/${pick.total_picks} · Zarada: +${pick.tokens_won} tokena`,
+          { pick_id: pick.id }
+        );
+      }
+    });
+
+    // 4. Watch Contests → notify when new contest goes active or finishes
     const unsubContest = base44.entities.Contest.subscribe(async (event) => {
       if (event.type !== 'create' && event.type !== 'update') return;
       const contest = event.data;
       if (contest.status === 'active') {
-        // Check sport interest (user has picks in this sport)
         await notifyUser(
           currentUser.email,
           'new_contest',
@@ -53,12 +89,25 @@ export function useNotificationWatcher(currentUser) {
           `${contest.sport} · Ulaz: ${contest.entry_cost} tokena · Nagradni fond: ${contest.prize_pool?.toLocaleString()} tokena`,
           { contest_id: contest.id }
         );
+      } else if (contest.status === 'finished') {
+        // Only notify if user has a pick in this contest
+        const userPicks = await base44.entities.Pick.filter({ user_email: currentUser.email, contest_id: contest.id });
+        if (userPicks.length > 0) {
+          await notifyUser(
+            currentUser.email,
+            'pick_finished',
+            `🏁 Natjecanje završilo: ${contest.title}`,
+            `Provjeri rezultate svojih odabira!`,
+            { contest_id: contest.id }
+          );
+        }
       }
     });
 
     return () => {
       unsubNotif();
       unsubSocial();
+      unsubPick();
       unsubContest();
       initialized.current = false;
     };
