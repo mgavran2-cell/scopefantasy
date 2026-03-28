@@ -1,0 +1,125 @@
+{
+  "name": "Parlay",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "selections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "contest_id": {
+            "type": "string"
+          },
+          "contest_title": {
+            "type": "string"
+          },
+          "sport": {
+            "type": "string"
+          },
+          "player_name": {
+            "type": "string"
+          },
+          "stat_type": {
+            "type": "string"
+          },
+          "over_under": {
+            "type": "number"
+          },
+          "choice": {
+            "type": "string",
+            "enum": [
+              "over",
+              "under"
+            ]
+          },
+          "odds": {
+            "type": "number"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "win",
+              "loss"
+            ]
+          }
+        }
+      }
+    },
+    "total_odds": {
+      "type": "number"
+    },
+    "stake_tokens": {
+      "type": "number"
+    },
+    "potential_win": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "won",
+        "lost",
+        "partial"
+      ],
+      "default": "active"
+    },
+    "tokens_won": {
+      "type": "number",
+      "default": 0
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "extreme"
+      ]
+    }
+  },
+  "required": [
+    "user_email",
+    "selections",
+    "stake_tokens"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
