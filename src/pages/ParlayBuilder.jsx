@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
+
+function useSafeOutletContext(embedded) {
+  try { return embedded ? {} : useOutletContext() || {}; } catch { return {}; }
+}
 import { Layers, Plus, X, TrendingUp, TrendingDown, Coins, AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, Trophy } from 'lucide-react';
 import moment from 'moment';
 
@@ -133,8 +137,10 @@ function ContestPicker({ contests, onAdd, existing }) {
   );
 }
 
-export default function ParlayBuilder() {
-  const { tokenBalance, loadBalance } = useOutletContext();
+export default function ParlayBuilder({ embedded } = {}) {
+  const ctx = useSafeOutletContext(embedded);
+  const tokenBalance = ctx?.tokenBalance ?? 0;
+  const loadBalance = ctx?.loadBalance || (() => {});
   const [contests, setContests] = useState([]);
   const [selections, setSelections] = useState([]);
   const [stake, setStake] = useState(100);

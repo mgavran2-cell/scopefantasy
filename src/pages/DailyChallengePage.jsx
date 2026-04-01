@@ -3,6 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Zap, CheckCircle2, Gift, RefreshCw } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
+
+function useSafeOutletContext(embedded) {
+  try { return embedded ? {} : useOutletContext() || {}; } catch { return {}; }
+}
 import { notifyUser } from '../hooks/useNotifications';
 import moment from 'moment';
 
@@ -13,8 +17,9 @@ const typeLabel = {
   win_contest: 'Pobijedi u natjecanju',
 };
 
-export default function DailyChallengePage() {
-  const { loadBalance } = useOutletContext();
+export default function DailyChallengePage({ embedded } = {}) {
+  const ctx = useSafeOutletContext(embedded);
+  const loadBalance = ctx?.loadBalance || (() => {});
   const [challenges, setChallenges] = useState([]);
   const [progressMap, setProgressMap] = useState({});
   const [user, setUser] = useState(null);
