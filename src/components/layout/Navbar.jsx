@@ -13,9 +13,7 @@ const navItems = [
   { path: '/trgovina', label: 'Trgovina', icon: ShoppingCart },
   { path: '/statistika', label: 'Statistika', icon: Activity },
   { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
-  { path: '/izazovi', label: 'Izazovi', icon: Zap },
   { path: '/novcanik', label: 'Novčanik', icon: Wallet },
-  { path: '/parlay', label: 'Parlay', icon: Layers },
   { path: '/dashboard', label: 'Dashboard', icon: BarChart2 },
   { path: '/profil', label: 'Profil', icon: User },
 ];
