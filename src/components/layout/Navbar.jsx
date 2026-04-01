@@ -14,7 +14,6 @@ const navItems = [
   { path: '/statistika', label: 'Statistika', icon: Activity },
   { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
   { path: '/novcanik', label: 'Novčanik', icon: Wallet },
-  { path: '/dashboard', label: 'Dashboard', icon: BarChart2 },
   { path: '/profil', label: 'Profil', icon: User },
 ];
 
