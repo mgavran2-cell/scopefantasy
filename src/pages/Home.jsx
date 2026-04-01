@@ -29,6 +29,7 @@ export default function Home() {
 
   const activeContests = filteredContests.filter(c => c.status === 'active');
   const upcomingContests = filteredContests.filter(c => c.status === 'upcoming');
+  const allVisible = [...activeContests, ...upcomingContests];
 
   return (
     <div className="min-h-screen">
@@ -115,34 +116,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Active Contests */}
-      {activeContests.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
+      {/* All Contests */}
+      {allVisible.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-12">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              Uživo
+              <Trophy className="w-5 h-5 text-primary" />
+              Natjecanja
+              <span className="text-sm font-normal text-muted-foreground">({allVisible.length})</span>
             </h2>
             <Link to="/natjecanja" className="text-sm text-primary font-semibold flex items-center gap-1 hover:gap-2 transition-all">
               Vidi sve <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {activeContests.map((contest, i) => (
-              <ContestCard key={contest.id} contest={contest} index={i} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Upcoming */}
-      {upcomingContests.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Nadolazeća natjecanja</h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {upcomingContests.map((contest, i) => (
+            {allVisible.map((contest, i) => (
               <ContestCard key={contest.id} contest={contest} index={i} />
             ))}
           </div>
