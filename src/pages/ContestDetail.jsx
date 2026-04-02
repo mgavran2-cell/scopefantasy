@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check } from 'lucide-react';
+import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check, Eye, EyeOff } from 'lucide-react';
+import ContestLiveChat from '../components/contests/ContestLiveChat';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
@@ -17,15 +18,21 @@ export default function ContestDetail() {
   const [loading, setLoading] = useState(true);
   const [selections, setSelections] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     loadContest();
   }, [id]);
 
   const loadContest = async () => {
-    const data = await base44.entities.Contest.list();
+    const [data, me] = await Promise.all([
+      base44.entities.Contest.list(),
+      base44.auth.me(),
+    ]);
     const found = data.find(c => c.id === id);
     setContest(found);
+    setUser(me);
     setLoading(false);
   };
 
@@ -57,7 +64,6 @@ export default function ContestDetail() {
 
     setSubmitting(true);
 
-    const user = await base44.auth.me();
     const pickSelections = Object.entries(selections).map(([playerName, choice]) => {
       const player = contest.players?.find(p => p.name === playerName);
       return {
@@ -77,7 +83,8 @@ export default function ContestDetail() {
       selections: pickSelections,
       tokens_spent: contest.entry_cost,
       total_picks: pickSelections.length,
-      status: 'active'
+      status: 'active',
+      is_public: isPublic,
     });
 
     const newBalance = tokenBalance - contest.entry_cost;
@@ -207,8 +214,29 @@ export default function ContestDetail() {
         </div>
       )}
 
+      {/* Live Chat */}
+      {contest.status === 'active' && user && (
+        <div className="mb-8">
+          <ContestLiveChat contestId={contest.id} currentUser={user} />
+        </div>
+      )}
+
       {/* Submit */}
-      <div className="sticky bottom-4 z-30">
+      <div className="sticky bottom-4 z-30 space-y-2">
+        {/* Privacy toggle */}
+        <div className="flex items-center justify-center">
+          <button
+            onClick={() => setIsPublic(v => !v)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition-all ${
+              isPublic
+                ? 'bg-primary/10 border-primary/30 text-primary'
+                : 'bg-secondary border-border/50 text-muted-foreground'
+            }`}
+          >
+            {isPublic ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            {isPublic ? 'Javno (vidljivo svima)' : 'Privatno (samo ti vidiš)'}
+          </button>
+        </div>
         <Button
           onClick={handleSubmit}
           disabled={selected < required || submitting}
@@ -223,7 +251,7 @@ export default function ContestDetail() {
             </>
           )}
         </Button>
+        </div>
       </div>
-    </div>
-  );
-}
+      );
+      }

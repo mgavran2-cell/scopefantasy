@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Trophy, Coins, Send, Zap, Users } from 'lucide-react';
+import { Heart, MessageCircle, Trophy, Coins, Send, Zap, Users, Copy, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
 
@@ -106,6 +107,14 @@ function PostCard({ post, currentUser, onLike, onComment }) {
           <MessageCircle className="w-4 h-4" />
           Komentari
         </button>
+        {post.contest_id && (
+          <Link
+            to={`/natjecanje/${post.contest_id}`}
+            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-accent hover:opacity-80 transition-all px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20"
+          >
+            <Copy className="w-3.5 h-3.5" /> Kopiraj okladu
+          </Link>
+        )}
       </div>
 
       {/* Comments */}
@@ -169,19 +178,23 @@ function PostCard({ post, currentUser, onLike, onComment }) {
 
 export default function SocialFeed() {
   const [posts, setPosts] = useState([]);
+  const [activePicks, setActivePicks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [newPost, setNewPost] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [tab, setTab] = useState('feed');
 
   useEffect(() => {
     (async () => {
-      const [postsData, user] = await Promise.all([
+      const [postsData, user, picksData] = await Promise.all([
         base44.entities.SocialPost.list('-created_date', 30),
         base44.auth.me(),
+        base44.entities.Pick.filter({ status: 'active', is_public: true }, '-created_date', 50),
       ]);
       setPosts(postsData);
       setCurrentUser(user);
+      setActivePicks(picksData);
       setLoading(false);
     })();
   }, []);
@@ -215,12 +228,24 @@ export default function SocialFeed() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-black mb-1 flex items-center gap-3">
           <Users className="w-8 h-8 text-primary" />
           Social Feed
         </h1>
         <p className="text-muted-foreground text-sm">Prati uspjehe igrača, dijeli rezultate i komentiraj</p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6">
+        {[{key:'feed',label:'Feed'},{key:'active',label:'Aktivni okladi'}].map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              tab === t.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
+            }`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {/* New post */}
@@ -256,30 +281,72 @@ export default function SocialFeed() {
         </div>
       </div>
 
-      {/* Feed */}
+      {/* Feed or Active Picks */}
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
         </div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-16">
-          <Users className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-          <h3 className="font-bold text-lg mb-1">Feed je prazan</h3>
-          <p className="text-muted-foreground text-sm">Budi prvi koji će nešto podijeliti!</p>
-        </div>
+      ) : tab === 'feed' ? (
+        posts.length === 0 ? (
+          <div className="text-center py-16">
+            <Users className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
+            <h3 className="font-bold text-lg mb-1">Feed je prazan</h3>
+            <p className="text-muted-foreground text-sm">Budi prvi koji će nešto podijeliti!</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post, i) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUser={currentUser}
+                onLike={handleLike}
+                onComment={() => {}}
+              />
+            ))}
+          </div>
+        )
       ) : (
-        <div className="space-y-4">
-          {posts.map((post, i) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              currentUser={currentUser}
-              onLike={handleLike}
-              onComment={() => {}}
-              style={{ animationDelay: `${i * 0.05}s` }}
-            />
-          ))}
-        </div>
+        activePicks.length === 0 ? (
+          <div className="text-center py-16">
+            <Eye className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
+            <h3 className="font-bold text-lg mb-1">Nema aktivnih oklada</h3>
+            <p className="text-muted-foreground text-sm">Korisnici još nisu označili okladu kao javnu.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {activePicks.map((pick, i) => (
+              <motion.div key={pick.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                className="bg-card border border-border/50 rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-fuchsia-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">{(pick.user_name || pick.user_email)?.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm">{pick.user_name || pick.user_email}</p>
+                      <p className="text-xs text-muted-foreground">{pick.selections?.length} odabira · {pick.tokens_spent} tokena</p>
+                    </div>
+                  </div>
+                  <Link to={`/natjecanje/${pick.contest_id}`}
+                    className="flex items-center gap-1.5 text-xs font-bold text-accent px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:opacity-80 transition-all">
+                    <Copy className="w-3.5 h-3.5" /> Kopiraj
+                  </Link>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {pick.selections?.slice(0, 4).map((s, j) => (
+                    <span key={j} className="text-xs px-2 py-1 rounded-lg bg-secondary font-medium">
+                      {s.player_name} · <span className={s.choice === 'over' ? 'text-green-400' : 'text-red-400'}>{s.choice === 'over' ? '↑' : '↓'} {s.choice}</span>
+                    </span>
+                  ))}
+                  {pick.selections?.length > 4 && (
+                    <span className="text-xs px-2 py-1 rounded-lg bg-secondary text-muted-foreground">+{pick.selections.length - 4} više</span>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )
       )}
     </div>
   );
