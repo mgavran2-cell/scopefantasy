@@ -239,7 +239,14 @@ export default function WalletPage() {
             <p className="text-sm">Nema transakcija</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="rounded-2xl border border-border/50 overflow-hidden">
+            {/* Table header */}
+            <div className="grid grid-cols-[auto_1fr_auto_auto] gap-3 px-4 py-2.5 bg-secondary/50 border-b border-border/40 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              <span>Tip</span>
+              <span>Opis</span>
+              <span className="text-center hidden sm:block">Datum</span>
+              <span className="text-right">Iznos</span>
+            </div>
             {filtered.map((tx, i) => {
               const cfg = txConfig[tx.type] || txConfig.bonus;
               const Icon = cfg.icon;
@@ -247,25 +254,40 @@ export default function WalletPage() {
               return (
                 <motion.div
                   key={tx.id}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.02 }}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/40"
+                  className={`grid grid-cols-[auto_1fr_auto_auto] gap-3 items-center px-4 py-3 border-b border-border/30 last:border-0 transition-colors hover:bg-white/[0.02] ${
+                    isPositive ? 'bg-green-500/[0.03]' : 'bg-red-500/[0.03]'
+                  }`}
                 >
-                  <div className={`w-9 h-9 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0`}>
-                    <Icon className={`w-4 h-4 ${cfg.color}`} />
+                  {/* Type badge */}
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${cfg.bg} shrink-0`}>
+                    <Icon className={`w-3.5 h-3.5 ${cfg.color}`} />
+                    <span className={`text-xs font-bold ${cfg.color} hidden sm:inline`}>{cfg.label}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{tx.description || cfg.label}</p>
-                    <p className="text-xs text-muted-foreground">{moment(tx.created_date).format('DD.MM.YYYY HH:mm')}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className={`font-black text-sm ${isPositive ? 'text-primary' : 'text-destructive'}`}>
-                      {cfg.sign}{tx.amount?.toLocaleString()}
-                    </p>
+
+                  {/* Description */}
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{tx.description || cfg.label}</p>
+                    <p className="text-xs text-muted-foreground sm:hidden">{moment(tx.created_date).format('DD.MM.YY HH:mm')}</p>
                     {tx.balance_after != null && (
-                      <p className="text-[10px] text-muted-foreground">Stanje: {tx.balance_after.toLocaleString()}</p>
+                      <p className="text-[10px] text-muted-foreground/60">Stanje: {tx.balance_after.toLocaleString()}</p>
                     )}
+                  </div>
+
+                  {/* Date */}
+                  <span className="text-xs text-muted-foreground whitespace-nowrap hidden sm:block">
+                    {moment(tx.created_date).format('DD.MM.YYYY')}<br/>
+                    <span className="opacity-60">{moment(tx.created_date).format('HH:mm')}</span>
+                  </span>
+
+                  {/* Amount */}
+                  <div className={`text-right shrink-0 font-black text-sm ${
+                    isPositive ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    <span className="text-base">{cfg.sign}{tx.amount?.toLocaleString()}</span>
+                    <p className="text-[10px] font-normal opacity-60">tokena</p>
                   </div>
                 </motion.div>
               );
