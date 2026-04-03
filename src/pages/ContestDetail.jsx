@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check, Eye, EyeOff, Swords } from 'lucide-react';
 import ContestLiveChat from '../components/contests/ContestLiveChat';
+import DuelModal from '../components/social/DuelModal';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
@@ -20,6 +21,7 @@ export default function ContestDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [user, setUser] = useState(null);
+  const [showDuelModal, setShowDuelModal] = useState(false);
 
   useEffect(() => {
     loadContest();
@@ -171,9 +173,18 @@ export default function ContestDetail() {
                 <span>{moment(contest.start_time).format('DD.MM.YYYY HH:mm')}</span>
               </div>
             )}
+            {user && contest.status === 'active' && (
+              <button onClick={() => setShowDuelModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold hover:bg-primary/20 transition-all">
+                <Swords className="w-3.5 h-3.5" /> Izazovi prijatelja
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
+      {showDuelModal && user && contest && (
+        <DuelModal contest={contest} currentUser={user} onClose={() => setShowDuelModal(false)} />
+      )}
 
       {/* Progress bar */}
       <div className="mb-6 p-4 rounded-2xl bg-card border border-border/50">

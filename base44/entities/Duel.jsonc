@@ -1,0 +1,93 @@
+{
+  "name": "Duel",
+  "type": "object",
+  "properties": {
+    "challenger_email": {
+      "type": "string"
+    },
+    "challenger_name": {
+      "type": "string"
+    },
+    "opponent_email": {
+      "type": "string"
+    },
+    "opponent_name": {
+      "type": "string"
+    },
+    "contest_id": {
+      "type": "string"
+    },
+    "contest_title": {
+      "type": "string"
+    },
+    "stake_tokens": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined",
+        "finished"
+      ],
+      "default": "pending"
+    },
+    "challenger_pick_id": {
+      "type": "string"
+    },
+    "opponent_pick_id": {
+      "type": "string"
+    },
+    "winner_email": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "challenger_email",
+    "opponent_email",
+    "contest_id",
+    "stake_tokens"
+  ],
+  "rls": {
+    "create": {
+      "data.challenger_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.challenger_email": "{{user.email}}"
+        },
+        {
+          "data.opponent_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.challenger_email": "{{user.email}}"
+        },
+        {
+          "data.opponent_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "data.challenger_email": "{{user.email}}"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Crown, Coins, TrendingUp } from 'lucide-react';
+import FollowButton from '../components/social/FollowButton';
 import moment from 'moment';
 
 const PERIODS = [
@@ -158,10 +159,9 @@ export default function Leaderboard() {
                     </p>
                     <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} igara</p>
                   </div>
-                  <div className="hidden sm:flex items-center gap-1 w-16 justify-center">
-                    <TrendingUp className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-sm font-semibold text-accent">{winRate}%</span>
-                  </div>
+                  {!isMe && (
+                    <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />
+                  )}
                   <p className="flex items-center gap-1 font-bold text-primary text-sm w-20 justify-end">
                     <Coins className="w-3.5 h-3.5 shrink-0" /> {entry.tokensWon.toLocaleString()}
                   </p>

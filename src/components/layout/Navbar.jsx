@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, BarChart2, Rss, ShoppingCart, Activity, Sparkles, Zap, Wallet, Layers } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, BarChart2, Rss, ShoppingCart, Activity, Sparkles, Zap, Wallet, Layers, Heart } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,7 @@ const navItems = [
   { path: '/statistika', label: 'Statistika', icon: Activity },
   { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
   { path: '/novcanik', label: 'Novčanik', icon: Wallet },
+  { path: '/prijatelji', label: 'Prijatelji', icon: Heart },
   { path: '/profil', label: 'Profil', icon: User },
 ];
 

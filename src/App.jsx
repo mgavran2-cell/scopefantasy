@@ -22,6 +22,7 @@ import DailyChallengePage from './pages/DailyChallengePage';
 import WalletPage from './pages/Wallet';
 import ParlayBuilder from './pages/ParlayBuilder';
 import UserStats from './pages/UserStats';
+import FriendsFeed from './pages/FriendsFeed';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
         <Route path="/novcanik" element={<WalletPage />} />
         <Route path="/parlay" element={<ParlayBuilder />} />
         <Route path="/statistika-korisnika" element={<UserStats />} />
+        <Route path="/prijatelji" element={<FriendsFeed />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
