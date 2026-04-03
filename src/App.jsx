@@ -21,6 +21,7 @@ import Predictor from './pages/Predictor';
 import DailyChallengePage from './pages/DailyChallengePage';
 import WalletPage from './pages/Wallet';
 import ParlayBuilder from './pages/ParlayBuilder';
+import UserStats from './pages/UserStats';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
         <Route path="/izazovi" element={<DailyChallengePage />} />
         <Route path="/novcanik" element={<WalletPage />} />
         <Route path="/parlay" element={<ParlayBuilder />} />
+        <Route path="/statistika-korisnika" element={<UserStats />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

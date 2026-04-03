@@ -3,7 +3,7 @@ import ReferralSection from '../components/profile/ReferralSection';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2 } from 'lucide-react';
+import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
 
@@ -116,6 +116,13 @@ export default function Profile() {
               <p className="text-4xl font-black text-primary">{tokenBalance?.toLocaleString()}</p>
             </div>
             <div className="flex gap-2">
+              <Link
+                to="/statistika-korisnika"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border/50 font-bold text-sm hover:bg-secondary/80 transition-all"
+              >
+                <PieChart className="w-4 h-4" />
+                Statistika
+              </Link>
               <Link
                 to="/dashboard"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border/50 font-bold text-sm hover:bg-secondary/80 transition-all"
