@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import ReferralSection from '../components/profile/ReferralSection';
+import RankCard, { RankBadgeSmall, getRank } from '../components/profile/RankBadge';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
@@ -23,6 +24,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
+  const [loadBalance, setLoadBalance] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => { loadProfile(); }, []);
@@ -106,6 +108,9 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground">{user?.email}</p>
             <p className="text-xs text-muted-foreground mt-1">Član od {moment(user?.created_date).format('MMMM YYYY.')}</p>
           </div>
+          <div className="ml-auto">
+            <RankBadgeSmall rank={getRank(stats.total, stats.tokensWon)} />
+          </div>
         </div>
 
         {/* Token balance */}
@@ -165,10 +170,11 @@ export default function Profile() {
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-5">
+      <div className="flex gap-2 mb-5 flex-wrap">
         {[
           { key: 'history', label: 'Povijest natjecanja' },
           { key: 'stats', label: 'Statistika' },
+          { key: 'rank', label: '🏅 Rang' },
           { key: 'referral', label: '🎁 Referali' },
         ].map(t => (
           <button
@@ -291,6 +297,13 @@ export default function Profile() {
               <span>{stats.lost} poraza</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Rank tab */}
+      {activeTab === 'rank' && (
+        <div className="mb-8">
+          <RankCard totalPicks={stats.total} totalTokensWon={stats.tokensWon} />
         </div>
       )}
 
