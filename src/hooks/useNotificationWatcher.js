@@ -82,33 +82,89 @@ export function useNotificationWatcher(currentUser) {
       if (event.type !== 'create' && event.type !== 'update') return;
       const contest = event.data;
       if (contest.status === 'active') {
-        await notifyUser(
-          currentUser.email,
-          'new_contest',
-          `⚡ Novo natjecanje: ${contest.title}`,
-          `${contest.sport} · Ulaz: ${contest.entry_cost} tokena · Nagradni fond: ${contest.prize_pool?.toLocaleString()} tokena`,
-          { contest_id: contest.id }
-        );
+        await notifyUser(currentUser.email, 'new_contest', `⚡ Novo natjecanje: ${contest.title}`,
+          `${contest.sport} · Ulaz: ${contest.entry_cost} tokena`, { contest_id: contest.id });
       } else if (contest.status === 'finished') {
-        // Only notify if user has a pick in this contest
         const userPicks = await base44.entities.Pick.filter({ user_email: currentUser.email, contest_id: contest.id });
         if (userPicks.length > 0) {
-          await notifyUser(
-            currentUser.email,
-            'pick_finished',
-            `🏁 Natjecanje završilo: ${contest.title}`,
-            `Provjeri rezultate svojih odabira!`,
-            { contest_id: contest.id }
-          );
+          await notifyUser(currentUser.email, 'pick_finished', `🏁 Natjecanje završilo: ${contest.title}`,
+            `Provjeri rezultate svojih odabira!`, { contest_id: contest.id });
         }
       }
     });
+
+    // 5. Watch Duels → notify on new challenge or status change
+    const seenDuelStatuses = {};
+    const unsubDuel = base44.entities.Duel.subscribe(async (event) => {
+      const duel = event.data;
+      if (event.type === 'create' && duel.opponent_email === currentUser.email) {
+        await notifyUser(currentUser.email, 'duel_accepted',
+          `⚔️ ${duel.challenger_name || duel.challenger_email} te izaziva!`,
+          `Natjecanje: ${duel.contest_title} · Ulog: ${duel.stake_tokens} tokena${duel.message ? ` · "${duel.message}"` : ''}`);
+        return;
+      }
+      if (event.type === 'update') {
+        const prev = seenDuelStatuses[duel.id];
+        seenDuelStatuses[duel.id] = duel.status;
+        if (prev === duel.status) return;
+        if (duel.challenger_email === currentUser.email) {
+          if (duel.status === 'accepted') {
+            await notifyUser(currentUser.email, 'duel_accepted',
+              `✅ ${duel.opponent_name || duel.opponent_email} je prihvatio tvoj izazov!`,
+              `Natjecanje: ${duel.contest_title} · Ulog: ${duel.stake_tokens} tokena`);
+          } else if (duel.status === 'declined') {
+            await notifyUser(currentUser.email, 'duel_declined',
+              `❌ ${duel.opponent_name || duel.opponent_email} je odbio tvoj izazov`,
+              `Natjecanje: ${duel.contest_title}`);
+          } else if (duel.status === 'finished') {
+            const won = duel.winner_email === currentUser.email;
+            await notifyUser(currentUser.email, won ? 'pick_won' : 'pick_lost',
+              won ? `🏆 Pobijedio si dvoboj!` : `💀 Izgubio si dvoboj`,
+              `${duel.contest_title} · Ulog: ${duel.stake_tokens} tokena`);
+          }
+        }
+      }
+    });
+
+    // 6. Watch DailyChallenges → notify on new challenge
+    const unsubChallenge = base44.entities.DailyChallenge.subscribe(async (event) => {
+      if (event.type !== 'create') return;
+      const c = event.data;
+      await notifyUser(currentUser.email, 'new_challenge',
+        `🎯 Novi dnevni izazov: ${c.title}`,
+        `Nagrada: ${c.reward_tokens} tokena${c.description ? ` · ${c.description}` : ''}`);
+    });
+
+    // 7. Leaderboard rank check every 5min
+    let lastRank = null;
+    const checkRank = async () => {
+      const picks = await base44.entities.Pick.list('-created_date', 500);
+      const userStats = {};
+      picks.forEach(p => {
+        const e = p.user_email || p.created_by;
+        if (!userStats[e]) userStats[e] = { tokensWon: 0 };
+        userStats[e].tokensWon += (p.tokens_won || 0);
+      });
+      const sorted = Object.entries(userStats).sort((a, b) => b[1].tokensWon - a[1].tokensWon);
+      const myRank = sorted.findIndex(([e]) => e === currentUser.email) + 1;
+      if (myRank > 0 && lastRank !== null && myRank < lastRank) {
+        await notifyUser(currentUser.email, 'rank_change',
+          `📈 Napredovao si na ljestvici!`,
+          `Nova pozicija: #${myRank} (prethodno: #${lastRank})`);
+      }
+      lastRank = myRank;
+    };
+    checkRank();
+    const rankInterval = setInterval(checkRank, 5 * 60 * 1000);
 
     return () => {
       unsubNotif();
       unsubSocial();
       unsubPick();
       unsubContest();
+      unsubDuel();
+      unsubChallenge();
+      clearInterval(rankInterval);
       initialized.current = false;
     };
   }, [currentUser?.email]);

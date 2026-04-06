@@ -1,16 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Bell, Trophy, Star, X, CheckCheck } from 'lucide-react';
+import { Bell, Trophy, Star, X, CheckCheck, Swords, Zap, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 
 const typeConfig = {
-  new_contest:   { icon: Star,   color: 'text-accent',      bg: 'bg-accent/15' },
-  pick_won:      { icon: Trophy, color: 'text-primary',     bg: 'bg-primary/15' },
-  pick_lost:     { icon: Bell,   color: 'text-destructive', bg: 'bg-destructive/15' },
-  pick_finished: { icon: Bell,   color: 'text-muted-foreground', bg: 'bg-muted' },
-  reward:        { icon: Trophy, color: 'text-yellow-400',  bg: 'bg-yellow-400/15' },
-  friend_win:    { icon: Trophy, color: 'text-fuchsia-400', bg: 'bg-fuchsia-400/15' },
+  new_contest:   { icon: Star,       color: 'text-accent',       bg: 'bg-accent/15' },
+  pick_won:      { icon: Trophy,     color: 'text-primary',      bg: 'bg-primary/15' },
+  pick_lost:     { icon: Bell,       color: 'text-destructive',  bg: 'bg-destructive/15' },
+  pick_finished: { icon: Bell,       color: 'text-muted-foreground', bg: 'bg-muted' },
+  reward:        { icon: Trophy,     color: 'text-yellow-400',   bg: 'bg-yellow-400/15' },
+  friend_win:    { icon: Trophy,     color: 'text-fuchsia-400',  bg: 'bg-fuchsia-400/15' },
+  duel_accepted: { icon: Swords,     color: 'text-green-400',    bg: 'bg-green-400/15' },
+  duel_declined: { icon: Swords,     color: 'text-destructive',  bg: 'bg-destructive/15' },
+  new_challenge: { icon: Zap,        color: 'text-accent',       bg: 'bg-accent/15' },
+  rank_change:   { icon: TrendingUp, color: 'text-primary',      bg: 'bg-primary/15' },
 };
 
 export default function NotificationBell() {
