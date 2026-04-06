@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check, Eye, EyeOff, Swords } from 'lucide-react';
 import ContestLiveChat from '../components/contests/ContestLiveChat';
+import LiveMatchCenter from '../components/contests/LiveMatchCenter';
 import DuelModal from '../components/social/DuelModal';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -223,6 +224,11 @@ export default function ContestDetail() {
         <div className="text-center py-12 text-muted-foreground">
           <p>Igrači će uskoro biti dodani</p>
         </div>
+      )}
+
+      {/* Live Match Center */}
+      {contest.status === 'active' && (
+        <LiveMatchCenter contest={contest} />
       )}
 
       {/* Live Chat */}
