@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Trophy, Flame, Zap, ArrowRight, Coins, Star } from 'lucide-react';
 import ContestCard from '../components/contests/ContestCard';
+import HomeDailyChallenges from '../components/home/HomeDailyChallenges';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
 
@@ -12,6 +13,9 @@ export default function Home() {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeSport, setActiveSport] = useState('Svi');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setCurrentUser); }, []);
 
   useEffect(() => {
     loadContests();
@@ -96,6 +100,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Daily Challenges */}
+      <HomeDailyChallenges user={currentUser} />
 
       {/* Sport filters */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-6">
