@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Coins, Trophy, Users, Clock, Zap, Check, Eye, EyeOff, Swords } from 'lucide-react';
 import ContestLiveChat from '../components/contests/ContestLiveChat';
 import LiveMatchCenter from '../components/contests/LiveMatchCenter';
+import LiveOddsPanel from '../components/contests/LiveOddsPanel';
 import DuelModal from '../components/social/DuelModal';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -224,6 +225,11 @@ export default function ContestDetail() {
         <div className="text-center py-12 text-muted-foreground">
           <p>Igrači će uskoro biti dodani</p>
         </div>
+      )}
+
+      {/* Live Odds */}
+      {contest.status === 'active' && contest.players?.length > 0 && (
+        <LiveOddsPanel contest={contest} selections={selections} />
       )}
 
       {/* Live Match Center */}
