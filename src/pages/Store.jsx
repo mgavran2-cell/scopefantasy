@@ -2,59 +2,41 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Coins, Zap, Star, Crown, ArrowUpRight, ArrowDownLeft, ShoppingCart, Clock, CreditCard, AlertCircle } from 'lucide-react';
+import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Clock, CreditCard, AlertCircle, Star, Zap, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import moment from 'moment';
+import { TOKEN_PACKAGES } from '@/lib/tokenPackages';
 
-const PACKAGES = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    tokens: 500,
-    price: 4.99,
-    bonus: 0,
-    icon: Coins,
-    color: 'from-slate-500/20 to-slate-600/5',
-    border: 'border-slate-500/20',
-    iconColor: 'text-slate-400',
-  },
-  {
-    id: 'popular',
-    name: 'Popular',
-    tokens: 1200,
-    price: 9.99,
-    bonus: 200,
-    icon: Star,
-    color: 'from-primary/20 to-primary/5',
-    border: 'border-primary/30',
-    iconColor: 'text-primary',
-    badge: 'Najpopularnije',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    tokens: 2500,
-    price: 19.99,
-    bonus: 500,
-    icon: Zap,
-    color: 'from-fuchsia-500/20 to-fuchsia-600/5',
-    border: 'border-fuchsia-500/30',
-    iconColor: 'text-fuchsia-400',
-  },
-  {
-    id: 'elite',
-    name: 'Elite',
-    tokens: 6000,
-    price: 39.99,
-    bonus: 1500,
-    icon: Crown,
-    color: 'from-yellow-500/20 to-yellow-600/5',
-    border: 'border-yellow-500/30',
-    iconColor: 'text-yellow-400',
-    badge: 'Najveća vrijednost',
-  },
-];
+function BetaModal({ onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card border border-border rounded-2xl p-6 w-full max-w-sm"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-black text-lg">ScopeFantasy Beta</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+          Aplikacija je trenutno u zatvorenoj beta fazi. Plaćanja nisu aktivna. Novi korisnici dobivaju <strong className="text-foreground">5000 besplatnih tokena</strong> pri registraciji + dnevni bonus od <strong className="text-foreground">500 tokena</strong>.
+          <br /><br />
+          Ako želiš dodatne tokene za testiranje, javi se na{' '}
+          <a href="mailto:marko.gavran@outlook.com" className="text-primary underline">marko.gavran@outlook.com</a>
+          <br /><br />
+          Hvala što testiraš ScopeFantasy!
+        </p>
+        <button
+          onClick={onClose}
+          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all"
+        >
+          Zatvori
+        </button>
+      </motion.div>
+    </div>
+  );
+}
 
 const typeConfig = {
   purchase: { label: 'Kupnja', icon: ArrowDownLeft, color: 'text-primary' },
@@ -69,41 +51,15 @@ export default function Store() {
   const [transactions, setTransactions] = useState([]);
   const [loadingTx, setLoadingTx] = useState(true);
   const [activeTab, setActiveTab] = useState('packages');
-  const [processing, setProcessing] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [showBetaModal, setShowBetaModal] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [txData, user] = await Promise.all([
-        base44.entities.TokenTransaction.list('-created_date', 50),
-        base44.auth.me(),
-      ]);
+      const txData = await base44.entities.TokenTransaction.list('-created_date', 50);
       setTransactions(txData);
-      setCurrentUser(user);
       setLoadingTx(false);
     })();
   }, []);
-
-  // Demo purchase (replace with Stripe when Builder+ available)
-  const handlePurchase = async (pkg) => {
-    setProcessing(pkg.id);
-    const totalTokens = pkg.tokens + pkg.bonus;
-    const newBalance = (tokenBalance || 0) + totalTokens;
-
-    await base44.auth.updateMe({ token_balance: newBalance });
-    const tx = await base44.entities.TokenTransaction.create({
-      user_email: currentUser.email,
-      type: 'purchase',
-      amount: totalTokens,
-      description: `Kupnja paketa: ${pkg.name} (${pkg.tokens}${pkg.bonus ? ` + ${pkg.bonus} bonus` : ''} tokena)`,
-      balance_after: newBalance,
-    });
-
-    setTransactions(prev => [tx, ...prev]);
-    await loadBalance();
-    toast.success(`Uspješno kupljeno ${totalTokens} tokena!`);
-    setProcessing(null);
-  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -155,7 +111,7 @@ export default function Store() {
       {/* Packages tab */}
       {activeTab === 'packages' && (
         <div className="grid sm:grid-cols-2 gap-4">
-          {PACKAGES.map((pkg, i) => {
+          {TOKEN_PACKAGES.map((pkg, i) => {
             const Icon = pkg.icon;
             const total = pkg.tokens + pkg.bonus;
             return (
@@ -189,14 +145,10 @@ export default function Store() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => handlePurchase(pkg)}
-                    disabled={processing === pkg.id}
+                    onClick={() => setShowBetaModal(true)}
                     className="rounded-xl font-bold"
                   >
-                    {processing === pkg.id
-                      ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                      : <><CreditCard className="w-4 h-4 mr-1.5" /> €{pkg.price}</>
-                    }
+                    <CreditCard className="w-4 h-4 mr-1.5" /> {pkg.priceLabel}
                   </Button>
                 </div>
 
@@ -210,6 +162,7 @@ export default function Store() {
           })}
         </div>
       )}
+      {showBetaModal && <BetaModal onClose={() => setShowBetaModal(false)} />}
 
       {/* History tab */}
       {activeTab === 'history' && (

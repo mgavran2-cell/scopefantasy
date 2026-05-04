@@ -10,7 +10,6 @@ const navItems = [
   { path: '/moji-odabiri', label: 'Moji Odabiri', icon: ListChecks },
   { path: '/ljestvica', label: 'Ljestvica', icon: Users },
   { path: '/feed', label: 'Feed', icon: Rss },
-  { path: '/trgovina', label: 'Trgovina', icon: ShoppingCart },
   { path: '/statistika', label: 'Statistika', icon: Activity },
   { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
   { path: '/novcanik', label: 'Novčanik', icon: Wallet },

@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Coins, ArrowLeft, Check, Sparkles, Gift, Zap, X } from 'lucide-react';
-
-const packages = [
-  { id: 1, tokens: 500, price: 'Besplatno', bonus: '+ 50 bonus', icon: Gift, highlight: false, description: 'Dnevni poklon' },
-  { id: 2, tokens: 2500, price: '€1.99', bonus: '+ 250 bonus', icon: Coins, highlight: false, description: 'Starter paket' },
-  { id: 3, tokens: 7500, price: '€4.99', bonus: '+ 1000 bonus', icon: Zap, highlight: true, description: 'Najpopularniji' },
-  { id: 4, tokens: 20000, price: '€9.99', bonus: '+ 5000 bonus', icon: Sparkles, highlight: false, description: 'Pro paket' },
-];
+import { Coins, ArrowLeft, X } from 'lucide-react';
+import { TOKEN_PACKAGES } from '@/lib/tokenPackages';
 
 function BetaModal({ onClose }) {
   return (
@@ -67,8 +61,10 @@ export default function BuyTokens() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {packages.map((pkg, i) => {
+          {TOKEN_PACKAGES.map((pkg, i) => {
             const Icon = pkg.icon;
+            const total = pkg.tokens + pkg.bonus;
+            const isPopular = pkg.badge === 'Najpopularnije';
             return (
               <motion.div
                 key={pkg.id}
@@ -78,37 +74,28 @@ export default function BuyTokens() {
               >
                 <button
                   onClick={() => setShowBetaModal(true)}
-                  className={`w-full text-left p-5 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${
-                    pkg.highlight
-                      ? 'bg-gradient-to-br from-primary/10 to-emerald-500/5 border-primary/30 shadow-lg shadow-primary/10'
-                      : 'bg-card border-border/50 hover:border-border'
-                  }`}
+                  className={`w-full text-left p-5 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-br ${pkg.color} ${pkg.border}`}
                 >
-                  {pkg.highlight && (
+                  {pkg.badge && (
                     <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-primary/20 text-primary mb-3">
-                      ⭐ Najpopularniji
+                      ⭐ {pkg.badge}
                     </span>
                   )}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        pkg.highlight ? 'bg-primary/20' : 'bg-secondary'
-                      }`}>
-                        <Icon className={`w-5 h-5 ${pkg.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                        <Icon className={`w-5 h-5 ${pkg.iconColor}`} />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">{pkg.description}</p>
-                        <p className="text-2xl font-black">{pkg.tokens.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">{pkg.name}</p>
+                        <p className="text-2xl font-black">{total.toLocaleString()}</p>
                       </div>
                     </div>
-                    <span className={`text-lg font-black ${pkg.price === 'Besplatno' ? 'text-primary' : 'text-foreground'}`}>
-                      {pkg.price}
-                    </span>
+                    <span className="text-lg font-black">{pkg.priceLabel}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-primary">{pkg.bonus}</span>
-                    <Check className="w-4 h-4 text-muted-foreground" />
-                  </div>
+                  {pkg.bonus > 0 && (
+                    <p className="text-xs font-semibold text-primary">🎁 +{pkg.bonus} bonus tokena gratis</p>
+                  )}
                 </button>
               </motion.div>
             );

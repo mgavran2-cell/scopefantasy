@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
-import { Wallet, TrendingUp, TrendingDown, Gift, ShoppingCart, Coins, CreditCard, X, CheckCircle2 } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Gift, ShoppingCart, Coins, X, CheckCircle2 } from 'lucide-react';
 import moment from 'moment';
+import { TOKEN_PACKAGES } from '@/lib/tokenPackages';
 
 const txConfig = {
   purchase: { label: 'Kupnja',     icon: ShoppingCart, color: 'text-primary',     bg: 'bg-primary/15',     sign: '+' },
@@ -12,13 +13,6 @@ const txConfig = {
   bonus:    { label: 'Bonus',      icon: Gift,         color: 'text-accent',      bg: 'bg-accent/15',      sign: '+' },
   refund:   { label: 'Povrat',     icon: Coins,        color: 'text-yellow-400',  bg: 'bg-yellow-400/15',  sign: '+' },
 };
-
-const PACKAGES = [
-  { id: 1, tokens: 500,   price: '€4.99',  label: 'Starter',  popular: false },
-  { id: 2, tokens: 1200,  price: '€9.99',  label: 'Popular',  popular: true  },
-  { id: 3, tokens: 3000,  price: '€19.99', label: 'Pro',       popular: false },
-  { id: 4, tokens: 7500,  price: '€39.99', label: 'Elite',    popular: false },
-];
 
 function BetaModal({ onClose }) {
   return (
@@ -117,18 +111,21 @@ export default function WalletPage() {
         {/* Buy tokens section */}
         <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Kupi tokene</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
-          {PACKAGES.map(pkg => (
-            <button
-              key={pkg.id}
-              onClick={() => setShowBetaModal(true)}
-              className={`relative p-3 rounded-xl border text-left transition-all hover:border-primary/50 hover:bg-primary/5 ${pkg.popular ? 'border-primary/40 bg-primary/5' : 'border-border/50 bg-card'}`}
-            >
-              {pkg.popular && <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Popular</span>}
-              <p className="font-black text-base text-primary">{pkg.tokens >= 1000 ? `${pkg.tokens/1000}K` : pkg.tokens}</p>
-              <p className="text-xs text-muted-foreground">tokena</p>
-              <p className="text-sm font-bold mt-1">{pkg.price}</p>
-            </button>
-          ))}
+          {TOKEN_PACKAGES.map(pkg => {
+            const total = pkg.tokens + pkg.bonus;
+            return (
+              <button
+                key={pkg.id}
+                onClick={() => setShowBetaModal(true)}
+                className={`relative p-3 rounded-xl border text-left transition-all hover:border-primary/50 hover:bg-primary/5 ${pkg.badge === 'Najpopularnije' ? 'border-primary/40 bg-primary/5' : 'border-border/50 bg-card'}`}
+              >
+                {pkg.badge === 'Najpopularnije' && <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Popular</span>}
+                <p className="font-black text-base text-primary">{total >= 1000 ? `${(total/1000).toFixed(1).replace('.0','')}K` : total}</p>
+                <p className="text-xs text-muted-foreground">tokena</p>
+                <p className="text-sm font-bold mt-1">{pkg.priceLabel}</p>
+              </button>
+            );
+          })}
         </div>
 
         {/* Transaction history */}
