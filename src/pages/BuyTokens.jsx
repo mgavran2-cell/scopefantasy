@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Coins, ArrowLeft, Check, Sparkles, Gift, Zap } from 'lucide-react';
-import { toast } from 'sonner';
+import { Coins, ArrowLeft, Check, Sparkles, Gift, Zap, X } from 'lucide-react';
 
 const packages = [
   { id: 1, tokens: 500, price: 'Besplatno', bonus: '+ 50 bonus', icon: Gift, highlight: false, description: 'Dnevni poklon' },
@@ -12,33 +10,41 @@ const packages = [
   { id: 4, tokens: 20000, price: '€9.99', bonus: '+ 5000 bonus', icon: Sparkles, highlight: false, description: 'Pro paket' },
 ];
 
+function BetaModal({ onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card border border-border rounded-2xl p-6 w-full max-w-sm"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-black text-lg">ScopeFantasy Beta</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+          Aplikacija je trenutno u zatvorenoj beta fazi. Plaćanja nisu aktivna. Novi korisnici dobivaju <strong className="text-foreground">5000 besplatnih tokena</strong> pri registraciji + dnevni bonus od <strong className="text-foreground">500 tokena</strong>.
+          <br /><br />
+          Ako želiš dodatne tokene za testiranje, javi se na{' '}
+          <a href="mailto:marko.gavran@outlook.com" className="text-primary underline">marko.gavran@outlook.com</a>
+          <br /><br />
+          Hvala što testiraš ScopeFantasy!
+        </p>
+        <button
+          onClick={onClose}
+          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all"
+        >
+          Zatvori
+        </button>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function BuyTokens() {
-  const { tokenBalance, loadBalance } = useOutletContext();
+  const { tokenBalance } = useOutletContext();
   const navigate = useNavigate();
-  const [purchasing, setPurchasing] = useState(null);
-
-  const handlePurchase = async (pkg) => {
-    setPurchasing(pkg.id);
-    
-    // Simulate purchase (in real app, integrate payment)
-    const totalTokens = pkg.tokens + parseInt(pkg.bonus.replace(/[^0-9]/g, ''));
-    const user = await base44.auth.me();
-    const newBalance = (tokenBalance || 0) + totalTokens;
-
-    await base44.auth.updateMe({ token_balance: newBalance });
-    
-    await base44.entities.TokenTransaction.create({
-      user_email: user.email,
-      type: pkg.price === 'Besplatno' ? 'bonus' : 'purchase',
-      amount: totalTokens,
-      description: `Kupnja: ${pkg.description} (${pkg.tokens} + bonus)`,
-      balance_after: newBalance
-    });
-
-    await loadBalance();
-    setPurchasing(null);
-    toast.success(`Uspješno dodano ${totalTokens.toLocaleString()} tokena!`);
-  };
+  const [showBetaModal, setShowBetaModal] = useState(false);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
@@ -71,8 +77,7 @@ export default function BuyTokens() {
                 transition={{ delay: i * 0.05 }}
               >
                 <button
-                  onClick={() => handlePurchase(pkg)}
-                  disabled={purchasing !== null}
+                  onClick={() => setShowBetaModal(true)}
                   className={`w-full text-left p-5 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${
                     pkg.highlight
                       ? 'bg-gradient-to-br from-primary/10 to-emerald-500/5 border-primary/30 shadow-lg shadow-primary/10'
@@ -102,11 +107,7 @@ export default function BuyTokens() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-primary">{pkg.bonus}</span>
-                    {purchasing === pkg.id ? (
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Check className="w-4 h-4 text-muted-foreground" />
-                    )}
+                    <Check className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </button>
               </motion.div>
@@ -118,6 +119,7 @@ export default function BuyTokens() {
           Tokeni su virtualna valuta i nemaju stvarnu novčanu vrijednost.
         </p>
       </motion.div>
+      {showBetaModal && <BetaModal onClose={() => setShowBetaModal(false)} />}
     </div>
   );
 }
