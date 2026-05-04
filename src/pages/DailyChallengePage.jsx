@@ -4,9 +4,6 @@ import { motion } from 'framer-motion';
 import { Zap, CheckCircle2, Gift, RefreshCw } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 
-function useSafeOutletContext(embedded) {
-  try { return embedded ? {} : useOutletContext() || {}; } catch { return {}; }
-}
 import { notifyUser } from '../hooks/useNotifications';
 import moment from 'moment';
 
@@ -18,7 +15,7 @@ const typeLabel = {
 };
 
 export default function DailyChallengePage({ embedded } = {}) {
-  const ctx = useSafeOutletContext(embedded);
+  const ctx = useOutletContext() || {};
   const loadBalance = ctx?.loadBalance || (() => {});
   const [challenges, setChallenges] = useState([]);
   const [progressMap, setProgressMap] = useState({});

@@ -1,0 +1,19 @@
+{
+  "name": "FeatureInterest",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "feature_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "feature_name",
+    "email"
+  ]
+}
