@@ -43,12 +43,22 @@ export default function AppLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar tokenBalance={tokenBalance} />
       <BrowserNotifBanner />
-      <main className="pt-16">
+      <main className="pt-16 flex-1">
         <Outlet context={{ tokenBalance, setTokenBalance, loadBalance }} />
       </main>
+      <footer className="border-t border-white/5 py-5 text-center text-[12px] text-muted-foreground px-4">
+        <p>ScopeFantasy Beta v0.1 — Aplikacija je u testnoj fazi.</p>
+        <p>Tokeni su virtualna valuta bez stvarne novčane vrijednosti. Nije igra na sreću.</p>
+        <p className="mt-1">
+          Kontakt:{' '}
+          <a href="mailto:marko.gavran@outlook.com" className="hover:text-foreground transition-colors underline underline-offset-2">
+            marko.gavran@outlook.com
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
