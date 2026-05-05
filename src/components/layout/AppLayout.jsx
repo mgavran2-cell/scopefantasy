@@ -18,18 +18,28 @@ export default function AppLayout() {
   const loadBalance = async () => {
     const user = await base44.auth.me();
     const updates = {};
-    if (!user?.token_balance && user?.token_balance !== 0) {
-      updates.token_balance = 1000;
+    const isNewUser = !user?.token_balance && user?.token_balance !== 0;
+    if (isNewUser) {
+      updates.token_balance = 5000;
     }
     if (!user?.referral_code) {
       updates.referral_code = Math.random().toString(36).substring(2, 8).toUpperCase();
     }
     if (Object.keys(updates).length > 0) {
       await base44.auth.updateMe(updates);
+      if (isNewUser) {
+        await base44.entities.TokenTransaction.create({
+          user_email: user.email,
+          type: 'bonus',
+          amount: 5000,
+          description: 'Bonus dobrodošlice',
+          balance_after: 5000,
+        });
+      }
     }
     const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
     setCurrentUser(fresh);
-    setTokenBalance(fresh?.token_balance ?? 1000);
+    setTokenBalance(fresh?.token_balance ?? 5000);
   };
 
   return (

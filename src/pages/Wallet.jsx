@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
-import { Wallet, TrendingUp, TrendingDown, Gift, ShoppingCart, Coins, X, CheckCircle2 } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Gift, ShoppingCart, Coins, X, CheckCircle2, Sparkles } from 'lucide-react';
 import moment from 'moment';
 import { TOKEN_PACKAGES } from '@/lib/tokenPackages';
 
@@ -52,6 +52,8 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(true);
   const [showBetaModal, setShowBetaModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [claimingBonus, setClaimingBonus] = useState(false);
+  const [dailyBonusClaimed, setDailyBonusClaimed] = useState(false);
 
   useEffect(() => { init(); }, []);
 
@@ -62,7 +64,34 @@ export default function WalletPage() {
     ]);
     setUser(me);
     setTransactions(txs);
+
+    // Check if daily bonus already claimed today
+    const today = moment().format('YYYY-MM-DD');
+    const claimedToday = txs.some(tx =>
+      tx.type === 'bonus' &&
+      tx.description === 'Dnevni bonus' &&
+      moment(tx.created_date).format('YYYY-MM-DD') === today
+    );
+    setDailyBonusClaimed(claimedToday);
     setLoading(false);
+  };
+
+  const handleDailyBonus = async () => {
+    if (dailyBonusClaimed || claimingBonus) return;
+    setClaimingBonus(true);
+    const newBalance = (tokenBalance || 0) + 500;
+    await base44.auth.updateMe({ token_balance: newBalance });
+    const tx = await base44.entities.TokenTransaction.create({
+      user_email: user.email,
+      type: 'bonus',
+      amount: 500,
+      description: 'Dnevni bonus',
+      balance_after: newBalance,
+    });
+    setTransactions(prev => [tx, ...prev]);
+    setDailyBonusClaimed(true);
+    await loadBalance();
+    setClaimingBonus(false);
   };
 
 
@@ -107,6 +136,36 @@ export default function WalletPage() {
             </div>
           </div>
         </div>
+
+        {/* Daily bonus */}
+        <button
+          onClick={handleDailyBonus}
+          disabled={dailyBonusClaimed || claimingBonus}
+          className={`w-full flex items-center justify-between p-4 rounded-2xl border mb-4 transition-all ${
+            dailyBonusClaimed
+              ? 'border-border/30 bg-secondary/50 opacity-60 cursor-not-allowed'
+              : 'border-accent/30 bg-accent/5 hover:bg-accent/10'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center">
+              {claimingBonus
+                ? <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                : <Sparkles className="w-5 h-5 text-accent" />
+              }
+            </div>
+            <div className="text-left">
+              <p className="font-bold text-sm">Dnevni poklon</p>
+              <p className="text-xs text-muted-foreground">{dailyBonusClaimed ? 'Sutra ponovno' : 'Svaki dan besplatnih 500 tokena'}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {dailyBonusClaimed
+              ? <CheckCircle2 className="w-5 h-5 text-muted-foreground" />
+              : <span className="font-black text-accent text-sm">+500</span>
+            }
+          </div>
+        </button>
 
         {/* Buy tokens section */}
         <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Kupi tokene</h2>
