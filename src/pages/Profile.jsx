@@ -136,7 +136,7 @@ export default function Profile() {
                 Dashboard
               </Link>
               <Link
-                to="/kupnja-tokena"
+                to="/novcanik"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
               >
                 <Coins className="w-4 h-4" />

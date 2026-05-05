@@ -70,7 +70,7 @@ export default function Home() {
                 IGRAJ SADA
               </Link>
               <Link
-                to="/kupnja-tokena"
+                to="/novcanik"
                 className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white/8 border border-white/10 text-white font-bold text-sm hover:bg-white/12 transition-all"
               >
                 <Coins className="w-4 h-4 text-primary" />

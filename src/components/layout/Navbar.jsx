@@ -58,7 +58,7 @@ export default function Navbar({ tokenBalance }) {
             <div className="flex items-center gap-3">
               <NotificationBell />
               <Link
-                to="/kupnja-tokena"
+                to="/novcanik"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/25 hover:bg-primary/25 transition-all"
               >
                 <Coins className="w-4 h-4 text-primary" />

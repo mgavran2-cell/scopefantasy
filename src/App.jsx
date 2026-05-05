@@ -12,10 +12,8 @@ import ContestDetail from './pages/ContestDetail';
 import MyPicks from './pages/MyPicks';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
-import BuyTokens from './pages/BuyTokens';
 import Dashboard from './pages/Dashboard';
 import SocialFeed from './pages/SocialFeed';
-import Store from './pages/Store';
 import TeamStats from './pages/TeamStats';
 import Predictor from './pages/Predictor';
 import DailyChallengePage from './pages/DailyChallengePage';
@@ -57,10 +55,8 @@ const AuthenticatedApp = () => {
         <Route path="/moji-odabiri" element={<MyPicks />} />
         <Route path="/ljestvica" element={<Leaderboard />} />
         <Route path="/profil" element={<Profile />} />
-        <Route path="/kupnja-tokena" element={<BuyTokens />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/feed" element={<SocialFeed />} />
-        <Route path="/trgovina" element={<Store />} />
         <Route path="/statistika" element={<TeamStats />} />
         <Route path="/predictor" element={<Predictor />} />
         <Route path="/izazovi" element={<DailyChallengePage />} />
