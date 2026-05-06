@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReferralSection from '../components/profile/ReferralSection';
 import RankCard, { RankBadgeSmall, getRank } from '../components/profile/RankBadge';
+import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
@@ -16,7 +17,7 @@ const statusConfig = {
 };
 
 export default function Profile() {
-  const { tokenBalance } = useOutletContext();
+  const { tokenBalance, loadBalance } = useOutletContext();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ total: 0, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 });
   const [picks, setPicks] = useState([]);
@@ -24,7 +25,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
-  const [loadBalance, setLoadBalance] = useState(null);
+
   const fileInputRef = useRef(null);
 
   useEffect(() => { loadProfile(); }, []);
@@ -76,6 +77,16 @@ export default function Profile() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <WelcomeBonusBanner
+        user={user}
+        picks={picks}
+        onClaimed={async () => {
+          const me = await base44.auth.me();
+          setUser(me);
+          if (loadBalance) await loadBalance();
+        }}
+      />
+
       {/* Profile Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex items-center gap-5 mb-6">
