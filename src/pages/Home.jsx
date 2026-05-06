@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Flame, Zap, ArrowRight, Coins, Star } from 'lucide-react';
 import ContestCard from '../components/contests/ContestCard';
 import HomeDailyChallenges from '../components/home/HomeDailyChallenges';
+import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
 
@@ -14,8 +15,17 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activeSport, setActiveSport] = useState('Svi');
   const [currentUser, setCurrentUser] = useState(null);
+  const [userPicks, setUserPicks] = useState([]);
 
-  useEffect(() => { base44.auth.me().then(setCurrentUser); }, []);
+  useEffect(() => {
+    base44.auth.me().then(async (me) => {
+      setCurrentUser(me);
+      if (me) {
+        const picks = await base44.entities.Pick.filter({ user_email: me.email }, '-created_date', 20);
+        setUserPicks(picks);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     loadContests();
@@ -25,6 +35,24 @@ export default function Home() {
     const data = await base44.entities.Contest.list('-created_date', 20);
     setContests(data);
     setLoading(false);
+  };
+
+  const refreshUser = async () => {
+    const me = await base44.auth.me();
+    setCurrentUser(me);
+    if (me) {
+      const picks = await base44.entities.Pick.filter({ user_email: me.email }, '-created_date', 20);
+      setUserPicks(picks);
+    }
+  };
+
+  // DEV: simulate new user with eligible pick for testing
+  const devResetWelcomeBonus = async () => {
+    await base44.auth.updateMe({ welcome_bonus_claimed: false });
+    const me = await base44.auth.me();
+    setCurrentUser(me);
+    // Simulate an eligible won pick with 3+ selections
+    setUserPicks([{ id: 'dev-test', status: 'won', selections: [{}, {}, {}] }]);
   };
 
   const filteredContests = activeSport === 'Svi' 
@@ -100,6 +128,26 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Welcome Bonus Banner */}
+      {currentUser && (
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4">
+          <WelcomeBonusBanner
+            user={currentUser}
+            picks={userPicks}
+            onClaimed={refreshUser}
+          />
+          {/* DEV only: reset button to test as new user */}
+          <div className="text-center">
+            <button
+              onClick={devResetWelcomeBonus}
+              className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground/60 underline transition-colors"
+            >
+              [DEV] Simuliraj novog korisnika
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Daily Challenges */}
       <HomeDailyChallenges user={currentUser} />
