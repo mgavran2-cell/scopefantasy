@@ -1,0 +1,82 @@
+{
+  "name": "DailyStreakEntry",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "week_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "day_number": {
+      "type": "integer"
+    },
+    "pick_player": {
+      "type": "string"
+    },
+    "pick_stat": {
+      "type": "string"
+    },
+    "pick_line": {
+      "type": "number"
+    },
+    "pick_choice": {
+      "type": "string",
+      "enum": [
+        "vise",
+        "manje"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "won",
+        "lost",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_email",
+    "week_start_date",
+    "day_number"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
