@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -64,14 +64,24 @@ export default function Navbar({ tokenBalance }) {
 
             <div className="flex items-center gap-3">
               {isAdmin && (
-                <Link
-                  to="/admin/natjecanja"
-                  className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    location.pathname.startsWith('/admin') ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
-                  }`}
-                >
-                  <Shield className="w-4 h-4" /> Admin
-                </Link>
+                <div className="hidden md:flex items-center gap-1">
+                  <Link
+                    to="/admin/natjecanja"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      location.pathname === '/admin/natjecanja' ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
+                    }`}
+                  >
+                    <Shield className="w-4 h-4" /> Admin
+                  </Link>
+                  <Link
+                    to="/admin/sponsori"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      location.pathname === '/admin/sponsori' ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
+                    }`}
+                  >
+                    <Star className="w-4 h-4" /> Sponsori
+                  </Link>
+                </div>
               )}
               <NotificationBell />
               <Link
@@ -103,15 +113,26 @@ export default function Navbar({ tokenBalance }) {
           >
             <div className="p-4 space-y-1">
               {isAdmin && (
-                <Link
-                  to="/admin/natjecanja"
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    location.pathname.startsWith('/admin') ? 'bg-yellow-500/10 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-secondary'
-                  }`}
-                >
-                  <Shield className="w-5 h-5" /> Admin Panel
-                </Link>
+                <>
+                  <Link
+                    to="/admin/natjecanja"
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      location.pathname === '/admin/natjecanja' ? 'bg-yellow-500/10 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-secondary'
+                    }`}
+                  >
+                    <Shield className="w-5 h-5" /> Admin Panel
+                  </Link>
+                  <Link
+                    to="/admin/sponsori"
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      location.pathname === '/admin/sponsori' ? 'bg-yellow-500/10 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-secondary'
+                    }`}
+                  >
+                    <Star className="w-5 h-5" /> Sponsor Dashboard
+                  </Link>
+                </>
               )}
               {navItems.map(item => {
                 const Icon = item.icon;

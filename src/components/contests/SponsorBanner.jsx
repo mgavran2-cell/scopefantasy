@@ -1,9 +1,20 @@
 import { ExternalLink, Gift } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function SponsorBanner({ contest }) {
   if (!contest?.is_sponsored) return null;
 
   const { sponsor_name, sponsor_logo_url, sponsor_message, sponsor_url, sponsor_prize_description, sponsor_color } = contest;
+
+  const handleSponsorClick = async () => {
+    const user = await base44.auth.me().catch(() => null);
+    await base44.entities.SponsorClick.create({
+      contest_id: contest.id,
+      user_email: user?.email || null,
+      sponsor_name: sponsor_name || '',
+    }).catch(() => {});
+    if (sponsor_url) window.open(sponsor_url, '_blank', 'noopener,noreferrer');
+  };
   const accentColor = sponsor_color || '#FFD700';
 
   return (
@@ -48,16 +59,14 @@ export default function SponsorBanner({ contest }) {
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{sponsor_message}</p>
           )}
           {sponsor_url && (
-            <a
-              href={sponsor_url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={handleSponsorClick}
               className="inline-flex items-center gap-1.5 mt-3 text-xs font-bold px-3 py-1.5 rounded-xl transition-all hover:opacity-80"
               style={{ color: accentColor, background: `${accentColor}15`, border: `1px solid ${accentColor}30` }}
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Saznaj više
-            </a>
+            </button>
           )}
         </div>
       </div>
