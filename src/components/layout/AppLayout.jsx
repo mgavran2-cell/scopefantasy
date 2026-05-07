@@ -4,10 +4,12 @@ import Navbar from './Navbar';
 import { base44 } from '@/api/base44Client';
 import { useNotificationWatcher } from '../../hooks/useNotificationWatcher';
 import BrowserNotifBanner from './BrowserNotifBanner';
+import OnboardingTour from '../onboarding/OnboardingTour';
 
 export default function AppLayout() {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useNotificationWatcher(currentUser);
 
@@ -40,11 +42,27 @@ export default function AppLayout() {
     const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
     setCurrentUser(fresh);
     setTokenBalance(fresh?.token_balance ?? 5000);
+
+    // Show onboarding only for genuinely new users
+    // Existing users (token_balance already set before this session) won't have onboarding_completed=false
+    // We treat anyone with onboarding_completed explicitly false as needing the tour
+    // But skip if they're existing users who never had the field set (treat null/undefined as completed)
+    const needsOnboarding = fresh?.onboarding_completed === false && isNewUser;
+    if (needsOnboarding) {
+      setTimeout(() => setShowOnboarding(true), 1000);
+    }
+
     return fresh;
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {showOnboarding && (
+        <OnboardingTour onComplete={() => {
+          setShowOnboarding(false);
+          base44.auth.me().then(me => setCurrentUser(me));
+        }} />
+      )}
       <Navbar tokenBalance={tokenBalance} />
       <BrowserNotifBanner />
       <main className="pt-16 flex-1">

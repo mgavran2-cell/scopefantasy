@@ -1,0 +1,40 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "token_balance": {
+      "type": "number",
+      "default": 5000
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "referral_code": {
+      "type": "string"
+    },
+    "referred_by": {
+      "type": "string"
+    },
+    "welcome_bonus_eligible": {
+      "type": "boolean",
+      "default": true
+    },
+    "welcome_bonus_claimed": {
+      "type": "boolean",
+      "default": false
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": []
+}
