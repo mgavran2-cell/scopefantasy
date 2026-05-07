@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Bell, Trophy, Star, X, CheckCheck, Swords, Zap, TrendingUp } from 'lucide-react';
+import { Bell, Trophy, Star, X, CheckCheck, Swords, Zap, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 
 const typeConfig = {
   new_contest:   { icon: Star,       color: 'text-accent',       bg: 'bg-accent/15' },
   pick_won:      { icon: Trophy,     color: 'text-primary',      bg: 'bg-primary/15' },
   pick_lost:     { icon: Bell,       color: 'text-destructive',  bg: 'bg-destructive/15' },
-  pick_finished: { icon: Bell,       color: 'text-muted-foreground', bg: 'bg-muted' },
+  pick_finished: { icon: CheckCircle2, color: 'text-primary',       bg: 'bg-primary/15' },
   reward:        { icon: Trophy,     color: 'text-yellow-400',   bg: 'bg-yellow-400/15' },
   friend_win:    { icon: Trophy,     color: 'text-fuchsia-400',  bg: 'bg-fuchsia-400/15' },
   duel_accepted: { icon: Swords,     color: 'text-green-400',    bg: 'bg-green-400/15' },
@@ -21,6 +22,7 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadNotifications();
@@ -50,9 +52,15 @@ export default function NotificationBell() {
   };
 
   const markRead = async (n) => {
-    if (n.read) return;
-    await base44.entities.Notification.update(n.id, { read: true });
-    setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
+    if (!n.read) {
+      await base44.entities.Notification.update(n.id, { read: true });
+      setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
+    }
+    // Navigate to contest results if applicable
+    if (n.contest_id && (n.type === 'pick_finished' || n.type === 'pick_won' || n.type === 'pick_lost')) {
+      setOpen(false);
+      navigate(`/natjecanje/${n.contest_id}`);
+    }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
