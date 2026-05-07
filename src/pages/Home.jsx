@@ -7,6 +7,7 @@ import ContestCard from '../components/contests/ContestCard';
 import HomeDailyChallenges from '../components/home/HomeDailyChallenges';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import HokejComingSoon from '../components/sports/HokejComingSoon';
+import PikadoComingSoon from '../components/sports/PikadoComingSoon';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA', 'Hokej', 'Pikado'];
 const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
@@ -177,9 +178,14 @@ export default function Home() {
       </section>
 
       {/* Coming soon sports */}
-      {COMING_SOON_SPORTS.includes(activeSport) && (
+      {activeSport === 'Hokej' && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
           <HokejComingSoon onClose={() => setActiveSport('Svi')} />
+        </section>
+      )}
+      {activeSport === 'Pikado' && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
+          <PikadoComingSoon onClose={() => setActiveSport('Svi')} />
         </section>
       )}
 

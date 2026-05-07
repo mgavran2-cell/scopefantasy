@@ -7,6 +7,7 @@ import ContestCard from '../components/contests/ContestCard';
 import ParlayBuilder from './ParlayBuilder';
 import DailyChallengePage from './DailyChallengePage';
 import HokejComingSoon from '../components/sports/HokejComingSoon';
+import PikadoComingSoon from '../components/sports/PikadoComingSoon';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA', 'Hokej', 'Pikado'];
 const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
@@ -98,9 +99,8 @@ function PickEmTab() {
         ))}
       </div>
 
-      {COMING_SOON_SPORTS.includes(sport) && (
-        <HokejComingSoon onClose={() => setSport('Svi')} />
-      )}
+      {sport === 'Hokej' && <HokejComingSoon onClose={() => setSport('Svi')} />}
+      {sport === 'Pikado' && <PikadoComingSoon onClose={() => setSport('Svi')} />}
 
       {loading && !COMING_SOON_SPORTS.includes(sport) ? (
         <div className="flex justify-center py-20">
