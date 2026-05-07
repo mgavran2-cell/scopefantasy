@@ -47,7 +47,7 @@ export default function AppLayout() {
     // Existing users (token_balance already set before this session) won't have onboarding_completed=false
     // We treat anyone with onboarding_completed explicitly false as needing the tour
     // But skip if they're existing users who never had the field set (treat null/undefined as completed)
-    const needsOnboarding = fresh?.onboarding_completed === false && isNewUser;
+    const needsOnboarding = fresh?.onboarding_completed === false;
     if (needsOnboarding) {
       setTimeout(() => setShowOnboarding(true), 1000);
     }
