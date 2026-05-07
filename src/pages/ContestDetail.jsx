@@ -7,6 +7,7 @@ import ContestLiveChat from '../components/contests/ContestLiveChat';
 import LiveMatchCenter from '../components/contests/LiveMatchCenter';
 import LiveOddsPanel from '../components/contests/LiveOddsPanel';
 import DuelModal from '../components/social/DuelModal';
+import SponsorBanner from '../components/contests/SponsorBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
@@ -145,6 +146,8 @@ export default function ContestDetail() {
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm font-medium">Natrag</span>
       </button>
+
+      <SponsorBanner contest={contest} />
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="mb-8">

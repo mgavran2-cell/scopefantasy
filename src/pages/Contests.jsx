@@ -8,8 +8,8 @@ import ParlayBuilder from './ParlayBuilder';
 import DailyChallengePage from './DailyChallengePage';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
-const statusFilters = ['Svi', 'active', 'upcoming', 'finished'];
-const statusLabels = { 'Svi': 'Svi', 'active': '🔴 Uživo', 'upcoming': 'Uskoro', 'finished': 'Završeno' };
+const statusFilters = ['Svi', 'active', 'upcoming', 'finished', 'sponsored'];
+const statusLabels = { 'Svi': 'Svi', 'active': '🔴 Uživo', 'upcoming': 'Uskoro', 'finished': 'Završeno', 'sponsored': '🏆 Sponzorirano' };
 
 const TABS = [
   { key: 'pickem', label: 'Pick\'em', icon: ListChecks, desc: 'Predvidi ishode igrača' },
@@ -33,7 +33,8 @@ function PickEmTab() {
 
   const filtered = contests.filter(c => {
     if (sport !== 'Svi' && c.sport !== sport) return false;
-    if (status !== 'Svi' && c.status !== status) return false;
+    if (status === 'sponsored' && !c.is_sponsored) return false;
+    if (status !== 'Svi' && status !== 'sponsored' && c.status !== status) return false;
     if (search && !c.title?.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });

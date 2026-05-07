@@ -1,0 +1,136 @@
+{
+  "name": "Contest",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "sport": {
+      "type": "string",
+      "enum": [
+        "Nogomet",
+        "Ko\u0161arka",
+        "Tenis",
+        "Formula 1",
+        "Hokej",
+        "MMA"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "entry_cost": {
+      "type": "number"
+    },
+    "prize_pool": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "upcoming",
+        "finished"
+      ],
+      "default": "upcoming"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "max_participants": {
+      "type": "number"
+    },
+    "current_participants": {
+      "type": "number",
+      "default": 0
+    },
+    "picks_required": {
+      "type": "number",
+      "default": 5
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "team": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "stat_line": {
+            "type": "string"
+          },
+          "over_under": {
+            "type": "number"
+          },
+          "stat_type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "is_sponsored": {
+      "type": "boolean",
+      "default": false
+    },
+    "sponsor_name": {
+      "type": "string"
+    },
+    "sponsor_logo_url": {
+      "type": "string"
+    },
+    "sponsor_message": {
+      "type": "string"
+    },
+    "sponsor_color": {
+      "type": "string"
+    },
+    "sponsor_url": {
+      "type": "string"
+    },
+    "sponsor_prize_description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "sport",
+    "entry_cost",
+    "prize_pool",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

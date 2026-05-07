@@ -23,6 +23,7 @@ import UserStats from './pages/UserStats';
 import FriendsFeed from './pages/FriendsFeed';
 import DailyStreak from './pages/DailyStreak';
 import AdminDailyStreak from './pages/AdminDailyStreak';
+import AdminContests from './pages/AdminContests';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -68,6 +69,7 @@ const AuthenticatedApp = () => {
         <Route path="/prijatelji" element={<FriendsFeed />} />
         <Route path="/streak" element={<DailyStreak />} />
         <Route path="/admin/streak" element={<AdminDailyStreak />} />
+        <Route path="/admin/natjecanja" element={<AdminContests />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

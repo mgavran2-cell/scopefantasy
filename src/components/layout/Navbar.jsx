@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, BarChart2, Rss, ShoppingCart, Activity, Sparkles, Zap, Wallet, Layers, Heart, Flame } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield } from 'lucide-react';
 import NotificationBell from './NotificationBell';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { path: '/', label: 'Početna', icon: Home },
@@ -21,6 +22,11 @@ const navItems = [
 export default function Navbar({ tokenBalance }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
+  }, []);
 
   return (
     <>
@@ -57,6 +63,16 @@ export default function Navbar({ tokenBalance }) {
             </div>
 
             <div className="flex items-center gap-3">
+              {isAdmin && (
+                <Link
+                  to="/admin/natjecanja"
+                  className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    location.pathname.startsWith('/admin') ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" /> Admin
+                </Link>
+              )}
               <NotificationBell />
               <Link
                 to="/novcanik"
@@ -86,6 +102,17 @@ export default function Navbar({ tokenBalance }) {
             className="fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border md:hidden"
           >
             <div className="p-4 space-y-1">
+              {isAdmin && (
+                <Link
+                  to="/admin/natjecanja"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    location.pathname.startsWith('/admin') ? 'bg-yellow-500/10 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-secondary'
+                  }`}
+                >
+                  <Shield className="w-5 h-5" /> Admin Panel
+                </Link>
+              )}
               {navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
