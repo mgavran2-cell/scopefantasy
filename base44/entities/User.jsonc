@@ -34,6 +34,31 @@
     "onboarding_completed": {
       "type": "boolean",
       "default": false
+    },
+    "notification_preferences": {
+      "type": "object",
+      "properties": {
+        "pick_results": {
+          "type": "boolean",
+          "default": true
+        },
+        "daily_streak": {
+          "type": "boolean",
+          "default": true
+        },
+        "social": {
+          "type": "boolean",
+          "default": true
+        },
+        "system": {
+          "type": "boolean",
+          "default": true
+        },
+        "browser_push": {
+          "type": "boolean",
+          "default": false
+        }
+      }
     }
   },
   "required": []

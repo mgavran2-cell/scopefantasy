@@ -7,6 +7,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2, PieChart, Medal } from 'lucide-react';
 import BadgesSection from '../components/badges/BadgesSection';
+import NotificationPreferences from '../components/notifications/NotificationPreferences';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
 
@@ -189,6 +190,7 @@ export default function Profile() {
           { key: 'badges', label: '🏅 Dostignuća' },
           { key: 'rank', label: 'Rang' },
           { key: 'referral', label: '🎁 Referali' },
+          { key: 'notif_settings', label: '🔔 Obavijesti' },
         ].map(t => (
           <button
             key={t.key}
@@ -331,6 +333,16 @@ export default function Profile() {
       {activeTab === 'referral' && (
         <div className="mb-8">
           <ReferralSection user={user} tokenBalance={tokenBalance} loadBalance={loadBalance} />
+        </div>
+      )}
+
+      {/* Notification settings tab */}
+      {activeTab === 'notif_settings' && (
+        <div className="mb-8">
+          <NotificationPreferences
+            user={user}
+            onSaved={(prefs) => setUser(prev => ({ ...prev, notification_preferences: prefs }))}
+          />
         </div>
       )}
 
