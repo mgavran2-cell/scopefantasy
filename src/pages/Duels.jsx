@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Swords, Clock, Check, X, Trophy, Coins, ChevronRight } from 'lucide-react';
+import { Swords, Clock, Check, X, Trophy, Coins, ChevronRight, BarChart2 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -127,11 +127,19 @@ export default function Duels() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black mb-1 flex items-center gap-3">
-          <Swords className="w-8 h-8 text-primary" /> Dueli
-        </h1>
-        <p className="text-muted-foreground text-sm">Pobjednik uzima cijeli pool tokena.</p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-black mb-1 flex items-center gap-3">
+            <Swords className="w-8 h-8 text-primary" /> Dueli
+          </h1>
+          <p className="text-muted-foreground text-sm">Pobjednik uzima cijeli pool tokena.</p>
+        </div>
+        <Link
+          to="/dueli/statistika"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary border border-border/50 text-sm font-semibold hover:bg-secondary/80 transition-all"
+        >
+          <BarChart2 className="w-4 h-4 text-primary" /> Statistika
+        </Link>
       </div>
 
       {/* Tabs */}
