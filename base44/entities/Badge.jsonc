@@ -1,0 +1,84 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique identifier, e.g. first_pick, streak_7, win_10"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "picks",
+        "streak",
+        "social",
+        "tokens",
+        "special"
+      ],
+      "default": "picks"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common"
+    },
+    "condition_type": {
+      "type": "string",
+      "enum": [
+        "picks_count",
+        "wins_count",
+        "tokens_won",
+        "streak_days",
+        "parlay_count",
+        "referral_count",
+        "special"
+      ]
+    },
+    "condition_value": {
+      "type": "number"
+    },
+    "reward_tokens": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "key",
+    "title",
+    "emoji",
+    "condition_type",
+    "condition_value"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

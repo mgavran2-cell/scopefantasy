@@ -5,7 +5,8 @@ import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2, PieChart } from 'lucide-react';
+import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2, PieChart, Medal } from 'lucide-react';
+import BadgesSection from '../components/badges/BadgesSection';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
 
@@ -185,7 +186,8 @@ export default function Profile() {
         {[
           { key: 'history', label: 'Povijest natjecanja' },
           { key: 'stats', label: 'Statistika' },
-          { key: 'rank', label: '🏅 Rang' },
+          { key: 'badges', label: '🏅 Dostignuća' },
+          { key: 'rank', label: 'Rang' },
           { key: 'referral', label: '🎁 Referali' },
         ].map(t => (
           <button
@@ -308,6 +310,13 @@ export default function Profile() {
               <span>{stats.lost} poraza</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Badges tab */}
+      {activeTab === 'badges' && (
+        <div className="mb-8">
+          <BadgesSection userEmail={user?.email} />
         </div>
       )}
 

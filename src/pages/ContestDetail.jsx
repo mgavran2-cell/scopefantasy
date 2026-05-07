@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
 import { notifyUser } from '../hooks/useNotifications';
 import moment from 'moment';
+import { awardBadges } from '@/lib/awardBadges';
+import BadgeAwardToast from '../components/badges/BadgeAwardToast';
 
 export default function ContestDetail() {
   const { id } = useParams();
@@ -25,6 +27,7 @@ export default function ContestDetail() {
   const [isPublic, setIsPublic] = useState(true);
   const [user, setUser] = useState(null);
   const [showDuelModal, setShowDuelModal] = useState(false);
+  const [newBadges, setNewBadges] = useState([]);
 
   useEffect(() => {
     loadContest();
@@ -115,8 +118,16 @@ export default function ContestDetail() {
       { contest_id: contest.id }
     );
 
-    toast.success('Listić uspješno podnesen!');
-    navigate('/moji-odabiri');
+    // Check for new badges
+    const freshUser = await base44.auth.me();
+    const awarded = await awardBadges(freshUser);
+    if (awarded.length > 0) {
+      setNewBadges(awarded);
+    } else {
+      toast.success('Listić uspješno podnesen!');
+      navigate('/moji-odabiri');
+    }
+    setSubmitting(false);
   };
 
   if (loading) {
@@ -124,6 +135,15 @@ export default function ContestDetail() {
       <div className="flex justify-center py-20">
         <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
       </div>
+    );
+  }
+
+  if (newBadges.length > 0) {
+    return (
+      <BadgeAwardToast
+        badges={newBadges}
+        onDone={() => navigate('/moji-odabiri')}
+      />
     );
   }
 
