@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Swords, Clock, Check, X, Trophy, Coins, ChevronRight, BarChart2 } from 'lucide-react';
+import { Swords, Clock, Check, X, Trophy, Coins, ChevronRight, BarChart2, Crown } from 'lucide-react';
+import DuelLeaderboard from '../components/duels/DuelLeaderboard';
 import { toast } from 'sonner';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -110,10 +111,11 @@ export default function Duels() {
   };
 
   const tabs = [
-    { key: 'incoming', label: 'Primljeni', count: incoming.length },
-    { key: 'active',   label: 'Aktivni',   count: active.length },
-    { key: 'outgoing', label: 'Poslani',    count: outgoing.filter(d => d.status === 'pending').length },
-    { key: 'history',  label: 'Povijest',   count: history.length },
+    { key: 'incoming',    label: 'Primljeni', count: incoming.length },
+    { key: 'active',      label: 'Aktivni',   count: active.length },
+    { key: 'outgoing',    label: 'Poslani',    count: outgoing.filter(d => d.status === 'pending').length },
+    { key: 'history',     label: 'Povijest',   count: history.length },
+    { key: 'leaderboard', label: '🏆 Ljestvica', count: 0 },
   ];
 
   const getList = () => {
@@ -162,7 +164,9 @@ export default function Duels() {
         ))}
       </div>
 
-      {loading ? (
+      {tab === 'leaderboard' ? (
+        <DuelLeaderboard />
+      ) : loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
         </div>
