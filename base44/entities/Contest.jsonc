@@ -85,6 +85,22 @@
         }
       }
     },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Derbi",
+          "Ekskluzivno",
+          "Besplatno",
+          "Novi",
+          "Popularno",
+          "Ograni\u010deno",
+          "VIP"
+        ]
+      },
+      "default": []
+    },
     "is_sponsored": {
       "type": "boolean",
       "default": false

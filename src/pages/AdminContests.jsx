@@ -8,10 +8,21 @@ import SponsorFields from '../components/admin/SponsorFields';
 const SPORTS = ['Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
 const STATUSES = ['upcoming', 'active', 'finished'];
 const STATUS_LABELS = { upcoming: 'Uskoro', active: 'Aktivno', finished: 'Završeno' };
+const ALL_TAGS = ['Derbi', 'Ekskluzivno', 'Besplatno', 'Novi', 'Popularno', 'Ograničeno', 'VIP'];
+const TAG_STYLE = {
+  'Derbi':       'bg-red-500/15 text-red-400 border-red-500/30',
+  'Ekskluzivno': 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  'Besplatno':   'bg-green-500/15 text-green-400 border-green-500/30',
+  'Novi':        'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  'Popularno':   'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  'Ograničeno':  'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+  'VIP':         'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+};
 
 const emptyForm = {
   title: '', sport: 'Košarka', description: '', entry_cost: 100, prize_pool: 10000,
   status: 'upcoming', picks_required: 5, start_time: '', end_time: '',
+  tags: [],
   is_sponsored: false, sponsor_name: '', sponsor_logo_url: '', sponsor_message: '',
   sponsor_color: '', sponsor_url: '', sponsor_prize_description: '',
   players: [],
@@ -199,6 +210,29 @@ export default function AdminContests() {
               </div>
             </div>
 
+            {/* Tags */}
+            <div className="mb-4">
+              <label className="text-xs font-semibold text-muted-foreground block mb-2">Tagovi</label>
+              <div className="flex flex-wrap gap-2">
+                {ALL_TAGS.map(tag => {
+                  const active = (form.tags || []).includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setForm(f => ({
+                        ...f,
+                        tags: active ? f.tags.filter(t => t !== tag) : [...(f.tags || []), tag],
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${active ? TAG_STYLE[tag] : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Sponsored toggle */}
             <label className="flex items-center gap-3 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20 cursor-pointer mb-2 hover:bg-yellow-500/8 transition-all">
               <div
@@ -286,6 +320,13 @@ export default function AdminContests() {
                     {contest.sport} · {contest.players?.length || 0} igrača · {contest.entry_cost} tokena ulaz
                     {contest.is_sponsored && contest.sponsor_name && ` · ${contest.sponsor_name}`}
                   </p>
+                  {contest.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {contest.tags.map(tag => (
+                        <span key={tag} className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${TAG_STYLE[tag] || ''}`}>{tag}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button onClick={() => openEdit(contest)} className="p-2 rounded-xl hover:bg-secondary transition-all">

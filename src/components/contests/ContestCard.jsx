@@ -3,6 +3,16 @@ import { Trophy, Users, Clock, Coins, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import moment from 'moment';
 
+const TAG_STYLE = {
+  'Derbi':       'bg-red-500/15 text-red-400 border-red-500/30',
+  'Ekskluzivno': 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  'Besplatno':   'bg-green-500/15 text-green-400 border-green-500/30',
+  'Novi':        'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  'Popularno':   'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  'Ograničeno':  'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+  'VIP':         'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+};
+
 const sportEmoji = {
   'Nogomet': '⚽',
   'Košarka': '🏀',
@@ -99,6 +109,18 @@ export default function ContestCard({ contest, index = 0 }) {
               od {contest.sponsor_name}
             </p>
           )}
+
+          {/* Tags */}
+          {contest.tags?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {contest.tags.map(tag => (
+                <span key={tag} className={`text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border ${TAG_STYLE[tag] || 'bg-muted text-muted-foreground border-border'}`}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
           {contest.description && (
             <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{contest.description}</p>
           )}

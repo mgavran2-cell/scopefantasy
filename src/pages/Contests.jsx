@@ -11,6 +11,17 @@ const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej
 const statusFilters = ['Svi', 'active', 'upcoming', 'finished', 'sponsored'];
 const statusLabels = { 'Svi': 'Svi', 'active': '🔴 Uživo', 'upcoming': 'Uskoro', 'finished': 'Završeno', 'sponsored': '🏆 Sponzorirano' };
 
+const ALL_TAGS = ['Derbi', 'Ekskluzivno', 'Besplatno', 'Novi', 'Popularno', 'Ograničeno', 'VIP'];
+const TAG_STYLE = {
+  'Derbi':       'bg-red-500/15 text-red-400 border-red-500/30',
+  'Ekskluzivno': 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  'Besplatno':   'bg-green-500/15 text-green-400 border-green-500/30',
+  'Novi':        'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  'Popularno':   'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  'Ograničeno':  'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+  'VIP':         'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+};
+
 const TABS = [
   { key: 'pickem', label: 'Pick\'em', icon: ListChecks, desc: 'Predvidi ishode igrača' },
   { key: 'parlay', label: 'Parlay', icon: Layers, desc: 'Kombinirani listić' },
@@ -23,6 +34,7 @@ function PickEmTab() {
   const [sport, setSport] = useState('Svi');
   const [status, setStatus] = useState('Svi');
   const [search, setSearch] = useState('');
+  const [activeTag, setActiveTag] = useState(null);
 
   useEffect(() => {
     base44.entities.Contest.list('-created_date', 50).then(data => {
@@ -36,6 +48,7 @@ function PickEmTab() {
     if (status === 'sponsored' && !c.is_sponsored) return false;
     if (status !== 'Svi' && status !== 'sponsored' && c.status !== status) return false;
     if (search && !c.title?.toLowerCase().includes(search.toLowerCase())) return false;
+    if (activeTag && !(c.tags || []).includes(activeTag)) return false;
     return true;
   });
 
@@ -58,11 +71,24 @@ function PickEmTab() {
           </button>
         ))}
       </div>
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-3">
         {statusFilters.map(s => (
           <button key={s} onClick={() => setStatus(s)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${status === s ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}>
             {statusLabels[s]}
+          </button>
+        ))}
+      </div>
+      {/* Tag filters */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button onClick={() => setActiveTag(null)}
+          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${!activeTag ? 'bg-foreground text-background border-foreground' : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`}>
+          Svi tagovi
+        </button>
+        {ALL_TAGS.map(tag => (
+          <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${activeTag === tag ? TAG_STYLE[tag] : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`}>
+            {tag}
           </button>
         ))}
       </div>
