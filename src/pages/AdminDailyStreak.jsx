@@ -95,11 +95,11 @@ export default function AdminDailyStreak() {
   };
 
   const handleSetResult = async (entryId, result) => {
+    // Find entry BEFORE reload
+    const entry = entries.find(e => e.id === entryId);
     await base44.entities.DailyStreakEntry.update(entryId, { result });
     await loadEntries();
 
-    // After setting result, check if we need to update DailyStreakWeek
-    const entry = entries.find(e => e.id === entryId);
     if (!entry) return;
 
     // Find or create week record for this user
