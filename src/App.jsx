@@ -27,6 +27,7 @@ import AdminContests from './pages/AdminContests';
 import AdminSponsorDashboard from './pages/AdminSponsorDashboard';
 import WelcomeChallenge from './pages/WelcomeChallenge';
 import AdminWelcomeChallenge from './pages/AdminWelcomeChallenge';
+import Duels from './pages/Duels';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/sponsori" element={<AdminSponsorDashboard />} />
         <Route path="/welcome-challenge" element={<WelcomeChallenge />} />
         <Route path="/admin/welcome-challenge" element={<AdminWelcomeChallenge />} />
+        <Route path="/dueli" element={<Duels />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
