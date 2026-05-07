@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
-import { Trophy, TrendingUp, Coins, Target, Users, ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { Trophy, TrendingUp, Coins, Target, Users, ArrowUp, ArrowDown, Minus, CheckCircle2, XCircle, Clock, BarChart2, List } from 'lucide-react';
 import moment from 'moment';
 
 const SPORT_COLORS = ['#7c3aed', '#a855f7', '#22d3ee', '#34d399', '#f59e0b', '#f43f5e'];
@@ -20,6 +20,13 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
+const STATUS_CONFIG = {
+  won:     { label: 'Pobjeda',    color: 'text-primary',      bg: 'bg-primary/15',      icon: CheckCircle2 },
+  lost:    { label: 'Poraz',      color: 'text-destructive',  bg: 'bg-destructive/15',  icon: XCircle },
+  active:  { label: 'Aktivno',   color: 'text-accent',       bg: 'bg-accent/15',       icon: Clock },
+  partial: { label: 'Djelomično', color: 'text-yellow-400',  bg: 'bg-yellow-400/15',   icon: Minus },
+};
+
 export default function UserStats() {
   const { tokenBalance } = useOutletContext();
   const [loading, setLoading] = useState(true);
@@ -27,6 +34,7 @@ export default function UserStats() {
   const [picks, setPicks] = useState([]);
   const [allPicks, setAllPicks] = useState([]);
   const [contests, setContests] = useState({});
+  const [activeTab, setActiveTab] = useState('stats');
 
   useEffect(() => {
     (async () => {
@@ -119,11 +127,79 @@ export default function UserStats() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-black mb-1">Moja Statistika</h1>
         <p className="text-muted-foreground text-sm">Detaljna analiza tvojih oklada i usporedba s platformom</p>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2 mb-8">
+        <button onClick={() => setActiveTab('stats')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'stats' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}>
+          <BarChart2 className="w-4 h-4" /> Statistika
+        </button>
+        <button onClick={() => setActiveTab('history')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}>
+          <List className="w-4 h-4" /> Povijest listića ({picks.length})
+        </button>
+      </div>
+
+      {activeTab === 'history' && (
+        <div className="space-y-3">
+          {picks.length === 0 ? (
+            <div className="text-center py-20 text-muted-foreground">
+              <List className="w-12 h-12 mx-auto mb-3 opacity-20" />
+              <p>Nema odigranih listića</p>
+            </div>
+          ) : picks.map((pick, i) => {
+            const sc = STATUS_CONFIG[pick.status] || STATUS_CONFIG.active;
+            const Icon = sc.icon;
+            const contest = contests[pick.contest_id];
+            const netPick = (pick.tokens_won || 0) - (pick.tokens_spent || 0);
+            return (
+              <motion.div key={pick.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.02 }}
+                className="rounded-2xl border border-border/50 bg-card p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="font-bold text-sm">{contest?.title || 'Natjecanje'}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {contest?.sport || ''} · {moment(pick.created_date).format('DD.MM.YYYY HH:mm')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${sc.bg} ${sc.color}`}>
+                      <Icon className="w-3 h-3" /> {sc.label}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Selections */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {(pick.selections || []).map((sel, j) => {
+                    const res = sel.result;
+                    const resColor = res === 'win' ? 'text-primary' : res === 'loss' ? 'text-destructive' : 'text-muted-foreground';
+                    return (
+                      <span key={j} className={`text-xs px-2 py-1 rounded-lg bg-secondary font-medium ${resColor}`}>
+                        {sel.player_name} — {sel.choice === 'over' ? '↑' : '↓'} {sel.over_under} {sel.stat_type}
+                      </span>
+                    );
+                  })}
+                </div>
+
+                {/* Financials */}
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span>Ulog: <strong className="text-foreground">{pick.tokens_spent?.toLocaleString()}</strong></span>
+                  <span>Zarada: <strong className={pick.tokens_won > 0 ? 'text-primary' : 'text-foreground'}>{(pick.tokens_won || 0).toLocaleString()}</strong></span>
+                  <span>Neto: <strong className={netPick >= 0 ? 'text-green-400' : 'text-destructive'}>{netPick >= 0 ? '+' : ''}{netPick.toLocaleString()}</strong></span>
+                  <span className="ml-auto">{pick.correct_picks || 0}/{pick.total_picks || (pick.selections?.length || 0)} točnih</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === 'stats' && <>
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         {[
@@ -258,6 +334,7 @@ export default function UserStats() {
           </div>
         </motion.div>
       )}
+      </>}
     </div>
   );
 }
