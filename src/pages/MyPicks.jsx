@@ -122,7 +122,7 @@ export default function MyPicks() {
                         <span className="text-sm font-medium">{sel.player_name}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-muted-foreground">{sel.stat_type} {sel.choice === 'over' ? '>' : '<'} {sel.over_under}</span>
+                        <span className="text-muted-foreground">{sel.stat_type} {sel.choice === 'over' ? 'Više od' : 'Manje od'} {sel.over_under}</span>
                         {sel.result && sel.result !== 'pending' && (
                           <span className={`px-2 py-0.5 rounded-full font-bold ${
                             sel.result === 'win' ? 'bg-primary/20 text-primary' : 'bg-destructive/20 text-destructive'

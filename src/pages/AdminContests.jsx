@@ -168,7 +168,7 @@ export default function AdminContests() {
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">Sport *</label>
                 <select value={form.sport} onChange={e => setForm(f => ({ ...f, sport: e.target.value }))}
                   className="w-full px-3 py-2 rounded-xl bg-secondary border border-border/50 text-sm focus:outline-none focus:border-primary/50">
-                  {SPORTS.map(s => <option key={s}>{s}</option>)}
+                  {SPORTS.map(s => <option key={s} value={s}>{s}{s === 'Hokej' ? ' (Uskoro)' : ''}</option>)}
                 </select>
               </div>
               <div className="sm:col-span-2">

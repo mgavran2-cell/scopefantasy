@@ -6,6 +6,7 @@ import { Trophy, Flame, Zap, ArrowRight, Coins, Star } from 'lucide-react';
 import ContestCard from '../components/contests/ContestCard';
 import HomeDailyChallenges from '../components/home/HomeDailyChallenges';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
+import HokejComingSoon from '../components/sports/HokejComingSoon';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
 
@@ -55,7 +56,7 @@ export default function Home() {
     setUserPicks([{ id: 'dev-test', status: 'won', selections: [{}, {}, {}] }]);
   };
 
-  const filteredContests = activeSport === 'Svi' 
+  const filteredContests = activeSport === 'Svi' || activeSport === 'Hokej'
     ? contests 
     : contests.filter(c => c.sport === activeSport);
 
@@ -159,17 +160,27 @@ export default function Home() {
             <button
               key={sport}
               onClick={() => setActiveSport(sport)}
-              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap tracking-wide uppercase transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap tracking-wide uppercase transition-all ${
                 activeSport === sport
                   ? 'bg-primary text-white shadow-lg shadow-primary/30'
                   : 'bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10'
               }`}
             >
               {sport}
+              {sport === 'Hokej' && (
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-accent/20 text-accent leading-none">USKORO</span>
+              )}
             </button>
           ))}
         </div>
       </section>
+
+      {/* Hokej coming soon */}
+      {activeSport === 'Hokej' && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
+          <HokejComingSoon onClose={() => setActiveSport('Svi')} />
+        </section>
+      )}
 
       {/* All Contests */}
       {allVisible.length > 0 && (
