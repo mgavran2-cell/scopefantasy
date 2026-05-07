@@ -87,7 +87,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-base text-muted-foreground mb-8 max-w-lg mx-auto">
-              Predvidi statistike igrača, osvoji tokene i popni se na ljestvicu. Besplatno zauvijek.
+              Predvidi statistike igrača, osvoji tokene i popni se na rang-listu. Besplatno zauvijek.
             </p>
             <div className="flex items-center justify-center gap-3">
               <Link
@@ -117,7 +117,7 @@ export default function Home() {
             {[
               { label: 'Aktivna natjecanja', value: contests.filter(c => c.status === 'active').length, icon: Trophy },
               { label: 'Tvoji tokeni', value: tokenBalance?.toLocaleString() ?? 0, icon: Coins },
-              { label: 'Nagradni fond', value: contests.reduce((s, c) => s + (c.prize_pool || 0), 0).toLocaleString(), icon: Star },
+              { label: 'Ukupni nagradni fond', value: contests.reduce((s, c) => s + (c.prize_pool || 0), 0).toLocaleString(), icon: Star },
             ].map((stat, i) => (
               <div key={i} className="text-center p-4 rounded-2xl bg-white/4 border border-white/8">
                 <stat.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
@@ -201,8 +201,8 @@ export default function Home() {
       {!loading && contests.length === 0 && (
         <div className="text-center py-20 px-4">
           <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-          <h3 className="text-lg font-bold mb-2">Nema natjecanja</h3>
-          <p className="text-muted-foreground">Nova natjecanja uskoro dolaze!</p>
+          <h3 className="text-lg font-bold mb-2">Nema aktivnih natjecanja</h3>
+          <p className="text-muted-foreground">Nova natjecanja uskoro dolaze. Provjeri opet malo kasnije!</p>
         </div>
       )}
     </div>

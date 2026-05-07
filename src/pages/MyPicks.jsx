@@ -39,7 +39,7 @@ export default function MyPicks() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-black mb-2">Moji Odabiri</h1>
-        <p className="text-muted-foreground">Prati aktivne i prošle odabire</p>
+        <p className="text-muted-foreground">Pregled aktivnih i prošlih listića</p>
       </div>
 
       {/* Tabs */}
@@ -70,7 +70,7 @@ export default function MyPicks() {
         <div className="text-center py-20">
           <ListChecks className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="text-lg font-bold mb-2">Nema odabira</h3>
-          <p className="text-muted-foreground">Sudjeluj u natjecanju da vidiš svoje odabire ovdje</p>
+          <p className="text-muted-foreground">Sudjeluj u natjecanju i tvoji odabiri će se pojaviti ovdje.</p>
         </div>
       ) : (
         <div className="space-y-3">

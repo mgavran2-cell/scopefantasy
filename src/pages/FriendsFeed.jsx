@@ -113,13 +113,13 @@ export default function FriendsFeed() {
         follows.length === 0 ? (
           <div className="text-center py-16">
             <Users className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <h3 className="font-bold text-lg mb-1">Ne pratiš nikoga</h3>
-            <p className="text-muted-foreground text-sm">Pronađi igrače na ljestvici i počni ih pratiti.</p>
+            <h3 className="font-bold text-lg mb-1">Ne pratiš nikoga još</h3>
+            <p className="text-muted-foreground text-sm">Pronađi igrače na Ljestvici i zaprati ih da vidiš njihove aktivnosti ovdje.</p>
           </div>
         ) : friendPicks.length === 0 ? (
           <div className="text-center py-16">
             <Activity className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground text-sm">Prijatelji još nisu imali aktivnosti.</p>
+            <p className="text-muted-foreground text-sm">Igrači koje pratiš još nemaju aktivnosti. Provjeri opet uskoro!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -157,7 +157,7 @@ export default function FriendsFeed() {
         follows.length === 0 ? (
           <div className="text-center py-16">
             <Users className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground text-sm">Ne pratiš nikoga. Idi na ljestvicu i pronađi igrače!</p>
+            <p className="text-muted-foreground text-sm">Još ne pratiš nikoga. Idi na Ljestvicu i pronađi igrače koje želiš pratiti!</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -183,8 +183,8 @@ export default function FriendsFeed() {
         myDuels.length === 0 ? (
           <div className="text-center py-16">
             <Swords className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <h3 className="font-bold text-lg mb-1">Nema dvoboja</h3>
-            <p className="text-muted-foreground text-sm">Izazovi prijatelja unutar natjecanja!</p>
+            <h3 className="font-bold text-lg mb-1">Nema dvoboja još</h3>
+            <p className="text-muted-foreground text-sm">Izazovi prijatelja unutar natjecanja klikom na "Izazovi prijatelja"!</p>
           </div>
         ) : (
           <div className="space-y-3">

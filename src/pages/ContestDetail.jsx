@@ -114,7 +114,7 @@ export default function ContestDetail() {
       { contest_id: contest.id }
     );
 
-    toast.success('Odabiri uspješno poslani!');
+    toast.success('Listić uspješno podnesen!');
     navigate('/moji-odabiri');
   };
 
@@ -194,7 +194,7 @@ export default function ContestDetail() {
           <span className="text-sm font-semibold">Odabrano: {selected} / {required}</span>
           {selected >= required && (
             <span className="flex items-center gap-1 text-xs font-bold text-primary">
-              <Check className="w-3.5 h-3.5" /> Spremno
+              <Check className="w-3.5 h-3.5" /> Sve odabrano
             </span>
           )}
         </div>
@@ -223,7 +223,7 @@ export default function ContestDetail() {
         </div>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Igrači će uskoro biti dodani</p>
+          <p>Igrači će uskoro biti dodani u ovo natjecanje.</p>
         </div>
       )}
 

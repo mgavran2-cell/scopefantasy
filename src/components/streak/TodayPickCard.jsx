@@ -27,7 +27,7 @@ export default function TodayPickCard({ entry, userEmail, onChosen }) {
       animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 to-fuchsia-500/5 p-5"
     >
-      <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">Pick dana</p>
+      <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">Odabir dana</p>
 
       <div className="text-center mb-5">
         <p className="text-2xl font-black text-white">{entry.pick_player}</p>
@@ -42,7 +42,7 @@ export default function TodayPickCard({ entry, userEmail, onChosen }) {
         <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 border border-primary/20">
           <CheckCircle2 className="w-5 h-5 text-primary" />
           <span className="font-bold text-primary">
-            Tvoj odabir: {chosen === 'vise' ? 'Više ↑' : 'Manje ↓'}
+          Tvoj odabir: {chosen === 'vise' ? '↑ Više' : '↓ Manje'}
           </span>
         </div>
       ) : (
@@ -66,7 +66,7 @@ export default function TodayPickCard({ entry, userEmail, onChosen }) {
         </div>
       )}
 
-      <p className="text-center text-xs text-muted-foreground mt-3">Besplatno · Ne troši tokene</p>
+      <p className="text-center text-xs text-muted-foreground mt-3">Besplatno sudjelovanje · Ne troši tokene</p>
     </motion.div>
   );
 }

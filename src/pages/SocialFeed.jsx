@@ -112,7 +112,7 @@ function PostCard({ post, currentUser, onLike, onComment }) {
             to={`/natjecanje/${post.contest_id}`}
             className="ml-auto flex items-center gap-1.5 text-xs font-bold text-accent hover:opacity-80 transition-all px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20"
           >
-            <Copy className="w-3.5 h-3.5" /> Kopiraj okladu
+            <Copy className="w-3.5 h-3.5" /> Kopiraj odabire
           </Link>
         )}
       </div>
@@ -231,14 +231,14 @@ export default function SocialFeed() {
       <div className="mb-6">
         <h1 className="text-3xl font-black mb-1 flex items-center gap-3">
           <Users className="w-8 h-8 text-primary" />
-          Social Feed
+          Zajednica
         </h1>
         <p className="text-muted-foreground text-sm">Prati uspjehe igrača, dijeli rezultate i komentiraj</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
-        {[{key:'feed',label:'Feed'},{key:'active',label:'Aktivni okladi'}].map(t => (
+        {[{key:'feed',label:'Objave'},{key:'active',label:'Aktivni listići'}].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
               tab === t.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
@@ -290,8 +290,8 @@ export default function SocialFeed() {
         posts.length === 0 ? (
           <div className="text-center py-16">
             <Users className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <h3 className="font-bold text-lg mb-1">Feed je prazan</h3>
-            <p className="text-muted-foreground text-sm">Budi prvi koji će nešto podijeliti!</p>
+            <h3 className="font-bold text-lg mb-1">Još nema objava</h3>
+            <p className="text-muted-foreground text-sm">Budi prvi koji će nešto podijeliti s zajednicom!</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -310,8 +310,8 @@ export default function SocialFeed() {
         activePicks.length === 0 ? (
           <div className="text-center py-16">
             <Eye className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
-            <h3 className="font-bold text-lg mb-1">Nema aktivnih oklada</h3>
-            <p className="text-muted-foreground text-sm">Korisnici još nisu označili okladu kao javnu.</p>
+            <h3 className="font-bold text-lg mb-1">Nema aktivnih listića</h3>
+            <p className="text-muted-foreground text-sm">Igrači još nisu označili listić kao javan.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -329,8 +329,8 @@ export default function SocialFeed() {
                     </div>
                   </div>
                   <Link to={`/natjecanje/${pick.contest_id}`}
-                    className="flex items-center gap-1.5 text-xs font-bold text-accent px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:opacity-80 transition-all">
-                    <Copy className="w-3.5 h-3.5" /> Kopiraj
+                   className="flex items-center gap-1.5 text-xs font-bold text-accent px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:opacity-80 transition-all">
+                   <Copy className="w-3.5 h-3.5" /> Kopiraj odabire
                   </Link>
                 </div>
                 <div className="flex flex-wrap gap-1.5">

@@ -130,7 +130,7 @@ export default function DailyStreak() {
       {weekData?.reward_claimed && (
         <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-green-500/10 border border-green-500/20 mb-4">
           <Coins className="w-4 h-4 text-green-400" />
-          <span className="text-sm font-bold text-green-400">Nagrada preuzeta ovaj tjedan!</span>
+          <span className="text-sm font-bold text-green-400">Nagrada je već preuzeta ovaj tjedan!</span>
         </div>
       )}
 
@@ -148,8 +148,8 @@ export default function DailyStreak() {
       {!todayEntry && (
         <div className="rounded-2xl border border-border/50 bg-card p-5 text-center mb-4">
           <Flame className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-sm font-bold">Pick dana još nije dostupan</p>
-          <p className="text-xs text-muted-foreground mt-1">Admin dodaje pick za danas uskoro.</p>
+          <p className="text-sm font-bold">Odabir dana još nije dostupan</p>
+          <p className="text-xs text-muted-foreground mt-1">Odabir za danas bit će dostupan uskoro. Provjeri opet malo kasnije.</p>
         </div>
       )}
 

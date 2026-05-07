@@ -74,7 +74,7 @@ function PickEmTab() {
         <div className="text-center py-20">
           <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="text-lg font-bold mb-2">Nema rezultata</h3>
-          <p className="text-muted-foreground">Pokušaj s drugim filterima</p>
+          <p className="text-muted-foreground">Pokušaj s drugim filterima ili provjeri opet uskoro.</p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -94,7 +94,7 @@ export default function Contests() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-black mb-2">Igraj</h1>
-        <p className="text-muted-foreground">Odaberi način igre i započni</p>
+        <p className="text-muted-foreground">Odaberi način igre i kreni!</p>
       </div>
 
       {/* Mode tabs */}

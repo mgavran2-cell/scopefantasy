@@ -27,9 +27,9 @@ function BetaModal({ onClose }) {
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-          Aplikacija je trenutno u zatvorenoj beta fazi. Plaćanja nisu aktivna. Novi korisnici dobivaju <strong className="text-foreground">5000 besplatnih tokena</strong> pri registraciji + dnevni bonus od <strong className="text-foreground">500 tokena</strong>.
+          Aplikacija je trenutno u zatvorenoj beta fazi — plaćanja nisu aktivna. Svaki novi korisnik dobiva <strong className="text-foreground">5.000 besplatnih tokena</strong> pri registraciji i dnevni poklon od <strong className="text-foreground">500 tokena</strong>.
           <br /><br />
-          Ako želiš dodatne tokene za testiranje, javi se na{' '}
+          Trebaš više tokena za testiranje? Javi se na{' '}
           <a href="mailto:marko.gavran@outlook.com" className="text-primary underline">marko.gavran@outlook.com</a>
           <br /><br />
           Hvala što testiraš ScopeFantasy!
@@ -178,7 +178,7 @@ export default function WalletPage() {
                 onClick={() => setShowBetaModal(true)}
                 className={`relative p-3 rounded-xl border text-left transition-all hover:border-primary/50 hover:bg-primary/5 ${pkg.badge === 'Najpopularnije' ? 'border-primary/40 bg-primary/5' : 'border-border/50 bg-card'}`}
               >
-                {pkg.badge === 'Najpopularnije' && <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Popular</span>}
+                {pkg.badge === 'Najpopularnije' && <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Najpopularnije</span>}
                 <p className="font-black text-base text-primary">{total >= 1000 ? `${(total/1000).toFixed(1).replace('.0','')}K` : total}</p>
                 <p className="text-xs text-muted-foreground">tokena</p>
                 <p className="text-sm font-bold mt-1">{pkg.priceLabel}</p>
@@ -207,7 +207,7 @@ export default function WalletPage() {
         {filtered.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground">
             <Coins className="w-10 h-10 mx-auto mb-2 opacity-20" />
-            <p className="text-sm">Nema transakcija</p>
+            <p className="text-sm">Nema transakcija. Odigraj natjecanje ili preuzmi dnevni poklon!</p>
           </div>
         ) : (
           <div className="rounded-2xl border border-border/50 overflow-hidden">

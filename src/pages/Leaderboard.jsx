@@ -62,7 +62,7 @@ export default function Leaderboard() {
       <div className="flex items-end justify-between mb-6">
         <div>
           <h1 className="text-3xl font-black mb-1">Ljestvica</h1>
-          <p className="text-muted-foreground text-sm">Rang lista igrača prema zaradi i postotku pobjeda</p>
+          <p className="text-muted-foreground text-sm">Rang-lista igrača prema zaradi i postotku pobjeda</p>
         </div>
       </div>
 
@@ -91,7 +91,7 @@ export default function Leaderboard() {
         <div className="text-center py-20">
           <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="text-lg font-bold mb-2">Ljestvica je prazna</h3>
-          <p className="text-muted-foreground">Nema podataka za odabrano razdoblje.</p>
+          <p className="text-muted-foreground">Nema podataka za odabrano razdoblje. Igrači koji sudjeluju u natjecanjima pojavit će se ovdje.</p>
         </div>
       ) : (
         <>
@@ -157,7 +157,7 @@ export default function Leaderboard() {
                     <p className="font-bold text-sm truncate">
                       {entry.name} {isMe && <span className="text-primary text-xs">(Ti)</span>}
                     </p>
-                    <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} igara</p>
+                    <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} listića</p>
                   </div>
                   {!isMe && (
                     <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />

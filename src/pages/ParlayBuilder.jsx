@@ -384,7 +384,7 @@ export default function ParlayBuilder() {
             )}
 
             {numPicks < 2 && (
-              <p className="text-xs text-muted-foreground text-center py-2">Odaberi najmanje 2 ishoda za parlay listić</p>
+              <p className="text-xs text-muted-foreground text-center py-2">Dodaj najmanje 2 igrača za parlay listić</p>
             )}
 
             {/* Contest picker */}
@@ -404,7 +404,7 @@ export default function ParlayBuilder() {
             {myParlays.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
                 <Layers className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>Još nisi podnio parlay listić</p>
+                <p>Još nisi predao nijedan listić. Sastavi ga u kartici "Sastavi listić"!</p>
               </div>
             ) : myParlays.map((p, i) => {
               const sc = statusMap[p.status] || statusMap.active;
