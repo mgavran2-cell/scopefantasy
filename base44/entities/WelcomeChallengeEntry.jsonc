@@ -1,0 +1,80 @@
+{
+  "name": "WelcomeChallengeEntry",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "admin_set_id": {
+      "type": "string"
+    },
+    "selections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pick_id": {
+            "type": "string"
+          },
+          "player_name": {
+            "type": "string"
+          },
+          "stat_type": {
+            "type": "string"
+          },
+          "over_under": {
+            "type": "number"
+          },
+          "choice": {
+            "type": "string",
+            "enum": [
+              "over",
+              "under"
+            ]
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "won",
+        "lost"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "user_email",
+    "admin_set_id",
+    "selections"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

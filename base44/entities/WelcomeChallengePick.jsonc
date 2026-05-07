@@ -1,0 +1,59 @@
+{
+  "name": "WelcomeChallengePick",
+  "type": "object",
+  "properties": {
+    "admin_set_id": {
+      "type": "string",
+      "description": "Groups 3 picks into one set"
+    },
+    "player_name": {
+      "type": "string"
+    },
+    "team": {
+      "type": "string"
+    },
+    "stat_type": {
+      "type": "string"
+    },
+    "over_under": {
+      "type": "number"
+    },
+    "correct_choice": {
+      "type": "string",
+      "enum": [
+        "over",
+        "under",
+        ""
+      ],
+      "default": ""
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "admin_set_id",
+    "player_name",
+    "stat_type",
+    "over_under"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
