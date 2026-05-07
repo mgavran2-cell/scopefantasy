@@ -52,6 +52,26 @@
         }
       }
     },
+    "play_type": {
+      "type": "string",
+      "enum": [
+        "power",
+        "flex"
+      ],
+      "default": "power"
+    },
+    "num_picks": {
+      "type": "integer"
+    },
+    "num_correct": {
+      "type": "integer"
+    },
+    "payout_multiplier": {
+      "type": "number"
+    },
+    "actual_payout": {
+      "type": "integer"
+    },
     "total_odds": {
       "type": "number"
     },
