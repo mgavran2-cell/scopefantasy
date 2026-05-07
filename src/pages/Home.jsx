@@ -8,7 +8,8 @@ import HomeDailyChallenges from '../components/home/HomeDailyChallenges';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import HokejComingSoon from '../components/sports/HokejComingSoon';
 
-const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
+const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA', 'Hokej', 'Pikado'];
+const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
 
 export default function Home() {
   const { tokenBalance } = useOutletContext();
@@ -56,7 +57,7 @@ export default function Home() {
     setUserPicks([{ id: 'dev-test', status: 'won', selections: [{}, {}, {}] }]);
   };
 
-  const filteredContests = activeSport === 'Svi' || activeSport === 'Hokej'
+  const filteredContests = activeSport === 'Svi' || COMING_SOON_SPORTS.includes(activeSport)
     ? contests 
     : contests.filter(c => c.sport === activeSport);
 
@@ -167,7 +168,7 @@ export default function Home() {
               }`}
             >
               {sport}
-              {sport === 'Hokej' && (
+              {COMING_SOON_SPORTS.includes(sport) && (
                 <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-accent/20 text-accent leading-none">USKORO</span>
               )}
             </button>
@@ -175,8 +176,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Hokej coming soon */}
-      {activeSport === 'Hokej' && (
+      {/* Coming soon sports */}
+      {COMING_SOON_SPORTS.includes(activeSport) && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
           <HokejComingSoon onClose={() => setActiveSport('Svi')} />
         </section>

@@ -8,7 +8,8 @@ import ParlayBuilder from './ParlayBuilder';
 import DailyChallengePage from './DailyChallengePage';
 import HokejComingSoon from '../components/sports/HokejComingSoon';
 
-const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'Hokej', 'MMA'];
+const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA', 'Hokej', 'Pikado'];
+const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
 const statusFilters = ['Svi', 'active', 'upcoming', 'finished', 'sponsored'];
 const statusLabels = { 'Svi': 'Svi', 'active': '🔴 Uživo', 'upcoming': 'Uskoro', 'finished': 'Završeno', 'sponsored': '🏆 Sponzorirano' };
 
@@ -44,7 +45,7 @@ function PickEmTab() {
     });
   }, []);
 
-  const filtered = sport === 'Hokej' ? [] : contests.filter(c => {
+  const filtered = COMING_SOON_SPORTS.includes(sport) ? [] : contests.filter(c => {
     if (sport !== 'Svi' && c.sport !== sport) return false;
     if (status === 'sponsored' && !c.is_sponsored) return false;
     if (status !== 'Svi' && status !== 'sponsored' && c.status !== status) return false;
@@ -69,7 +70,7 @@ function PickEmTab() {
           <button key={s} onClick={() => setSport(s)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${sport === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}>
             {s}
-            {s === 'Hokej' && (
+            {COMING_SOON_SPORTS.includes(s) && (
               <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-accent/20 text-accent leading-none">USKORO</span>
             )}
           </button>
@@ -97,21 +98,21 @@ function PickEmTab() {
         ))}
       </div>
 
-      {sport === 'Hokej' && (
+      {COMING_SOON_SPORTS.includes(sport) && (
         <HokejComingSoon onClose={() => setSport('Svi')} />
       )}
 
-      {loading && sport !== 'Hokej' ? (
+      {loading && !COMING_SOON_SPORTS.includes(sport) ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
         </div>
-      ) : !loading && sport !== 'Hokej' && filtered.length === 0 ? (
+      ) : !loading && !COMING_SOON_SPORTS.includes(sport) && filtered.length === 0 ? (
         <div className="text-center py-20">
           <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="text-lg font-bold mb-2">Nema rezultata</h3>
           <p className="text-muted-foreground">Pokušaj s drugim filterima ili provjeri opet uskoro.</p>
         </div>
-      ) : sport !== 'Hokej' ? (
+      ) : !COMING_SOON_SPORTS.includes(sport) ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((contest, i) => (
             <ContestCard key={contest.id} contest={contest} index={i} />
