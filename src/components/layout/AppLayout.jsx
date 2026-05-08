@@ -10,6 +10,7 @@ export default function AppLayout() {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [testNewUser, setTestNewUser] = useState(false);
 
   useNotificationWatcher(currentUser);
 
@@ -18,6 +19,7 @@ export default function AppLayout() {
   }, []);
 
   const forceOnboarding = () => {
+    setTestNewUser(true);
     setShowOnboarding(true);
   };
 
@@ -82,10 +84,10 @@ export default function AppLayout() {
       {showOnboarding && (
         <OnboardingTour onComplete={() => {
           setShowOnboarding(false);
-          base44.auth.me().then(me => setCurrentUser(me));
+          if (!testNewUser) base44.auth.me().then(me => setCurrentUser(me));
         }} />
       )}
-      {currentUser?.role === 'admin' && !showOnboarding && (
+      {currentUser?.role === 'admin' && !showOnboarding && !testNewUser && (
         <button
           onClick={forceOnboarding}
           className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-yellow-500 text-black text-xs font-bold rounded-full shadow-lg hover:bg-yellow-400 transition-all"
@@ -93,10 +95,18 @@ export default function AppLayout() {
           🧪 Test Onboarding
         </button>
       )}
+      {currentUser?.role === 'admin' && testNewUser && (
+        <button
+          onClick={() => { setTestNewUser(false); setShowOnboarding(false); }}
+          className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg hover:bg-red-400 transition-all"
+        >
+          ✕ Izlaz iz test moda
+        </button>
+      )}
       <Navbar tokenBalance={tokenBalance} />
       <BrowserNotifBanner />
       <main className="pt-16 flex-1">
-        <Outlet context={{ tokenBalance, setTokenBalance, loadBalance, currentUser, setCurrentUser }} />
+        <Outlet context={{ tokenBalance, setTokenBalance, loadBalance, currentUser, setCurrentUser, testNewUser }} />
       </main>
       <footer className="border-t border-white/5 py-5 text-center text-[12px] text-muted-foreground px-4">
         <p>ScopeFantasy Beta v0.1 — Aplikacija je u testnoj fazi. Sve funkcionalnosti mogu se mijenjati.</p>

@@ -13,7 +13,7 @@ const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA',
 const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
 
 export default function Home() {
-  const { tokenBalance } = useOutletContext();
+  const { tokenBalance, testNewUser } = useOutletContext();
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeSport, setActiveSport] = useState('Svi');
@@ -109,7 +109,7 @@ export default function Home() {
       {/* Welcome Bonus Banner */}
       {currentUser && (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4">
-          <WelcomeBonusBanner user={currentUser} />
+          <WelcomeBonusBanner user={currentUser} forceShow={testNewUser} />
         </div>
       )}
 

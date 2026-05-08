@@ -31,7 +31,7 @@ const TABS = [
 ];
 
 export default function Profile() {
-  const { tokenBalance, loadBalance } = useOutletContext();
+  const { tokenBalance, loadBalance, testNewUser } = useOutletContext();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ total: 0, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 });
   const [picks, setPicks] = useState([]);
@@ -99,6 +99,7 @@ export default function Profile() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <WelcomeBonusBanner
         user={user}
+        forceShow={testNewUser}
         picks={picks}
         onClaimed={async () => {
           const me = await base44.auth.me();

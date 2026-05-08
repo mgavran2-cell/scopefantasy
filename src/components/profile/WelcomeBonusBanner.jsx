@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Gift } from 'lucide-react';
 
-export default function WelcomeBonusBanner({ user }) {
+export default function WelcomeBonusBanner({ user, forceShow }) {
   if (!user) return null;
-  if (user.welcome_bonus_claimed) return null;
-  if (user.welcome_bonus_eligible === false) return null;
+  if (!forceShow && user.welcome_bonus_claimed) return null;
+  if (!forceShow && user.welcome_bonus_eligible === false) return null;
 
   return (
     <motion.div
