@@ -18,43 +18,59 @@ export default function AppLayout() {
   }, []);
 
   const loadBalance = async () => {
-    const user = await base44.auth.me();
+    // auth.me() may be cached — use it only for identity
+    const authUser = await base44.auth.me();
+    if (!authUser) return null;
+
+    // Read fresh fields directly from User entity (not cached)
+    const userRecords = await base44.entities.User.filter({ email: authUser.email });
+    const freshData = userRecords?.[0] || {};
+    // SDK returns custom fields at top level on auth.me but entity returns them nested; merge both
+    const user = { ...authUser, ...freshData };
+
     const updates = {};
 
-    // Genuinely new user: token_balance is null or undefined (never been set)
-    const isNewUser = user?.token_balance === null || user?.token_balance === undefined;
+    // New user: token_balance was never set (null/undefined)
+    const isNewUser = user.token_balance === null || user.token_balance === undefined;
 
-    // Needs onboarding: explicitly set to false (either first time or after reset)
-    const needsOnboarding = user?.onboarding_completed === false;
+    // Needs onboarding: explicitly false (new user or after reset)
+    const needsOnboarding = user.onboarding_completed === false;
 
     if (isNewUser) {
       updates.token_balance = 5000;
       updates.onboarding_completed = false;
     }
-    if (!user?.referral_code) {
+    if (!user.referral_code) {
       updates.referral_code = Math.random().toString(36).substring(2, 8).toUpperCase();
     }
+
     if (Object.keys(updates).length > 0) {
       await base44.auth.updateMe(updates);
       if (isNewUser) {
         await base44.entities.TokenTransaction.create({
-          user_email: user.email,
+          user_email: authUser.email,
           type: 'bonus',
           amount: 5000,
           description: 'Bonus dobrodošlice',
           balance_after: 5000,
         });
       }
+      // Re-read after update
+      const updatedRecords = await base44.entities.User.filter({ email: authUser.email });
+      const updatedData = updatedRecords?.[0] || {};
+      const updatedUser = { ...authUser, ...updatedData };
+      setCurrentUser(updatedUser);
+      setTokenBalance(updatedUser.token_balance ?? 0);
+    } else {
+      setCurrentUser(user);
+      setTokenBalance(user.token_balance ?? 0);
     }
-    const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
-    setCurrentUser(fresh);
-    setTokenBalance(fresh?.token_balance ?? 0);
 
     if (needsOnboarding || updates.onboarding_completed === false) {
       setTimeout(() => setShowOnboarding(true), 1000);
     }
 
-    return fresh;
+    return user;
   };
 
   return (
