@@ -1,25 +1,26 @@
-import { useParams, useLocation } from 'react-router-dom';
-
-const PAGES = {
-  '/pravila': {
-    title: 'Pravila korištenja',
-    version: 'Beta v0.1',
-  },
-  '/privatnost': {
-    title: 'Pravila o privatnosti',
-    version: 'Beta v0.1',
-  },
-  '/kako-igrati': {
-    title: 'Kako igrati',
-    version: 'Beta v0.1',
-  },
-};
+import { useLocation } from 'react-router-dom';
+import PravilaKoristenja from '../components/legal/PravilaKoristenja';
 
 const CURRENT_DATE = '8. svibnja 2026.';
 
+const PAGES = {
+  '/pravila':     { title: 'Pravila korištenja',    version: 'Beta v0.1', Content: PravilaKoristenja },
+  '/privatnost':  { title: 'Pravila o privatnosti', version: 'Beta v0.1', Content: null },
+  '/kako-igrati': { title: 'Kako igrati',           version: 'Beta v0.1', Content: null },
+};
+
+function Placeholder() {
+  return (
+    <p className="italic text-muted-foreground">
+      Sadržaj se učitava — ažurirat ćemo nakon pravne provjere.
+    </p>
+  );
+}
+
 export default function LegalPage() {
   const { pathname } = useLocation();
-  const page = PAGES[pathname] || { title: 'Dokument', version: 'Beta v0.1' };
+  const page = PAGES[pathname] || { title: 'Dokument', version: 'Beta v0.1', Content: null };
+  const Content = page.Content || Placeholder;
 
   return (
     <div className="min-h-screen bg-background py-12 px-4">
@@ -33,12 +34,8 @@ export default function LegalPage() {
         </div>
 
         {/* Body */}
-        <div className="prose prose-invert prose-sm max-w-none">
-          <div className="rounded-2xl bg-card border border-border/40 p-8 text-muted-foreground text-sm leading-relaxed">
-            <p className="italic">
-              Sadržaj se učitava — ažurirat ćemo nakon pravne provjere.
-            </p>
-          </div>
+        <div className="rounded-2xl bg-card border border-border/40 p-6 sm:p-10">
+          <Content />
         </div>
 
         {/* Footer */}
