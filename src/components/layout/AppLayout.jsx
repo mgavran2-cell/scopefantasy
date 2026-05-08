@@ -20,9 +20,16 @@ export default function AppLayout() {
   const loadBalance = async () => {
     const user = await base44.auth.me();
     const updates = {};
-    const isNewUser = !user?.token_balance && user?.token_balance !== 0;
+
+    // Genuinely new user: token_balance is null or undefined (never been set)
+    const isNewUser = user?.token_balance === null || user?.token_balance === undefined;
+
+    // Needs onboarding: explicitly set to false (either first time or after reset)
+    const needsOnboarding = user?.onboarding_completed === false;
+
     if (isNewUser) {
       updates.token_balance = 5000;
+      updates.onboarding_completed = false;
     }
     if (!user?.referral_code) {
       updates.referral_code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -41,14 +48,9 @@ export default function AppLayout() {
     }
     const fresh = Object.keys(updates).length > 0 ? await base44.auth.me() : user;
     setCurrentUser(fresh);
-    setTokenBalance(fresh?.token_balance ?? 5000);
+    setTokenBalance(fresh?.token_balance ?? 0);
 
-    // Show onboarding only for genuinely new users
-    // Existing users (token_balance already set before this session) won't have onboarding_completed=false
-    // We treat anyone with onboarding_completed explicitly false as needing the tour
-    // But skip if they're existing users who never had the field set (treat null/undefined as completed)
-    const needsOnboarding = fresh?.onboarding_completed === false;
-    if (needsOnboarding) {
+    if (needsOnboarding || updates.onboarding_completed === false) {
       setTimeout(() => setShowOnboarding(true), 1000);
     }
 
