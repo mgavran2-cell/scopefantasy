@@ -71,12 +71,18 @@ export default function AppLayout() {
       <footer className="border-t border-white/5 py-5 text-center text-[12px] text-muted-foreground px-4">
         <p>ScopeFantasy Beta v0.1 — Aplikacija je u testnoj fazi. Sve funkcionalnosti mogu se mijenjati.</p>
         <p>Tokeni su virtualna valuta bez stvarne novčane vrijednosti. Nije kockanje.</p>
-        <p className="mt-1">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2">
+          <a href="/pravila" className="hover:text-foreground transition-colors underline underline-offset-2">Pravila korištenja</a>
+          <span className="text-border">|</span>
+          <a href="/privatnost" className="hover:text-foreground transition-colors underline underline-offset-2">Privatnost</a>
+          <span className="text-border">|</span>
+          <a href="/kako-igrati" className="hover:text-foreground transition-colors underline underline-offset-2">Kako igrati</a>
+          <span className="text-border">|</span>
           Kontakt:{' '}
           <a href="mailto:marko.gavran@outlook.com" className="hover:text-foreground transition-colors underline underline-offset-2">
             marko.gavran@outlook.com
           </a>
-        </p>
+        </div>
       </footer>
     </div>
   );

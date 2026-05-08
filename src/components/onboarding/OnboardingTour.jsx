@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { ArrowRight, X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const STEPS = [
   {
@@ -33,6 +34,7 @@ const STEPS = [
 export default function OnboardingTour({ onComplete }) {
   const [step, setStep] = useState(0);
   const [completing, setCompleting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const complete = async () => {
     if (completing) return;
@@ -98,11 +100,33 @@ export default function OnboardingTour({ onComplete }) {
             <p className="text-muted-foreground text-sm leading-relaxed">{current.body}</p>
           </div>
 
+          {/* Terms checkbox — only on first step */}
+          {step === 0 && (
+            <div className="mt-6 flex items-start gap-3 bg-secondary/50 rounded-xl p-3">
+              <Checkbox
+                id="terms"
+                checked={termsAccepted}
+                onCheckedChange={setTermsAccepted}
+                className="mt-0.5 shrink-0"
+              />
+              <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                Prihvaćam{' '}
+                <a href="/pravila" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:opacity-80">
+                  Pravila korištenja
+                </a>{' '}
+                i{' '}
+                <a href="/privatnost" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:opacity-80">
+                  Pravila o privatnosti
+                </a>
+              </label>
+            </div>
+          )}
+
           {/* CTA button */}
           <button
             onClick={next}
-            disabled={completing}
-            className="mt-8 w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+            disabled={completing || (step === 0 && !termsAccepted)}
+            className="mt-4 w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {completing
               ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
