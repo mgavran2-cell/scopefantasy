@@ -17,6 +17,10 @@ export default function AppLayout() {
     loadBalance();
   }, []);
 
+  const forceOnboarding = () => {
+    setShowOnboarding(true);
+  };
+
   const loadBalance = async () => {
     // auth.me() may be cached — use it only for identity
     const authUser = await base44.auth.me();
@@ -80,6 +84,14 @@ export default function AppLayout() {
           setShowOnboarding(false);
           base44.auth.me().then(me => setCurrentUser(me));
         }} />
+      )}
+      {currentUser?.role === 'admin' && !showOnboarding && (
+        <button
+          onClick={forceOnboarding}
+          className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-yellow-500 text-black text-xs font-bold rounded-full shadow-lg hover:bg-yellow-400 transition-all"
+        >
+          🧪 Test Onboarding
+        </button>
       )}
       <Navbar tokenBalance={tokenBalance} />
       <BrowserNotifBanner />
