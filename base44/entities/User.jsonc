@@ -59,6 +59,24 @@
           "default": false
         }
       }
+    },
+    "bio": {
+      "type": "string",
+      "default": ""
+    },
+    "favorite_sport": {
+      "type": "string",
+      "enum": [
+        "Nogomet",
+        "Ko\u0161arka",
+        "Tenis",
+        "Formula 1",
+        "MMA"
+      ]
+    },
+    "deletion_requested": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": []

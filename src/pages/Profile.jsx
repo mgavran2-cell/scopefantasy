@@ -1,22 +1,34 @@
 import { useState, useEffect, useRef } from 'react';
-import ReferralSection from '../components/profile/ReferralSection';
-import RankCard, { RankBadgeSmall, getRank } from '../components/profile/RankBadge';
-import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Coins, Trophy, Target, TrendingUp, LogOut, Camera, CheckCircle, XCircle, Clock, BarChart2, PieChart, Medal } from 'lucide-react';
 import BadgesSection from '../components/badges/BadgesSection';
 import NotificationPreferences from '../components/notifications/NotificationPreferences';
-import { Button } from '@/components/ui/button';
+import ProfileHeader from '../components/profile/ProfileHeader';
+import ProfileStatsGrid from '../components/profile/ProfileStatsGrid';
+import ProfileSettings from '../components/profile/ProfileSettings';
+import RankCard, { getRank } from '../components/profile/RankBadge';
+import ReferralSection from '../components/profile/ReferralSection';
+import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
+import { CheckCircle, Clock, Coins, Trophy, XCircle } from 'lucide-react';
 import moment from 'moment';
 
 const statusConfig = {
-  active:  { label: 'Aktivno',      color: 'bg-accent/20 text-accent' },
-  won:     { label: 'Osvojeno',     color: 'bg-primary/20 text-primary' },
-  lost:    { label: 'Izgubljeno',   color: 'bg-destructive/20 text-destructive' },
-  partial: { label: 'Djelomično',   color: 'bg-muted text-muted-foreground' },
+  active:  { label: 'Aktivno',    color: 'bg-accent/20 text-accent' },
+  won:     { label: 'Osvojeno',   color: 'bg-primary/20 text-primary' },
+  lost:    { label: 'Izgubljeno', color: 'bg-destructive/20 text-destructive' },
+  partial: { label: 'Djelomično', color: 'bg-muted text-muted-foreground' },
 };
+
+const TABS = [
+  { key: 'history',       label: 'Moji Odabiri' },
+  { key: 'stats',         label: 'Statistika' },
+  { key: 'badges',        label: '🏅 Dostignuća' },
+  { key: 'rank',          label: 'Rang' },
+  { key: 'referral',      label: '🎁 Referali' },
+  { key: 'settings',      label: '⚙️ Postavke' },
+  { key: 'notif_settings',label: '🔔 Obavijesti' },
+];
 
 export default function Profile() {
   const { tokenBalance, loadBalance } = useOutletContext();
@@ -24,19 +36,20 @@ export default function Profile() {
   const [stats, setStats] = useState({ total: 0, won: 0, lost: 0, tokensWon: 0, tokensSpent: 0 });
   const [picks, setPicks] = useState([]);
   const [contests, setContests] = useState({});
+  const [streakCount, setStreakCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
 
-  const fileInputRef = useRef(null);
+  const avatarFileRef = useRef(null);
 
   useEffect(() => { loadProfile(); }, []);
 
   const loadProfile = async () => {
-    const [me, picksData, contestsData] = await Promise.all([
+    const [me, picksData, contestsData, streakData] = await Promise.all([
       base44.auth.me(),
       base44.entities.Pick.list('-created_date', 50),
       base44.entities.Contest.list('-created_date', 100),
+      base44.entities.DailyStreakWeek.filter({ user_email: (await base44.auth.me()).email }),
     ]);
     setUser(me);
     setPicks(picksData);
@@ -53,17 +66,22 @@ export default function Profile() {
       s.tokensSpent += (p.tokens_spent || 0);
     });
     setStats(s);
+
+    // Current week streak correct picks
+    const now = new Date();
+    const weekStart = moment(now).startOf('isoWeek').format('YYYY-MM-DD');
+    const currentWeek = streakData.find(sw => sw.week_start_date === weekStart);
+    setStreakCount(currentWeek?.correct_picks || 0);
+
     setLoading(false);
   };
 
-  const handleAvatarUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingAvatar(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    await base44.auth.updateMe({ avatar_url: file_url });
-    setUser(prev => ({ ...prev, avatar_url: file_url }));
-    setUploadingAvatar(false);
+  const handleAvatarUpdated = (url) => {
+    setUser(prev => ({ ...prev, avatar_url: url }));
+  };
+
+  const handleSettingsSaved = (updates) => {
+    setUser(prev => ({ ...prev, ...updates }));
   };
 
   if (loading) {
@@ -89,114 +107,46 @@ export default function Profile() {
         }}
       />
 
-      {/* Profile Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <div className="flex items-center gap-5 mb-6">
-          {/* Avatar */}
-          <div className="relative group">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-primary to-fuchsia-500 flex items-center justify-center">
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-3xl font-black text-white">
-                  {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingAvatar}
-              className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"
-            >
-              {uploadingAvatar
-                ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                : <Camera className="w-5 h-5 text-white" />
-              }
-            </button>
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-          </div>
+      {/* Hidden file input for avatar (triggered from ProfileSettings) */}
+      <input
+        ref={avatarFileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const { file_url } = await base44.integrations.Core.UploadFile({ file });
+          await base44.auth.updateMe({ avatar_url: file_url });
+          handleAvatarUpdated(file_url);
+        }}
+      />
 
-          <div>
-            <h1 className="text-2xl font-black">{user?.full_name || 'Igrač'}</h1>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
-            <p className="text-xs text-muted-foreground mt-1">Član od {moment(user?.created_date).format('MMMM YYYY.')}</p>
-          </div>
-          <div className="ml-auto">
-            <RankBadgeSmall rank={getRank(stats.total, stats.tokensWon)} />
-          </div>
-        </div>
+      {/* A) Header */}
+      <ProfileHeader
+        user={user}
+        stats={stats}
+        avatarSize={120}
+        onAvatarUpdated={handleAvatarUpdated}
+      />
 
-        {/* Token balance */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-primary/10 to-fuchsia-500/5 border border-primary/20 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Stanje tokena</p>
-              <p className="text-4xl font-black text-primary">{tokenBalance?.toLocaleString()}</p>
-            </div>
-            <div className="flex gap-2">
-              <Link
-                to="/statistika-korisnika"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border/50 font-bold text-sm hover:bg-secondary/80 transition-all"
-              >
-                <PieChart className="w-4 h-4" />
-                Statistika
-              </Link>
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border/50 font-bold text-sm hover:bg-secondary/80 transition-all"
-              >
-                <BarChart2 className="w-4 h-4" />
-                Dashboard
-              </Link>
-              <Link
-                to="/novcanik"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
-              >
-                <Coins className="w-4 h-4" />
-                Kupi Tokene
-              </Link>
-            </div>
-          </div>
-        </div>
+      {/* B) Stats grid */}
+      <ProfileStatsGrid
+        tokenBalance={tokenBalance}
+        stats={stats}
+        streakCount={streakCount}
+      />
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Odigrano', value: stats.total, icon: Target, color: 'text-muted-foreground' },
-            { label: 'Pobjede', value: stats.won, icon: Trophy, color: 'text-primary' },
-            { label: 'Win Rate', value: `${winRate}%`, icon: TrendingUp, color: 'text-accent' },
-            { label: 'Neto zarada', value: (netProfit >= 0 ? '+' : '') + netProfit.toLocaleString(), icon: Coins, color: netProfit >= 0 ? 'text-primary' : 'text-destructive' },
-          ].map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="p-4 rounded-2xl bg-card border border-border/50 text-center"
-            >
-              <s.icon className={`w-5 h-5 mx-auto mb-2 ${s.color}`} />
-              <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Tabs */}
-      <div className="flex gap-2 mb-5 flex-wrap">
-        {[
-          { key: 'history', label: 'Povijest natjecanja' },
-          { key: 'stats', label: 'Statistika' },
-          { key: 'badges', label: '🏅 Dostignuća' },
-          { key: 'rank', label: 'Rang' },
-          { key: 'referral', label: '🎁 Referali' },
-          { key: 'notif_settings', label: '🔔 Obavijesti' },
-        ].map(t => (
+      {/* C) Tabs */}
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
             className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              activeTab === t.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
+              activeTab === t.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             {t.label}
@@ -204,7 +154,7 @@ export default function Profile() {
         ))}
       </div>
 
-      {/* Contest History */}
+      {/* Tab: Moji Odabiri */}
       {activeTab === 'history' && (
         <div className="space-y-3 mb-8">
           {picks.length === 0 ? (
@@ -257,7 +207,7 @@ export default function Profile() {
         </div>
       )}
 
-      {/* Detailed Stats */}
+      {/* Tab: Statistika */}
       {activeTab === 'stats' && (
         <div className="space-y-4 mb-8">
           <div className="rounded-2xl bg-card border border-border/50 p-5">
@@ -315,28 +265,32 @@ export default function Profile() {
         </div>
       )}
 
-      {/* Badges tab */}
       {activeTab === 'badges' && (
-        <div className="mb-8">
-          <BadgesSection userEmail={user?.email} />
-        </div>
+        <div className="mb-8"><BadgesSection userEmail={user?.email} /></div>
       )}
 
-      {/* Rank tab */}
       {activeTab === 'rank' && (
         <div className="mb-8">
           <RankCard totalPicks={stats.total} totalTokensWon={stats.tokensWon} />
         </div>
       )}
 
-      {/* Referral tab */}
       {activeTab === 'referral' && (
         <div className="mb-8">
           <ReferralSection user={user} tokenBalance={tokenBalance} loadBalance={loadBalance} />
         </div>
       )}
 
-      {/* Notification settings tab */}
+      {activeTab === 'settings' && (
+        <div className="mb-8">
+          <ProfileSettings
+            user={user}
+            onSaved={handleSettingsSaved}
+            onAvatarClick={() => avatarFileRef.current?.click()}
+          />
+        </div>
+      )}
+
       {activeTab === 'notif_settings' && (
         <div className="mb-8">
           <NotificationPreferences
@@ -345,11 +299,6 @@ export default function Profile() {
           />
         </div>
       )}
-
-      <Button variant="outline" className="w-full rounded-xl" onClick={() => base44.auth.logout()}>
-        <LogOut className="w-4 h-4 mr-2" />
-        Odjava
-      </Button>
     </div>
   );
 }

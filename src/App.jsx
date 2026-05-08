@@ -30,6 +30,7 @@ import AdminWelcomeChallenge from './pages/AdminWelcomeChallenge';
 import Duels from './pages/Duels';
 import DuelStats from './pages/DuelStats';
 import LegalPage from './pages/LegalPage';
+import PublicProfile from './pages/PublicProfile';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -84,6 +85,7 @@ const AuthenticatedApp = () => {
         <Route path="/pravila" element={<LegalPage />} />
         <Route path="/privatnost" element={<LegalPage />} />
         <Route path="/kako-igrati" element={<LegalPage />} />
+        <Route path="/korisnik/:userId" element={<PublicProfile />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
