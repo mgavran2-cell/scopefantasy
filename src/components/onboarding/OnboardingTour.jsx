@@ -8,7 +8,7 @@ const STEPS = [
   {
     emoji: '🎉',
     title: 'Dobrodošao na ScopeFantasy!',
-    body: 'Igraj fantasy sport, predviđaj statistike igrača i osvajaj tokene. Imaš 5000 tokena za start. Hajdemo te provesti kroz osnove.',
+    body: 'Igraj fantasy sport, predviđaj statistike igrača i osvajaj tokene. Imaš 5000 tokena za start. Vodimo te kroz osnove.',
     btn: 'Krenimo →',
   },
   {
