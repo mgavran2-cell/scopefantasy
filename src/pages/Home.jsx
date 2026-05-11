@@ -58,9 +58,9 @@ export default function Home() {
               <span className="text-xs font-bold text-primary tracking-widest uppercase">Besplatno za igranje</span>
             </div>
             <h1 className="font-display font-black uppercase text-5xl sm:text-8xl leading-none tracking-tight mb-4">
-              <span className="text-white">IZGRADI</span><br />
+              <span className="text-white">POGODI</span><br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-fuchsia-400">
-                STREAK
+                OSVOJI
               </span>
             </h1>
             <p className="text-base text-muted-foreground mb-8 max-w-lg mx-auto">
