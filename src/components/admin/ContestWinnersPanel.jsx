@@ -50,11 +50,14 @@ export default function ContestWinnersPanel({ contest, onFinished }) {
       }
     }
 
-    // 2. Call payContestWinners
+    // 2. Call payContestWinners (also auto-resolves parlays)
     const res = await base44.functions.invoke('payContestWinners', { contest_id: contest.id });
-    const { paid_count, total_payout } = res.data || {};
+    const { paid_count, total_payout, parlay_paid_count, parlay_total_payout } = res.data || {};
 
-    toast.success(`✅ Isplaćeno ${paid_count} pobjednika — ukupno ${total_payout} tokena!`);
+    toast.success(`✅ Isplaćeno ${paid_count} pobjednika — ${total_payout} tokena!`);
+    if (parlay_paid_count > 0) {
+      toast.success(`🎯 Parlay: ${parlay_paid_count} listića — ${parlay_total_payout} tokena!`);
+    }
     setPaying(false);
     if (onFinished) onFinished();
   };

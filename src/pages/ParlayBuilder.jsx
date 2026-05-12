@@ -232,6 +232,7 @@ export default function ParlayBuilder() {
     setSubmitting(true);
 
     const newBalance = (user.token_balance || 0) - stake;
+    await base44.auth.updateMe({ token_balance: newBalance });
     await Promise.all([
       base44.entities.Parlay.create({
         user_email: user.email,
@@ -244,13 +245,13 @@ export default function ParlayBuilder() {
         potential_win: potentialWin,
         status: 'active',
         tokens_won: 0,
+        tokens_paid: false,
         risk_level: playType === 'flex' ? 'low' : (numPicks <= 2 ? 'low' : numPicks <= 4 ? 'medium' : 'high'),
       }),
-      base44.auth.updateMe({ token_balance: newBalance }),
       base44.entities.TokenTransaction.create({
         user_email: user.email,
         type: 'entry',
-        amount: stake,
+        amount: -stake,
         description: `${playType === 'flex' ? 'Flex' : 'Power'} Parlay (${numPicks} odabira)`,
         balance_after: newBalance,
       }),

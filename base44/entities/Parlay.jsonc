@@ -103,6 +103,16 @@
         "high",
         "extreme"
       ]
+    },
+    "tokens_paid": {
+      "type": "boolean",
+      "default": false,
+      "description": "Prevents double-payment of winnings"
+    },
+    "payout_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Actual amount paid out"
     }
   },
   "required": [
