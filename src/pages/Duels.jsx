@@ -50,30 +50,13 @@ export default function Duels() {
   );
 
   const accept = async (duel) => {
-    if ((user?.token_balance || 0) < duel.stake_tokens) {
-      return toast.error('Nemaš dovoljno tokena za prihvat!');
-    }
     setProcessing(duel.id);
-    // Deduct stake from opponent
-    const newBalance = (user.token_balance || 0) - duel.stake_tokens;
-    await base44.auth.updateMe({ token_balance: newBalance });
-    await base44.entities.TokenTransaction.create({
-      user_email: user.email,
-      type: 'entry',
-      amount: -duel.stake_tokens,
-      description: `Duel prihvaćen vs ${duel.challenger_name || duel.challenger_email}`,
-      balance_after: newBalance,
-    });
-    await base44.entities.Duel.update(duel.id, {
-      status: 'accepted',
-      opponent_name: user.full_name || user.email,
-    });
-    await base44.entities.Notification.create({
-      user_email: duel.challenger_email,
-      type: 'duel_accepted',
-      title: '⚔️ Duel prihvaćen!',
-      body: `${user.full_name || user.email} je prihvatio tvoj duel izazov za natjecanje "${duel.contest_title}".`,
-    });
+    const res = await base44.functions.invoke('acceptDuelChallenge', { duel_id: duel.id });
+    if (res.data?.error) {
+      toast.error(res.data.error);
+      setProcessing(null);
+      return;
+    }
     toast.success('Duel prihvaćen! Pobjednik uzima sve.');
     await loadBalance();
     loadData();
@@ -82,15 +65,9 @@ export default function Duels() {
 
   const decline = async (duel) => {
     setProcessing(duel.id);
+    // Mark as declined first, then resolveDuel handles challenger refund
     await base44.entities.Duel.update(duel.id, { status: 'declined' });
-    // resolveDuel handles refund when status is declined
     await base44.functions.invoke('resolveDuel', { duel_id: duel.id });
-    await base44.entities.Notification.create({
-      user_email: duel.challenger_email,
-      type: 'duel_declined',
-      title: '❌ Duel odbijen',
-      body: `${user.full_name || user.email} je odbio tvoj duel izazov. ${duel.stake_tokens} tokena vraćeno.`,
-    });
     toast.info('Izazov odbijen.');
     loadData();
     setProcessing(null);

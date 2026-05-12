@@ -20,38 +20,21 @@ export default function DuelModal({ contest, currentUser, onClose, onSent }) {
 
     setSubmitting(true);
 
-    // Escrow: deduct stake from challenger immediately
-    const newBalance = balance - stake;
-    await base44.auth.updateMe({ token_balance: newBalance });
-    await base44.entities.TokenTransaction.create({
-      user_email: currentUser.email,
-      type: 'entry',
-      amount: -stake,
-      description: `Duel izazov poslan (escrow)`,
-      balance_after: newBalance,
-    });
-
-    await base44.entities.Duel.create({
-      challenger_email: currentUser.email,
-      challenger_name: currentUser.full_name || currentUser.email,
+    const res = await base44.functions.invoke('createDuelChallenge', {
       opponent_email: opponentEmail.trim(),
       contest_id: contest.id,
-      contest_title: contest.title,
       stake_tokens: stake,
       message: message.trim() || null,
-      status: 'pending',
     });
 
-    // Notify opponent
-    await base44.entities.Notification.create({
-      user_email: opponentEmail.trim(),
-      type: 'new_challenge',
-      title: '⚔️ Novi duel izazov!',
-      body: `${currentUser.full_name || currentUser.email} te izaziva na duel u "${contest.title}" za ${stake} tokena!`,
-    });
+    if (res.data?.error) {
+      toast.error(res.data.error);
+      setSubmitting(false);
+      return;
+    }
 
     toast.success('Izazov poslan! Tokeni u escrowu.');
-    if (onSent) onSent(newBalance);
+    if (onSent) onSent(res.data.new_balance);
     onClose();
   };
 
