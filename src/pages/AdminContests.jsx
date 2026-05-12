@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star, Play, AlertTriangle } from 'lucide-react';
+import ContestWinnersPanel from '../components/admin/ContestWinnersPanel';
 import { toast } from 'sonner';
 import moment from 'moment';
 import SponsorFields from '../components/admin/SponsorFields';
@@ -403,7 +404,15 @@ export default function AdminContests() {
                           </button>
                         </div>
                       )}
-                      <div className="flex flex-wrap gap-1.5">
+                      {isWaiting && (
+                        <div className="mt-3 p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+                          <ContestWinnersPanel
+                            contest={contest}
+                            onFinished={() => init()}
+                          />
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-1.5 mt-2">
                         {(contest.players || []).map((p, j) => (
                           <span key={j} className="text-xs px-2 py-1 rounded-lg bg-secondary font-medium">
                             {p.name} · {p.over_under} {p.stat_type}
