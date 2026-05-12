@@ -12,72 +12,36 @@
     },
     "token_balance": {
       "type": "number",
-      "default": 5000
+      "default": 0
     },
     "avatar_url": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "favorite_sport": {
       "type": "string"
     },
     "referral_code": {
       "type": "string"
     },
-    "referred_by": {
-      "type": "string"
-    },
-    "welcome_bonus_eligible": {
-      "type": "boolean",
-      "default": true
+    "onboarding_completed": {
+      "type": "boolean"
     },
     "welcome_bonus_claimed": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
-    "onboarding_completed": {
-      "type": "boolean",
-      "default": false
+    "welcome_bonus_eligible": {
+      "type": "boolean"
     },
     "notification_preferences": {
-      "type": "object",
-      "properties": {
-        "pick_results": {
-          "type": "boolean",
-          "default": true
-        },
-        "daily_streak": {
-          "type": "boolean",
-          "default": true
-        },
-        "social": {
-          "type": "boolean",
-          "default": true
-        },
-        "system": {
-          "type": "boolean",
-          "default": true
-        },
-        "browser_push": {
-          "type": "boolean",
-          "default": false
-        }
-      }
+      "type": "object"
     },
-    "bio": {
-      "type": "string",
-      "default": ""
-    },
-    "favorite_sport": {
-      "type": "string",
-      "enum": [
-        "Nogomet",
-        "Ko\u0161arka",
-        "Tenis",
-        "Formula 1",
-        "MMA"
-      ]
-    },
-    "deletion_requested": {
-      "type": "boolean",
-      "default": false
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Experience points for level progression"
     }
-  },
-  "required": []
+  }
 }

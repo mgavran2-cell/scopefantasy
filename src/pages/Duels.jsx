@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { useOutletContext } from 'react-router-dom';
+import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
 
 const statusConfig = {
   pending:  { label: 'Na čekanju', color: 'bg-accent/20 text-accent' },
@@ -99,7 +100,9 @@ export default function Duels() {
     setProcessing(duel.id);
     const res = await base44.functions.invoke('resolveDuel', { duel_id: duel.id });
     if (res.data?.result === 'winner') {
-      toast.success(res.data.winner_email === user.email ? '🏆 Pobijedio si!' : '💀 Izgubio si duel.');
+      const didWin = res.data.winner_email === user.email;
+      toast.success(didWin ? '🏆 Pobijedio si!' : '💀 Izgubio si duel.');
+      if (didWin) await awardXP(base44, user.email, XP_REWARDS.DUEL_WIN, 'Pobjeda u duelu');
     } else if (res.data?.result === 'tie') {
       toast.info('Neriješeno — tokeni vraćeni.');
     } else {

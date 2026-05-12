@@ -5,6 +5,7 @@ import { Plus, CheckCircle2, XCircle, Users, Calendar, Database } from 'lucide-r
 import PlayerPoolSection from '../components/streak/PlayerPoolSection';
 import moment from 'moment';
 import { getWeekStart, getDayLabel } from '@/lib/streakUtils';
+import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
 
 const DAY_OPTIONS = [1,2,3,4,5,6,7];
 
@@ -93,6 +94,9 @@ export default function AdminDailyStreak() {
   const handleSetResult = async (entryId, result) => {
     const entry = entries.find(e => e.id === entryId);
     await base44.entities.DailyStreakEntry.update(entryId, { result });
+    if (result === 'won' && entry) {
+      await awardXP(base44, entry.user_email, XP_REWARDS.STREAK_WIN, 'Daily Streak pobjeda');
+    }
     await loadEntries();
 
     if (!entry) return;

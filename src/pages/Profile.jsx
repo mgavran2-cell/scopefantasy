@@ -10,6 +10,8 @@ import ProfileSettings from '../components/profile/ProfileSettings';
 import RankCard, { getRank } from '../components/profile/RankBadge';
 import ReferralSection from '../components/profile/ReferralSection';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
+import XPProgressBar, { LevelBadge } from '../components/profile/XPProgressBar';
+import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
 import { CheckCircle, Clock, Coins, Trophy, XCircle } from 'lucide-react';
 import moment from 'moment';
 
@@ -22,6 +24,7 @@ const statusConfig = {
 
 const TABS = [
   { key: 'history',       label: 'Moji Odabiri' },
+  { key: 'xp',           label: '⚡ XP & Razina' },
   { key: 'stats',         label: 'Statistika' },
   { key: 'badges',        label: '🏅 Dostignuća' },
   { key: 'rank',          label: 'Rang' },
@@ -124,6 +127,10 @@ export default function Profile() {
       />
 
       {/* A) Header */}
+      <div className="flex items-center justify-between mb-1">
+        <LevelBadge xp={user?.xp || 0} size="lg" />
+        <span className="text-xs text-muted-foreground">{(user?.xp || 0).toLocaleString()} XP</span>
+      </div>
       <ProfileHeader
         user={user}
         stats={stats}
@@ -205,6 +212,13 @@ export default function Profile() {
               </motion.div>
             );
           })}
+        </div>
+      )}
+
+      {/* Tab: XP & Level */}
+      {activeTab === 'xp' && (
+        <div className="mb-8">
+          <XPProgressBar xp={user?.xp || 0} />
         </div>
       )}
 
