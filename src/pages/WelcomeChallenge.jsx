@@ -41,47 +41,31 @@ export default function WelcomeChallenge() {
       if (existing.length > 0) {
         setEntry(existing[0]);
         // Check results if all correct_choice are set
-        await checkAndResolve(existing[0], activePicks, me);
+        await checkAndResolve(existing[0], activePicks);
       }
     }
 
     setLoading(false);
   };
 
-  const checkAndResolve = async (entryData, picksData, userData) => {
+  const checkAndResolve = async (entryData, picksData) => {
     // All picks must have correct_choice set
     const allGraded = picksData.every(p => p.correct_choice === 'over' || p.correct_choice === 'under');
     if (!allGraded || entryData.status !== 'pending') return;
 
-    // Check if user won all 3
+    // Determine result locally for UI only, actual payout via backend
     const allCorrect = entryData.selections.every(sel => {
       const pick = picksData.find(p => p.id === sel.pick_id);
       return pick && pick.correct_choice === sel.choice;
     });
 
     const newStatus = allCorrect ? 'won' : 'lost';
-    await base44.entities.WelcomeChallengeEntry.update(entryData.id, { status: newStatus });
 
     if (allCorrect) {
-      const freshUser = await base44.auth.me();
-      if (!freshUser.welcome_bonus_claimed) {
-        const newBalance = (freshUser.token_balance || 0) + 5000;
-        await base44.auth.updateMe({ token_balance: newBalance, welcome_bonus_claimed: true });
-        await base44.entities.TokenTransaction.create({
-          user_email: freshUser.email,
-          type: 'bonus',
-          amount: 5000,
-          description: 'Welcome Challenge - pogodio sva 3 picka',
-          balance_after: newBalance,
-        });
-        await base44.entities.Notification.create({
-          user_email: freshUser.email,
-          type: 'reward',
-          title: '🎉 Welcome bonus isplaćen! +5000 tokena',
-          body: 'Bravo! Pogodio si sva 3 picka u Welcome Challengeu!',
-        });
-        setUser({ ...freshUser, welcome_bonus_claimed: true });
-      }
+      // Backend handles token award + welcome_bonus_claimed flag
+      await base44.functions.invoke('claimWelcomeChallengeReward', {});
+    } else {
+      await base44.entities.WelcomeChallengeEntry.update(entryData.id, { status: 'lost' });
     }
 
     setEntry({ ...entryData, status: newStatus });
@@ -112,7 +96,7 @@ export default function WelcomeChallenge() {
     });
 
     // Check immediately if all graded already
-    await checkAndResolve(newEntry, picks, user);
+    await checkAndResolve(newEntry, picks);
     setEntry(newEntry);
     setSubmitting(false);
   };

@@ -48,49 +48,12 @@ export default function ReferralSection({ user, tokenBalance, loadBalance }) {
 
     setSubmitting(true);
 
-    // Find user with that referral code
-    const users = await base44.entities.User.filter({ referral_code: code }, '-created_date', 1);
-    if (!users || users.length === 0) {
-      toast.error('Referalni kod nije pronađen!');
+    const res = await base44.functions.invoke('claimReferralBonus', { referral_code: code });
+    if (res.data?.error) {
+      toast.error(res.data.error);
       setSubmitting(false);
       return;
     }
-
-    const referrer = users[0];
-
-    // Award bonus to current user
-    const myNewBalance = (tokenBalance || 0) + REFERRAL_BONUS;
-    await base44.auth.updateMe({ token_balance: myNewBalance, referred_by: code });
-
-    // Award bonus to referrer
-    const referrerNewBalance = (referrer.token_balance || 0) + REFERRAL_BONUS;
-    await base44.entities.User.update(referrer.id, { token_balance: referrerNewBalance });
-
-    // Record referral use
-    await base44.entities.ReferralUse.create({
-      referrer_email: referrer.email,
-      referred_email: user.email,
-      referred_name: user.full_name || user.email,
-      bonus_tokens: REFERRAL_BONUS,
-    });
-
-    // Record transactions for both
-    await Promise.all([
-      base44.entities.TokenTransaction.create({
-        user_email: user.email,
-        type: 'bonus',
-        amount: REFERRAL_BONUS,
-        description: `Referalni bonus — koristio/la kod: ${code}`,
-        balance_after: myNewBalance,
-      }),
-      base44.entities.TokenTransaction.create({
-        user_email: referrer.email,
-        type: 'bonus',
-        amount: REFERRAL_BONUS,
-        description: `Referalni bonus — prijatelj se pridružio: ${user.full_name || user.email}`,
-        balance_after: referrerNewBalance,
-      }),
-    ]);
 
     await loadBalance();
     toast.success(`🎉 Obojica ste dobili ${REFERRAL_BONUS} bonus tokena!`);

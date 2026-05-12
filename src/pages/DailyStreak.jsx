@@ -45,21 +45,8 @@ export default function DailyStreak() {
   const handleClaim = async () => {
     if (claiming || !weekData || weekData.reward_claimed) return;
     setClaiming(true);
-    const freshUser = await base44.auth.me();
-    const reward = weekData.reward_amount || getRewardForCorrect(correctCount);
-    if (reward > 0) {
-      const newBalance = (freshUser.token_balance || 0) + reward;
-      await base44.auth.updateMe({ token_balance: newBalance });
-      await base44.entities.TokenTransaction.create({
-        user_email: freshUser.email,
-        type: 'bonus',
-        amount: reward,
-        description: `Daily Streak nagrada — ${correctCount}/7 točnih`,
-        balance_after: newBalance,
-      });
-    }
-    await base44.entities.DailyStreakWeek.update(weekData.id, { reward_claimed: true });
-    await loadData(freshUser.email);
+    await base44.functions.invoke('claimDailyStreakReward', { week_start_date: weekStart });
+    await loadData(user.email);
     if (loadBalance) await loadBalance();
     setClaiming(false);
   };

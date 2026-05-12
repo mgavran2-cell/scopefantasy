@@ -77,29 +77,8 @@ export default function AdminWelcomeChallenge() {
         });
         const newStatus = allCorrect ? 'won' : 'lost';
         await base44.entities.WelcomeChallengeEntry.update(entry.id, { status: newStatus });
-
-        if (allCorrect) {
-          // Award tokens via service role — look up user balance
-          const users = await base44.entities.User.filter({ email: entry.user_email });
-          const u = users[0];
-          if (u && !u.welcome_bonus_claimed) {
-            const newBalance = (u.token_balance || 0) + 5000;
-            await base44.entities.User.update(u.id, { token_balance: newBalance, welcome_bonus_claimed: true });
-            await base44.entities.TokenTransaction.create({
-              user_email: entry.user_email,
-              type: 'bonus',
-              amount: 5000,
-              description: 'Welcome Challenge - pogodio sva 3 picka',
-              balance_after: newBalance,
-            });
-            await base44.entities.Notification.create({
-              user_email: entry.user_email,
-              type: 'reward',
-              title: '🎉 Welcome bonus isplaćen! +5000 tokena',
-              body: 'Bravo! Pogodio si sva 3 picka u Welcome Challengeu!',
-            });
-          }
-        }
+        // Token payout is handled by claimWelcomeChallengeReward called on user side
+        // For immediate admin resolution, use adminResolveWelcomeChallenge function
       }
     }
 

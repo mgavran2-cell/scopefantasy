@@ -95,25 +95,12 @@ export default function DailyChallengePage({ embedded } = {}) {
     if (!progress?.completed || progress?.reward_claimed) return;
     setClaiming(challenge.id);
 
-    const newBalance = (user.token_balance || 0) + challenge.reward_tokens;
-    await Promise.all([
-      base44.auth.updateMe({ token_balance: newBalance }),
-      base44.entities.ChallengeProgress.update(progress.id, { reward_claimed: true }),
-      base44.entities.TokenTransaction.create({
-        user_email: user.email,
-        type: 'bonus',
-        amount: challenge.reward_tokens,
-        description: `Dnevni izazov: ${challenge.title}`,
-        balance_after: newBalance,
-      }),
-      notifyUser(user.email, 'reward', `🎉 Izazov ispunjen!`, `Zaradio si ${challenge.reward_tokens} tokena za: ${challenge.title}`),
-    ]);
+    await base44.functions.invoke('claimDailyChallengeReward', { challenge_id: challenge.id });
 
     setProgressMap(prev => ({
       ...prev,
       [challenge.id]: { ...prev[challenge.id], reward_claimed: true },
     }));
-    setUser(prev => ({ ...prev, token_balance: newBalance }));
     loadBalance();
     setClaiming(null);
   };
