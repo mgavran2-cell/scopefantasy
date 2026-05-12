@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Plus, CheckCircle2, XCircle, Users, Calendar, Database } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, Users, Calendar, Database, Play } from 'lucide-react';
+import { toast } from 'sonner';
 import PlayerPoolSection from '../components/streak/PlayerPoolSection';
 import moment from 'moment';
 import { getWeekStart, getDayLabel } from '@/lib/streakUtils';
@@ -19,6 +20,19 @@ export default function AdminDailyStreak() {
   const [activeUsers, setActiveUsers] = useState([]);
   const [adminTab, setAdminTab] = useState('picks');
   const [filterDay, setFilterDay] = useState('all');
+  const [cronRunning, setCronRunning] = useState(false);
+
+  const handleRunCron = async () => {
+    setCronRunning(true);
+    try {
+      await base44.functions.invoke('autoCreateDailyStreakPick', {});
+      toast.success('✓ Pick dana je generiran');
+      await loadEntries();
+    } catch (err) {
+      toast.error(err?.message || 'Greška pri pokretanju crona');
+    }
+    setCronRunning(false);
+  };
 
   useEffect(() => { init(); }, []);
 
@@ -186,7 +200,22 @@ export default function AdminDailyStreak() {
         </button>
       </div>
 
-      {adminTab === 'pool' && <PlayerPoolSection />}
+      {adminTab === 'pool' && (
+        <div>
+          <div className="flex items-center justify-end mb-4">
+            <button
+              onClick={handleRunCron}
+              disabled={cronRunning}
+              title="Generira Pick dana za danas iz pool-a. Koristi za testiranje."
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-yellow-500/60 text-yellow-400 text-sm font-bold hover:bg-yellow-500/10 transition-all disabled:opacity-60"
+            >
+              <Play className="w-4 h-4" />
+              {cronRunning ? 'Pokrećem...' : 'Pokreni cron sada (test)'}
+            </button>
+          </div>
+          <PlayerPoolSection />
+        </div>
+      )}
 
       {adminTab === 'picks' && (
         <div>
