@@ -1,0 +1,62 @@
+{
+  "name": "DailyStreakPlayerPool",
+  "type": "object",
+  "properties": {
+    "sport": {
+      "type": "string",
+      "enum": [
+        "Nogomet",
+        "Ko\u0161arka",
+        "Tenis",
+        "Formula 1",
+        "MMA"
+      ]
+    },
+    "player_name": {
+      "type": "string"
+    },
+    "team": {
+      "type": "string"
+    },
+    "stat_type": {
+      "type": "string"
+    },
+    "typical_line": {
+      "type": "number"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "priority": {
+      "type": "integer",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 10
+    }
+  },
+  "required": [
+    "sport",
+    "player_name",
+    "stat_type",
+    "typical_line"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
