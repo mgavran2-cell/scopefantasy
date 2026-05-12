@@ -34,47 +34,32 @@ export default function AppLayout() {
     // SDK returns custom fields at top level on auth.me but entity returns them nested; merge both
     const user = { ...authUser, ...freshData };
 
-    const updates = {};
-
-    // New user: token_balance was never set (null/undefined)
-    const isNewUser = user.token_balance === null || user.token_balance === undefined;
-
-    // Needs onboarding: explicitly false (new user or after reset)
-    const needsOnboarding = user.onboarding_completed === false;
-
-    if (isNewUser) {
-      updates.token_balance = 5000;
-      updates.onboarding_completed = false;
-    }
-    if (!user.referral_code) {
-      updates.referral_code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await base44.auth.updateMe(updates);
-      if (isNewUser) {
-        await base44.entities.TokenTransaction.create({
-          user_email: authUser.email,
-          type: 'bonus',
-          amount: 5000,
-          description: 'Bonus dobrodošlice',
-          balance_after: 5000,
-        });
+    // Use backend to initialize new users — prevents welcome bonus exploit
+    let finalUser = user;
+    if (!user.welcome_bonus_initialized) {
+      const initRes = await base44.functions.invoke('initializeNewUser', {});
+      if (initRes.data?.success) {
+        // Re-read fresh data after initialization
+        const updatedRecords = await base44.entities.User.filter({ email: authUser.email });
+        const updatedData = updatedRecords?.[0] || {};
+        finalUser = { ...authUser, ...updatedData };
+        if (initRes.data?.needs_onboarding) {
+          setTimeout(() => setShowOnboarding(true), 1000);
+        }
       }
-      // Re-read after update
-      const updatedRecords = await base44.entities.User.filter({ email: authUser.email });
-      const updatedData = updatedRecords?.[0] || {};
-      const updatedUser = { ...authUser, ...updatedData };
-      setCurrentUser(updatedUser);
-      setTokenBalance(updatedUser.token_balance ?? 0);
     } else {
-      setCurrentUser(user);
-      setTokenBalance(user.token_balance ?? 0);
+      // Existing user: ensure referral_code exists (edge case)
+      if (!user.referral_code) {
+        await base44.functions.invoke('initializeNewUser', {});
+      }
+      // Check if onboarding needed
+      if (user.onboarding_completed === false) {
+        setTimeout(() => setShowOnboarding(true), 1000);
+      }
     }
 
-    if (needsOnboarding || updates.onboarding_completed === false) {
-      setTimeout(() => setShowOnboarding(true), 1000);
-    }
+    setCurrentUser(finalUser);
+    setTokenBalance(finalUser.token_balance ?? 0);
 
     return user;
   };

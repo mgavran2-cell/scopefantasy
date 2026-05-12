@@ -26,6 +26,9 @@
     "referral_code": {
       "type": "string"
     },
+    "referred_by": {
+      "type": "string"
+    },
     "onboarding_completed": {
       "type": "boolean"
     },
@@ -34,6 +37,11 @@
     },
     "welcome_bonus_eligible": {
       "type": "boolean"
+    },
+    "welcome_bonus_initialized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Permanent flag \u2014 set once on first login, prevents welcome 5000 token exploit"
     },
     "notification_preferences": {
       "type": "object"

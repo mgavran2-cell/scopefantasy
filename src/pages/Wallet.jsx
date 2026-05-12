@@ -79,18 +79,14 @@ export default function WalletPage() {
   const handleDailyBonus = async () => {
     if (dailyBonusClaimed || claimingBonus) return;
     setClaimingBonus(true);
-    const newBalance = (tokenBalance || 0) + 500;
-    await base44.auth.updateMe({ token_balance: newBalance });
-    const tx = await base44.entities.TokenTransaction.create({
-      user_email: user.email,
-      type: 'bonus',
-      amount: 500,
-      description: 'Dnevni bonus',
-      balance_after: newBalance,
-    });
-    setTransactions(prev => [tx, ...prev]);
+    const res = await base44.functions.invoke('claimDailyBonus', {});
+    if (res.data?.error || res.data?.already_claimed) {
+      setDailyBonusClaimed(true);
+      setClaimingBonus(false);
+      return;
+    }
     setDailyBonusClaimed(true);
-    await loadBalance();
+    await Promise.all([loadBalance(), init()]);
     setClaimingBonus(false);
   };
 
