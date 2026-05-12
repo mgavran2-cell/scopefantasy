@@ -18,10 +18,10 @@ export default function AppLayout() {
     loadBalance();
   }, []);
 
-  const forceOnboarding = () => {
-    setTestNewUser(true);
-    setShowOnboarding(true);
-  };
+  // const forceOnboarding = () => {
+  //   setTestNewUser(true);
+  //   setShowOnboarding(true);
+  // };
 
   const loadBalance = async () => {
     // auth.me() may be cached — use it only for identity
@@ -87,9 +87,10 @@ export default function AppLayout() {
           if (!testNewUser) base44.auth.me().then(me => setCurrentUser(me));
         }} />
       )}
-      {currentUser?.role === 'admin' && !showOnboarding && !testNewUser && (
+      {/* TEST ONBOARDING BUTTONS — uncomment to re-enable */}
+      {/* {currentUser?.role === 'admin' && !showOnboarding && !testNewUser && (
         <button
-          onClick={forceOnboarding}
+          onClick={() => { setTestNewUser(true); setShowOnboarding(true); }}
           className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-yellow-500 text-black text-xs font-bold rounded-full shadow-lg hover:bg-yellow-400 transition-all"
         >
           🧪 Test Onboarding
@@ -102,7 +103,7 @@ export default function AppLayout() {
         >
           ✕ Izlaz iz test moda
         </button>
-      )}
+      )} */}
       <Navbar tokenBalance={tokenBalance} />
       <BrowserNotifBanner />
       <main className="pt-16 flex-1">
