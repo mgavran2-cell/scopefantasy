@@ -93,13 +93,18 @@ export default function ContestCard({ contest, index = 0 }) {
                 </span>
               )}
               <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                contest.status === 'active'
+                contest.status_internal === 'waiting_results'
+                  ? 'bg-orange-500/20 text-orange-400'
+                  : contest.status === 'active'
                   ? 'bg-primary/20 text-primary'
                   : contest.status === 'upcoming'
                   ? 'bg-white/10 text-white/70'
                   : 'bg-muted text-muted-foreground'
               }`}>
-                {contest.status === 'active' ? '🔴 Uživo' : contest.status === 'upcoming' ? 'Uskoro' : 'Završeno'}
+                {contest.status_internal === 'waiting_results'
+                  ? '⏳ Čeka rezultate'
+                  : contest.status === 'active' ? '🔴 Uživo'
+                  : contest.status === 'upcoming' ? 'Uskoro' : 'Završeno'}
               </div>
             </div>
           </div>

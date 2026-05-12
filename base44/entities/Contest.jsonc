@@ -34,6 +34,16 @@
       ],
       "default": "upcoming"
     },
+    "status_internal": {
+      "type": "string",
+      "enum": [
+        "active",
+        "waiting_results",
+        "finished"
+      ],
+      "default": "active",
+      "description": "Internal resolution state: active / waiting_results / finished"
+    },
     "start_time": {
       "type": "string",
       "format": "date-time"

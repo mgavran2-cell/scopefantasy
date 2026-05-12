@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star, Play, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 import moment from 'moment';
 import SponsorFields from '../components/admin/SponsorFields';
 
@@ -39,6 +40,19 @@ export default function AdminContests() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [cronRunning, setCronRunning] = useState(false);
+
+  const handleRunCron = async () => {
+    setCronRunning(true);
+    try {
+      await base44.functions.invoke('autoResolveContests', {});
+      toast.success('✓ Cron je pokrenut, statusi osvježeni');
+      await init();
+    } catch (err) {
+      toast.error(err?.message || 'Greška pri pokretanju crona');
+    }
+    setCronRunning(false);
+  };
 
   useEffect(() => { init(); }, []);
 
@@ -133,20 +147,45 @@ export default function AdminContests() {
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 
+  const waitingCount = contests.filter(c => c.status_internal === 'waiting_results').length;
+  const sortedContests = [...contests].sort((a, b) => {
+    if (a.status_internal === 'waiting_results' && b.status_internal !== 'waiting_results') return -1;
+    if (b.status_internal === 'waiting_results' && a.status_internal !== 'waiting_results') return 1;
+    return 0;
+  });
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-3xl font-display font-black uppercase">Admin: Natjecanja</h1>
           <p className="text-muted-foreground text-sm mt-1">{contests.length} natjecanja ukupno</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
-        >
-          <Plus className="w-4 h-4" /> Novo natjecanje
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRunCron}
+            disabled={cronRunning}
+            title="Pokreće autoResolveContests — označava završena natjecanja. Koristi za testiranje."
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-yellow-500/60 text-yellow-400 text-sm font-bold hover:bg-yellow-500/10 transition-all disabled:opacity-60"
+          >
+            <Play className="w-4 h-4" />
+            {cronRunning ? 'Pokrećem...' : 'Pokreni cron (test)'}
+          </button>
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
+          >
+            <Plus className="w-4 h-4" /> Novo natjecanje
+          </button>
+        </div>
       </div>
+
+      {waitingCount > 0 && (
+        <div className="flex items-center gap-3 p-4 rounded-2xl border border-orange-500/40 bg-orange-500/8 mb-5">
+          <AlertTriangle className="w-5 h-5 text-orange-400 shrink-0" />
+          <p className="text-sm font-bold text-orange-400">{waitingCount} natjecanje{waitingCount > 1 ? 'a' : ''} čeka rezultate</p>
+        </div>
+      )}
 
       {/* Form modal */}
       <AnimatePresence>
@@ -297,12 +336,17 @@ export default function AdminContests() {
 
       {/* Contest list */}
       <div className="space-y-3">
-        {contests.map((contest, i) => {
+        {sortedContests.map((contest, i) => {
+          const isWaiting = contest.status_internal === 'waiting_results';
           const isExpanded = expandedId === contest.id;
           const sc = { upcoming: 'bg-accent/15 text-accent', active: 'bg-primary/15 text-primary', finished: 'bg-muted text-muted-foreground' };
           return (
             <motion.div key={contest.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
-              className={`rounded-2xl border bg-card overflow-hidden ${contest.is_sponsored ? 'border-yellow-500/30' : 'border-border/50'}`}>
+              className={`rounded-2xl border bg-card overflow-hidden ${
+                isWaiting ? 'border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.1)]'
+                : contest.is_sponsored ? 'border-yellow-500/30'
+                : 'border-border/50'
+              }`}>
               <div className="flex items-center gap-3 p-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
