@@ -123,16 +123,18 @@ export default function OnboardingTour({ onComplete }) {
           )}
 
           {/* CTA button */}
+          <div title={step === 0 && !termsAccepted ? 'Prihvati Pravila za nastavak' : undefined}>
           <button
             onClick={next}
             disabled={completing || (step === 0 && !termsAccepted)}
-            className="mt-4 w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-4 w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {completing
               ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               : <>{current.btn} {step < STEPS.length - 1 && <ArrowRight className="w-4 h-4" />}</>
             }
           </button>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

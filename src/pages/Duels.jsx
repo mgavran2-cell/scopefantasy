@@ -173,7 +173,7 @@ export default function Duels() {
       ) : list.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
           <Swords className="w-12 h-12 mx-auto mb-4 opacity-20" />
-          <p className="font-semibold">Nema duels ovdje</p>
+          <p className="font-semibold">Nema dvoboja ovdje</p>
           <p className="text-sm mt-1">Idi na natjecanje i izazovi prijatelja!</p>
           <Link to="/natjecanja" className="inline-flex items-center gap-1 mt-4 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-bold">
             Natjecanja <ChevronRight className="w-4 h-4" />

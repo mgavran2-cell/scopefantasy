@@ -10,7 +10,7 @@ const primaryNav = [
   { path: '/natjecanja', label: 'Natjecanja', icon: Trophy },
   { path: '/moji-odabiri', label: 'Odabiri', icon: ListChecks },
   { path: '/ljestvica', label: 'Ljestvica', icon: Users },
-  { path: '/feed', label: 'Feed', icon: Rss },
+  { path: '/feed', label: 'Zajednica', icon: Rss },
   { path: '/novcanik', label: 'Novčanik', icon: Wallet },
 ];
 
