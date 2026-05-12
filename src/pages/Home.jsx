@@ -123,7 +123,7 @@ export default function Home() {
             <button
               key={sport}
               onClick={() => setActiveSport(sport)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap tracking-wide uppercase transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap tracking-wide transition-all ${
                 activeSport === sport
                   ? 'bg-primary text-white shadow-lg shadow-primary/30'
                   : 'bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10'
