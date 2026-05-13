@@ -76,10 +76,11 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
   const [lastGeneratedDate, setLastGeneratedDate] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Beta: locked = false za sve korisnike. Aktivirati kad pretplate budu live:
-  // const locked = user ? user.subscription_tier !== 'premium' : false;
-  const locked = false;
+  // Locked ako je subscription_active eksplicitno false (novi korisnici).
+  // Postojeći korisnici (undefined/null) → slobodan pristup u beta fazi.
+  const locked = currentUser?.subscription_active === false;
 
   const getTodayStart = () => {
     const d = new Date();
@@ -96,6 +97,7 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
     const loadCache = async () => {
       const user = await base44.auth.me().catch(() => null);
       if (!user) return;
+      setCurrentUser(user);
       const records = await base44.entities.AICoachInsight.filter({ user_email: user.email });
       if (!records.length) return;
       const latest = records.sort((a, b) => new Date(b.generated_date) - new Date(a.generated_date))[0];

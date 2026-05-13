@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Users, ShieldAlert, Trash2, Play, RefreshCw, Mail } from 'lucide-react';
+import { Users, ShieldAlert, Trash2, Play, RefreshCw, Mail, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 
@@ -70,6 +70,8 @@ export default function AdminUsers() {
     const la = u.last_active_date ? new Date(u.last_active_date) : null;
     return la && la >= twelveMonthsAgo;
   });
+  const premiumUsers = allUsers.filter(u => u.subscription_active === true);
+  const freeUsers = allUsers.filter(u => u.subscription_active !== true);
   const warnedUsers = allUsers.filter(u => u.inactive_warning_sent);
   const pendingDeletion = warnedUsers.filter(u => {
     const wd = u.inactive_warning_date ? new Date(u.inactive_warning_date) : null;
@@ -93,11 +95,13 @@ export default function AdminUsers() {
         </p>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-5">
           {[
             { label: 'Aktivnih korisnika', value: activeUsers.length, color: 'text-green-400', icon: Users },
             { label: 'Korisnika s upozorenjem', value: warnedUsers.length, color: 'text-yellow-400', icon: ShieldAlert },
             { label: 'Za brisanje (sljedeći cron)', value: pendingDeletion.length, color: 'text-destructive', icon: Trash2 },
+            { label: 'Premium korisnika', value: premiumUsers.length, color: 'text-primary', icon: Star },
+            { label: 'Free korisnika', value: freeUsers.length, color: 'text-muted-foreground', icon: Users },
           ].map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
               className="rounded-xl border border-border/40 bg-card p-4 text-center">
@@ -177,18 +181,45 @@ export default function AdminUsers() {
           {allUsers.map(u => {
             const la = u.last_active_date ? new Date(u.last_active_date) : null;
             const isInactive = !la || la < twelveMonthsAgo;
+            const isPremium = u.subscription_active === true;
+
+            const handleTogglePremium = async () => {
+              const newActive = !isPremium;
+              await base44.entities.User.update(u.id, {
+                subscription_active: newActive,
+                subscription_tier: newActive ? 'premium' : 'free',
+              });
+              toast.success(`✓ ${u.full_name || u.email} sad je ${newActive ? 'Premium' : 'Free'}`);
+              await loadUsers();
+            };
+
             return (
               <div key={u.id} className="flex items-center gap-3 px-5 py-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{u.full_name || '—'}</p>
                   <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                 </div>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${
+                  isPremium ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+                }`}>
+                  {isPremium ? 'Premium' : 'Free'}
+                </span>
                 <div className="text-right text-xs shrink-0">
                   <p className={isInactive ? 'text-yellow-400' : 'text-green-400'}>
                     {la ? moment(la).format('DD.MM.YYYY') : 'Nikad'}
                   </p>
                   <p className="text-muted-foreground">{u.role}</p>
                 </div>
+                <button
+                  onClick={handleTogglePremium}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all shrink-0 ${
+                    isPremium
+                      ? 'border-yellow-500/40 text-yellow-400 hover:bg-yellow-500/10'
+                      : 'border-primary/40 text-primary hover:bg-primary/10'
+                  }`}
+                >
+                  {isPremium ? '→ Free' : '→ Premium'}
+                </button>
               </div>
             );
           })}
