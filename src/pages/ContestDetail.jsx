@@ -11,7 +11,6 @@ import SponsorBanner from '../components/contests/SponsorBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PlayerPickCard from '../components/contests/PlayerPickCard';
-import { notifyUser } from '../hooks/useNotifications';
 import moment from 'moment';
 import { awardBadges } from '@/lib/awardBadges';
 import BadgeAwardToast from '../components/badges/BadgeAwardToast';
@@ -80,43 +79,22 @@ export default function ContestDetail() {
         choice,
         stat_type: player?.stat_type || '',
         over_under: player?.over_under || 0,
-        result: 'pending'
       };
     });
 
-    await base44.entities.Pick.create({
+    const res = await base44.functions.invoke('submitPick', {
       contest_id: contest.id,
-      user_email: user.email,
-      user_name: user.full_name || user.email,
       selections: pickSelections,
-      tokens_spent: contest.entry_cost,
-      total_picks: pickSelections.length,
-      status: 'active',
       is_public: isPublic,
     });
 
-    const newBalance = tokenBalance - contest.entry_cost;
-    await base44.auth.updateMe({ token_balance: newBalance });
-
-    await base44.entities.TokenTransaction.create({
-      user_email: user.email,
-      type: 'entry',
-      amount: -contest.entry_cost,
-      description: `Ulaz: ${contest.title}`,
-      contest_id: contest.id,
-      balance_after: newBalance
-    });
+    if (res.data?.error) {
+      toast.error(res.data.error);
+      setSubmitting(false);
+      return;
+    }
 
     await loadBalance();
-
-    // Notify user entry confirmed
-    await notifyUser(
-      user.email,
-      'pick_finished',
-      `Ulaz potvrđen: ${contest.title}`,
-      `Tvoji odabiri su zaprimljeni. Čekaj rezultate natjecanja!`,
-      { contest_id: contest.id }
-    );
 
     // Check for new badges
     const freshUser = await base44.auth.me();

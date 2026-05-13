@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
 import { Layers, X, TrendingUp, TrendingDown, Coins, AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, Zap, Shield } from 'lucide-react';
+import { toast } from 'sonner';
 import moment from 'moment';
 import {
   getPowerMultiplier, getFlexPayoutBreakdown, calcPowerPotential, calcFlexPayout, FLEX_ODDS
@@ -231,34 +232,20 @@ export default function ParlayBuilder() {
     if ((user?.token_balance || 0) < stake) return;
     setSubmitting(true);
 
-    const newBalance = (user.token_balance || 0) - stake;
-    await base44.auth.updateMe({ token_balance: newBalance });
-    await Promise.all([
-      base44.entities.Parlay.create({
-        user_email: user.email,
-        user_name: user.full_name || user.email,
-        selections,
-        play_type: playType,
-        num_picks: numPicks,
-        total_odds: powerMult || 0,
-        stake_tokens: stake,
-        potential_win: potentialWin,
-        status: 'active',
-        tokens_won: 0,
-        tokens_paid: false,
-        risk_level: playType === 'flex' ? 'low' : (numPicks <= 2 ? 'low' : numPicks <= 4 ? 'medium' : 'high'),
-      }),
-      base44.entities.TokenTransaction.create({
-        user_email: user.email,
-        type: 'entry',
-        amount: -stake,
-        description: `${playType === 'flex' ? 'Flex' : 'Power'} Parlay (${numPicks} odabira)`,
-        balance_after: newBalance,
-      }),
-    ]);
+    const res = await base44.functions.invoke('submitParlay', {
+      selections,
+      play_type: playType,
+      stake_tokens: stake,
+    });
+
+    if (res.data?.error) {
+      toast.error(res.data.error);
+      setSubmitting(false);
+      return;
+    }
 
     loadBalance();
-    setUser(prev => ({ ...prev, token_balance: newBalance }));
+    setUser(prev => ({ ...prev, token_balance: res.data.new_balance }));
     setSelections([]);
     setStake(100);
     setPlayType('power');
