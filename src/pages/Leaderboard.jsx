@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Trophy, Medal, Crown, Coins, TrendingUp } from 'lucide-react';
+import { Trophy, Medal, Crown, Coins, Archive } from 'lucide-react';
 import FollowButton from '../components/social/FollowButton';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const PERIODS = [
   { key: 'all',   label: 'Sve vrijeme' },
@@ -15,6 +16,17 @@ const topIcons  = [Crown, Trophy, Medal];
 const topColors = ['text-yellow-400', 'text-gray-300', 'text-amber-600'];
 const topBg     = ['bg-yellow-400/10 border-yellow-400/30', 'bg-gray-300/10 border-gray-300/30', 'bg-amber-600/10 border-amber-600/30'];
 
+const MONTH_NAMES_HR = [
+  'Siječanj', 'Veljača', 'Ožujak', 'Travanj', 'Svibanj', 'Lipanj',
+  'Srpanj', 'Kolovoz', 'Rujan', 'Listopad', 'Studeni', 'Prosinac'
+];
+
+function formatMonth(monthStr) {
+  if (!monthStr) return '';
+  const [y, m] = monthStr.split('-');
+  return `${MONTH_NAMES_HR[parseInt(m) - 1]} ${y}`;
+}
+
 function isDeletedUser(email) {
   return email && email.startsWith('deleted_user_');
 }
@@ -23,7 +35,7 @@ function aggregatePicks(picks) {
   const userStats = {};
   picks.forEach(pick => {
     const email = pick.user_email || pick.created_by;
-    if (isDeletedUser(email)) return; // skip deleted users
+    if (isDeletedUser(email)) return;
     if (!userStats[email]) {
       userStats[email] = { email, name: pick.user_name || email, wins: 0, total: 0, tokensWon: 0 };
     }
@@ -34,20 +46,90 @@ function aggregatePicks(picks) {
   return Object.values(userStats).sort((a, b) => b.tokensWon - a.tokensWon || b.wins - a.wins);
 }
 
+function ArchiveTab({ archives }) {
+  if (archives.length === 0) {
+    return (
+      <div className="text-center py-16 text-muted-foreground">
+        <Archive className="w-12 h-12 mx-auto mb-3 opacity-20" />
+        <p className="font-semibold">Još nema arhiviranih ljestvica</p>
+        <p className="text-sm mt-1">Arhiviranje se vrši 1. u svakom mjesecu.</p>
+      </div>
+    );
+  }
+
+  const placeConfig = [
+    { key: 'top_1', emoji: '🥇', color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+    { key: 'top_2', emoji: '🥈', color: 'text-gray-300',   bg: 'bg-gray-300/10' },
+    { key: 'top_3', emoji: '🥉', color: 'text-amber-600',  bg: 'bg-amber-600/10' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {archives.map((arch, i) => (
+        <motion.div
+          key={arch.id}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.05 }}
+          className="rounded-2xl border border-border/50 bg-card overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border/30 bg-secondary/30">
+            <div>
+              <h3 className="font-black text-sm">{formatMonth(arch.month)}</h3>
+              <p className="text-xs text-muted-foreground">{arch.total_active_users} aktivnih igrača</p>
+            </div>
+            <Archive className="w-4 h-4 text-muted-foreground" />
+          </div>
+
+          {/* Top 3 */}
+          <div className="divide-y divide-border/20">
+            {placeConfig.map(({ key, emoji, color, bg }) => {
+              const name  = arch[`${key}_name`];
+              const email = arch[`${key}_email`];
+              const zarada = arch[`${key}_zarada`];
+              if (!name) return null;
+              return (
+                <div key={key} className="flex items-center gap-4 px-5 py-3">
+                  <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center shrink-0`}>
+                    <span className="text-base">{emoji}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Link to={`/korisnik/${encodeURIComponent(email)}`} className="font-bold text-sm hover:text-primary transition-colors truncate block">
+                      {name}
+                    </Link>
+                  </div>
+                  <div className={`flex items-center gap-1 font-black text-sm ${color}`}>
+                    <Coins className="w-3.5 h-3.5" /> {(zarada || 0).toLocaleString()}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function Leaderboard() {
   const [allPicks, setAllPicks]       = useState([]);
+  const [archives, setArchives]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [period, setPeriod]           = useState('month');
+  const [tab, setTab]                 = useState('live');
 
   useEffect(() => {
     (async () => {
-      const [picks, user] = await Promise.all([
+      const [picks, user, arcs] = await Promise.all([
         base44.entities.Pick.list('-created_date', 500),
         base44.auth.me(),
+        base44.entities.LeaderboardArchive.list('-created_date', 24),
       ]);
       setCurrentUser(user);
       setAllPicks(picks);
+      setArchives(arcs);
       setLoading(false);
     })();
   }, []);
@@ -71,109 +153,131 @@ export default function Leaderboard() {
         </div>
       </div>
 
-      {/* Period filter */}
-      <div className="flex gap-2 mb-8">
-        {PERIODS.map(p => (
-          <button
-            key={p.key}
-            onClick={() => setPeriod(p.key)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              period === p.key
-                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
-                : 'bg-secondary text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
+      {/* Main tabs */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setTab('live')}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${tab === 'live' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+        >
+          Ljestvica
+        </button>
+        <button
+          onClick={() => setTab('archive')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all ${tab === 'archive' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+        >
+          <Archive className="w-3.5 h-3.5" /> Povijest {archives.length > 0 && `(${archives.length})`}
+        </button>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
         </div>
-      ) : entries.length === 0 ? (
-        <div className="text-center py-20">
-          <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-          <h3 className="text-lg font-bold mb-2">Ljestvica je prazna</h3>
-          <p className="text-muted-foreground">Nema podataka za odabrano razdoblje. Igrači koji sudjeluju u natjecanjima pojavit će se ovdje.</p>
-        </div>
+      ) : tab === 'archive' ? (
+        <ArchiveTab archives={archives} />
       ) : (
         <>
-          {/* Top 3 podium */}
-          {entries.length >= 3 && (
-            <div className="grid grid-cols-3 gap-3 mb-8 items-end">
-              {[1, 0, 2].map((rank) => {
-                const entry = entries[rank];
-                const Icon = topIcons[rank];
-                const winRate = entry.total > 0 ? ((entry.wins / entry.total) * 100).toFixed(0) : 0;
-                return (
-                  <motion.div
-                    key={rank}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: rank * 0.1 }}
-                    className={`flex flex-col items-center p-4 rounded-2xl border ${topBg[rank]} ${rank === 0 ? 'py-6' : ''}`}
-                  >
-                    <Icon className={`w-7 h-7 ${topColors[rank]} mb-2`} />
-                    <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center mb-2">
-                      <span className="font-black text-base">{entry.name?.charAt(0).toUpperCase()}</span>
-                    </div>
-                    <p className="font-bold text-xs truncate max-w-full text-center">{entry.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{winRate}% pobjeda</p>
-                    <p className="flex items-center gap-1 mt-1.5 text-sm font-black text-accent">
-                      <Coins className="w-3.5 h-3.5" /> {entry.tokensWon.toLocaleString()}
-                    </p>
-                  </motion.div>
-                );
-              })}
+          {/* Period filter */}
+          <div className="flex gap-2 mb-8">
+            {PERIODS.map(p => (
+              <button
+                key={p.key}
+                onClick={() => setPeriod(p.key)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  period === p.key
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                    : 'bg-secondary text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {entries.length === 0 ? (
+            <div className="text-center py-20">
+              <Trophy className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+              <h3 className="text-lg font-bold mb-2">Ljestvica je prazna</h3>
+              <p className="text-muted-foreground">Nema podataka za odabrano razdoblje.</p>
             </div>
+          ) : (
+            <>
+              {/* Top 3 podium */}
+              {entries.length >= 3 && (
+                <div className="grid grid-cols-3 gap-3 mb-8 items-end">
+                  {[1, 0, 2].map((rank) => {
+                    const entry = entries[rank];
+                    const Icon = topIcons[rank];
+                    const winRate = entry.total > 0 ? ((entry.wins / entry.total) * 100).toFixed(0) : 0;
+                    return (
+                      <motion.div
+                        key={rank}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: rank * 0.1 }}
+                        className={`flex flex-col items-center p-4 rounded-2xl border ${topBg[rank]} ${rank === 0 ? 'py-6' : ''}`}
+                      >
+                        <Icon className={`w-7 h-7 ${topColors[rank]} mb-2`} />
+                        <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center mb-2">
+                          <span className="font-black text-base">{entry.name?.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <p className="font-bold text-xs truncate max-w-full text-center">{entry.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{winRate}% pobjeda</p>
+                        <p className="flex items-center gap-1 mt-1.5 text-sm font-black text-accent">
+                          <Coins className="w-3.5 h-3.5" /> {entry.tokensWon.toLocaleString()}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Column headers */}
+              <div className="flex items-center gap-4 px-4 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <span className="w-8 text-center">#</span>
+                <span className="flex-1">Igrač</span>
+                <span className="w-16 text-center hidden sm:block">Win %</span>
+                <span className="w-20 text-right">Zarada</span>
+              </div>
+
+              {/* Rest of leaderboard */}
+              <div className="space-y-2">
+                {entries.slice(entries.length >= 3 ? 3 : 0).map((entry, i) => {
+                  const rank    = entries.length >= 3 ? i + 4 : i + 1;
+                  const isMe    = currentUser?.email === entry.email;
+                  const winRate = entry.total > 0 ? ((entry.wins / entry.total) * 100).toFixed(1) : '0.0';
+                  return (
+                    <motion.div
+                      key={entry.email}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.02 }}
+                      className={`flex items-center gap-4 p-4 rounded-xl border border-border/50 ${
+                        isMe ? 'bg-primary/5 border-primary/20' : 'bg-card'
+                      }`}
+                    >
+                      <span className="w-8 text-center font-black text-muted-foreground text-sm">{rank}</span>
+                      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                        <span className="font-bold text-sm">{entry.name?.charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm truncate">
+                          {entry.name} {isMe && <span className="text-primary text-xs">(Ti)</span>}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} listića</p>
+                      </div>
+                      {!isMe && (
+                        <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />
+                      )}
+                      <p className="flex items-center gap-1 font-bold text-primary text-sm w-20 justify-end">
+                        <Coins className="w-3.5 h-3.5 shrink-0" /> {entry.tokensWon.toLocaleString()}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </>
           )}
-
-          {/* Column headers */}
-          <div className="flex items-center gap-4 px-4 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            <span className="w-8 text-center">#</span>
-            <span className="flex-1">Igrač</span>
-            <span className="w-16 text-center hidden sm:block">Win %</span>
-            <span className="w-20 text-right">Zarada</span>
-          </div>
-
-          {/* Rest of leaderboard */}
-          <div className="space-y-2">
-            {entries.slice(entries.length >= 3 ? 3 : 0).map((entry, i) => {
-              const rank    = entries.length >= 3 ? i + 4 : i + 1;
-              const isMe    = currentUser?.email === entry.email;
-              const winRate = entry.total > 0 ? ((entry.wins / entry.total) * 100).toFixed(1) : '0.0';
-              return (
-                <motion.div
-                  key={entry.email}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.02 }}
-                  className={`flex items-center gap-4 p-4 rounded-xl border border-border/50 ${
-                    isMe ? 'bg-primary/5 border-primary/20' : 'bg-card'
-                  }`}
-                >
-                  <span className="w-8 text-center font-black text-muted-foreground text-sm">{rank}</span>
-                  <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                    <span className="font-bold text-sm">{entry.name?.charAt(0).toUpperCase()}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm truncate">
-                      {entry.name} {isMe && <span className="text-primary text-xs">(Ti)</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} listića</p>
-                  </div>
-                  {!isMe && (
-                    <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />
-                  )}
-                  <p className="flex items-center gap-1 font-bold text-primary text-sm w-20 justify-end">
-                    <Coins className="w-3.5 h-3.5 shrink-0" /> {entry.tokensWon.toLocaleString()}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
         </>
       )}
     </div>

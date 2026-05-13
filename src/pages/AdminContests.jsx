@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star, Play, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star, Play, AlertTriangle, Archive } from 'lucide-react';
 import ContestWinnersPanel from '../components/admin/ContestWinnersPanel';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -42,6 +42,22 @@ export default function AdminContests() {
   const [saving, setSaving] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   const [cronRunning, setCronRunning] = useState(false);
+  const [archiveRunning, setArchiveRunning] = useState(false);
+
+  const handleRunArchive = async () => {
+    setArchiveRunning(true);
+    const res = await base44.functions.invoke('monthlyLeaderboardArchive', {});
+    if (res.data?.error) {
+      toast.error(res.data.error);
+    } else if (res.data?.skipped) {
+      toast.info(`Arhiva za ovaj period već postoji`);
+    } else {
+      const m = res.data?.month || '';
+      const tokens = res.data?.tokens_awarded || 0;
+      toast.success(`✓ Arhiva za ${m} stvorena, isplaćeno ${tokens.toLocaleString()} tokena pobjednicima`);
+    }
+    setArchiveRunning(false);
+  };
 
   const handleRunCron = async () => {
     setCronRunning(true);
@@ -163,6 +179,15 @@ export default function AdminContests() {
           <p className="text-muted-foreground text-sm mt-1">{contests.length} natjecanja ukupno</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleRunArchive}
+            disabled={archiveRunning}
+            title="Arhivira prethodni mjesec i isplaćuje top 3 pobjednike ljestvice."
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-purple-500/60 text-purple-400 text-sm font-bold hover:bg-purple-500/10 transition-all disabled:opacity-60"
+          >
+            <Archive className="w-4 h-4" />
+            {archiveRunning ? 'Arhiviram...' : 'Monthly archive (test)'}
+          </button>
           <button
             onClick={handleRunCron}
             disabled={cronRunning}

@@ -1,0 +1,65 @@
+{
+  "name": "LeaderboardArchive",
+  "type": "object",
+  "properties": {
+    "month": {
+      "type": "string",
+      "description": "Format YYYY-MM, e.g. 2026-05"
+    },
+    "year": {
+      "type": "number"
+    },
+    "top_1_email": {
+      "type": "string"
+    },
+    "top_1_name": {
+      "type": "string"
+    },
+    "top_1_zarada": {
+      "type": "number"
+    },
+    "top_2_email": {
+      "type": "string"
+    },
+    "top_2_name": {
+      "type": "string"
+    },
+    "top_2_zarada": {
+      "type": "number"
+    },
+    "top_3_email": {
+      "type": "string"
+    },
+    "top_3_name": {
+      "type": "string"
+    },
+    "top_3_zarada": {
+      "type": "number"
+    },
+    "total_active_users": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "month",
+    "year"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
