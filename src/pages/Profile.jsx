@@ -12,7 +12,8 @@ import ReferralSection from '../components/profile/ReferralSection';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import XPProgressBar, { LevelBadge } from '../components/profile/XPProgressBar';
 import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
-import { CheckCircle, Clock, Coins, Trophy, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Coins, Trophy, XCircle, BarChart2 } from 'lucide-react';
+import Analitika from './Analitika';
 import moment from 'moment';
 
 const statusConfig = {
@@ -26,6 +27,7 @@ const TABS = [
   { key: 'history',       label: 'Moji Odabiri' },
   { key: 'xp',           label: '⚡ XP & Razina' },
   { key: 'stats',         label: 'Statistika' },
+  { key: 'analitika',     label: '📊 Analitika' },
   { key: 'badges',        label: '🏅 Dostignuća' },
   { key: 'rank',          label: 'Rang' },
   { key: 'referral',      label: '🎁 Referali' },
@@ -277,6 +279,12 @@ export default function Profile() {
               <span>{stats.lost} poraza</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'analitika' && (
+        <div className="mb-8 -mx-4 sm:-mx-6">
+          <Analitika embedded />
         </div>
       )}
 

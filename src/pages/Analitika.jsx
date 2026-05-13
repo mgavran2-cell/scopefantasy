@@ -66,7 +66,7 @@ function TopPerformerCard({ rank, entry }) {
   );
 }
 
-export default function Analitika() {
+export default function Analitika({ embedded = false }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [myPicks, setMyPicks] = useState([]);
@@ -170,14 +170,16 @@ export default function Analitika() {
   const hasPickData = myPicks.length > 0;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-display font-black tracking-wide uppercase flex items-center gap-3">
-          <TrendingUp className="w-8 h-8 text-primary" /> Analitika
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Tjedna uspješnost, profit po sportovima i ljestvica igrača</p>
-      </motion.div>
+    <div className={embedded ? "px-4 sm:px-6 py-4" : "max-w-4xl mx-auto px-4 sm:px-6 py-8"}>
+      {/* Header — only on standalone page */}
+      {!embedded && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <h1 className="text-3xl font-display font-black tracking-wide uppercase flex items-center gap-3">
+            <TrendingUp className="w-8 h-8 text-primary" /> Analitika
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Tjedna uspješnost, profit po sportovima i ljestvica igrača</p>
+        </motion.div>
+      )}
 
       {/* ── Win Rate po tjednima ── */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
