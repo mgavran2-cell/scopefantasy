@@ -77,6 +77,8 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
   const [generated, setGenerated] = useState(false);
   const [lastGeneratedDate, setLastGeneratedDate] = useState(null);
 
+  // Beta: locked = false za sve korisnike. Aktivirati kad pretplate budu live:
+  // const locked = user ? user.subscription_tier !== 'premium' : false;
   const locked = false;
 
   const getTodayStart = () => {

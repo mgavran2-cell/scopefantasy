@@ -70,6 +70,18 @@
       "type": "string",
       "format": "date-time",
       "description": "Anti-spam: last time weekly digest was sent to this user"
+    },
+    "subscription_active": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "premium"
+      ],
+      "default": "free"
     }
   },
   "required": []
