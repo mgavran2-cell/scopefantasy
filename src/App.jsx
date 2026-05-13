@@ -35,6 +35,7 @@ import LegalPage from './pages/LegalPage';
 import AdminPartneri from './pages/AdminPartneri';
 import MojiVoucheri from './pages/MojiVoucheri';
 import PublicProfile from './pages/PublicProfile';
+import Povijest from './pages/Povijest';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -93,6 +94,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/korisnici" element={<AdminUsers />} />
         <Route path="/admin/partneri" element={<AdminPartneri />} />
         <Route path="/moji-voucheri" element={<MojiVoucheri />} />
+        <Route path="/povijest" element={<Povijest />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

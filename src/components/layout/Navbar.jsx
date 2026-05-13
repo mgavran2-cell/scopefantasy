@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown, Ticket, Handshake } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown, Ticket, Handshake, History } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +22,7 @@ const moreNav = [
   { path: '/prijatelji', label: 'Prijatelji', icon: Heart },
   { path: '/profil', label: 'Profil', icon: User },
   { path: '/moji-voucheri', label: 'Moji Voucheri', icon: Ticket },
+  { path: '/povijest', label: 'Povijest listića', icon: History },
 ];
 
 const allNav = [...primaryNav, ...moreNav];
