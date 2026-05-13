@@ -100,21 +100,36 @@ export default function DailyStreak() {
 
       {/* Claim reward */}
       {canClaim && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={handleClaim}
-          disabled={claiming}
-          className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-primary to-fuchsia-500 text-white font-black text-sm hover:opacity-90 transition-all mb-4 shadow-lg shadow-primary/30 disabled:opacity-60"
-        >
-          {claiming
-            ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            : <><Gift className="w-5 h-5" /> Preuzmi nagradu: +{reward.toLocaleString()} tokena</>
-          }
-        </motion.button>
+        <div className="mb-4">
+          <motion.button
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={handleClaim}
+            disabled={claiming}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-primary to-fuchsia-500 text-white font-black text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/30 disabled:opacity-60"
+          >
+            {claiming
+              ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              : <><Gift className="w-5 h-5" /> Preuzmi nagradu: +{reward.toLocaleString()} tokena</>
+            }
+          </motion.button>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            Nagrada se automatski isplaćuje nedjeljom u 23:59. Možeš i manualno preuzeti ako želiš ranije.
+          </p>
+        </div>
       )}
 
-      {weekData?.reward_claimed && (
+      {weekData?.reward_claimed && weekData?.claimed_via === 'auto_cron' && (
+        <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-green-500/10 border border-green-500/20 mb-4">
+          <Coins className="w-4 h-4 text-green-400" />
+          <span className="text-sm font-bold text-green-400">
+            ✓ Nagrada {weekData.reward_amount > 0 ? `+${weekData.reward_amount.toLocaleString()} tokena` : ''} automatski isplaćena
+            {weekData.claimed_at ? ` ${moment(weekData.claimed_at).format('DD.MM. HH:mm')}` : ''}
+          </span>
+        </div>
+      )}
+
+      {weekData?.reward_claimed && weekData?.claimed_via !== 'auto_cron' && (
         <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-green-500/10 border border-green-500/20 mb-4">
           <Coins className="w-4 h-4 text-green-400" />
           <span className="text-sm font-bold text-green-400">Nagrada je već preuzeta ovaj tjedan!</span>

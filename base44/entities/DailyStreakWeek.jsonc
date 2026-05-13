@@ -28,6 +28,19 @@
         "completed"
       ],
       "default": "active"
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the reward was claimed (manual or auto)"
+    },
+    "claimed_via": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "auto_cron"
+      ],
+      "description": "How the reward was claimed"
     }
   },
   "required": [

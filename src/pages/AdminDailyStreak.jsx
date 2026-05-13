@@ -21,6 +21,7 @@ export default function AdminDailyStreak() {
   const [adminTab, setAdminTab] = useState('picks');
   const [filterDay, setFilterDay] = useState('all');
   const [cronRunning, setCronRunning] = useState(false);
+  const [weeklyRewardRunning, setWeeklyRewardRunning] = useState(false);
 
   const handleRunCron = async () => {
     setCronRunning(true);
@@ -32,6 +33,18 @@ export default function AdminDailyStreak() {
       toast.error(err?.message || 'Greška pri pokretanju crona');
     }
     setCronRunning(false);
+  };
+
+  const handleRunWeeklyRewards = async () => {
+    setWeeklyRewardRunning(true);
+    try {
+      const res = await base44.functions.invoke('weeklyStreakRewards', {});
+      const { processed, total_payout } = res.data || {};
+      toast.success(`✓ Obrađeno ${processed} korisnika, isplaćeno ${(total_payout || 0).toLocaleString()} tokena`);
+    } catch (err) {
+      toast.error(err?.message || 'Greška pri pokretanju weekly rewards crona');
+    }
+    setWeeklyRewardRunning(false);
   };
 
   useEffect(() => { init(); }, []);
@@ -202,7 +215,16 @@ export default function AdminDailyStreak() {
 
       {adminTab === 'pool' && (
         <div>
-          <div className="flex items-center justify-end mb-4">
+          <div className="flex items-center justify-end gap-3 mb-4">
+            <button
+              onClick={handleRunWeeklyRewards}
+              disabled={weeklyRewardRunning}
+              title="Isplaćuje weekly streak nagrade svim korisnicima. Idempotent."
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-yellow-500/60 text-yellow-400 text-sm font-bold hover:bg-yellow-500/10 transition-all disabled:opacity-60"
+            >
+              <Play className="w-4 h-4" />
+              {weeklyRewardRunning ? 'Isplaćujem...' : 'Pokreni weekly rewards cron (test)'}
+            </button>
             <button
               onClick={handleRunCron}
               disabled={cronRunning}
