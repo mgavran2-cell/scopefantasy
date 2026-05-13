@@ -16,7 +16,7 @@ const primaryNav = [
 
 const moreNav = [
   { path: '/statistika', label: 'Moja Statistika', icon: Activity },
-  { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
+  { path: '/predictor', label: 'AI Analiza statistike', icon: Sparkles },
   { path: '/streak', label: 'Daily Streak', icon: Flame },
   { path: '/dueli', label: 'Dueli', icon: Swords },
   { path: '/prijatelji', label: 'Prijatelji', icon: Heart },

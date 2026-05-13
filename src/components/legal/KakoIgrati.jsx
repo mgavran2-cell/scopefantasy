@@ -116,7 +116,7 @@ export default function KakoIgrati() {
         <ul className="space-y-1 ml-2">
           <li>✓ Sve je besplatno</li>
           <li>✓ Plaćanja nisu aktivna</li>
-          <li>✓ Neke funkcije su "Uskoro" (AI Predictor, Statistika, Live Match Center, Hokej, Pikado)</li>
+          <li>✓ Neke funkcije su "Uskoro" (AI Analiza statistike, Tvoj AI Coach, Statistika, Live Match Center, Hokej, Pikado)</li>
           <li>✓ Tvoj feedback je super važan</li>
         </ul>
       </Section>

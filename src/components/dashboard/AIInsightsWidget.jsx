@@ -74,7 +74,7 @@ function LockedOverlay() {
       </div>
       <p className="font-black text-base mb-1">Premium funkcija</p>
       <p className="text-xs text-muted-foreground text-center max-w-[200px]">
-        AI analiza biti će dostupna pretplatnicima u sljedećem update-u.
+        Tvoj AI Coach biti će dostupan pretplatnicima u sljedećem update-u.
       </p>
       <span className="mt-3 text-[10px] font-black px-3 py-1.5 rounded-full bg-primary/15 text-primary">
         Uskoro — Pretplata
@@ -203,10 +203,10 @@ Budi konkretan, koristi stvarne podatke korisnika. Ne budi generičan.`;
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-black text-sm">AI Analiza</h3>
+              <h3 className="font-black text-sm">Tvoj AI Coach</h3>
               <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-primary/15 text-primary">BETA</span>
             </div>
-            <p className="text-xs text-muted-foreground">Personalizirani savjeti temeljeni na tvojim listićima</p>
+            <p className="text-xs text-muted-foreground">Personalizirani coaching temeljen na tvojim listićima</p>
           </div>
         </div>
         {generated && (

@@ -28,9 +28,9 @@ export default function Predictor() {
           <Sparkles className="w-8 h-8 text-primary" />
         </div>
         <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold uppercase tracking-widest mb-4">Uskoro</span>
-        <h1 className="text-4xl font-display font-black tracking-wide mb-3">AI PREDICTOR</h1>
+        <h1 className="text-4xl font-display font-black tracking-wide mb-3">AI ANALIZA STATISTIKE</h1>
         <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
-          Radimo na integraciji pravih sportskih podataka i AI analizi. Ostavi e-mail i bit ćeš prvi koji sazna kad bude spreman.
+          Radimo na integraciji pravih sportskih podataka i naprednoj AI analizi historijskih statistika. Ostavi e-mail i bit ćeš prvi koji sazna kad bude sprema.
         </p>
         {submitted ? (
           <div className="px-6 py-3 rounded-xl bg-primary/10 border border-primary/25 text-primary font-semibold text-sm">
