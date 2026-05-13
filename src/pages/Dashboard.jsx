@@ -160,7 +160,6 @@ export default function Dashboard() {
       <AIInsightsWidget
         myPicks={myPicksData}
         contestMap={contestMapData}
-        activeContests={activeContests}
       />
 
       {/* Stat Cards */}

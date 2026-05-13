@@ -1,23 +1,21 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, RefreshCw, ChevronRight, TrendingUp, AlertTriangle, Lightbulb, Target } from 'lucide-react';
+import { Sparkles, Lock, RefreshCw, ChevronRight, TrendingUp, AlertTriangle, Lightbulb } from 'lucide-react';
 
 const ICON_MAP = {
   tip: Lightbulb,
   warning: AlertTriangle,
-  prediction: Target,
   trend: TrendingUp,
 };
 
 const COLOR_MAP = {
-  tip:        { bg: 'bg-primary/10',     border: 'border-primary/25',     icon: 'text-primary',     badge: 'bg-primary/15 text-primary' },
-  warning:    { bg: 'bg-yellow-500/8',   border: 'border-yellow-500/25',  icon: 'text-yellow-400',  badge: 'bg-yellow-500/15 text-yellow-400' },
-  prediction: { bg: 'bg-accent/8',       border: 'border-accent/25',      icon: 'text-accent',      badge: 'bg-accent/15 text-accent' },
-  trend:      { bg: 'bg-green-500/8',    border: 'border-green-500/25',   icon: 'text-green-400',   badge: 'bg-green-500/15 text-green-400' },
+  tip:     { bg: 'bg-primary/10',   border: 'border-primary/25',    icon: 'text-primary',    badge: 'bg-primary/15 text-primary' },
+  warning: { bg: 'bg-yellow-500/8', border: 'border-yellow-500/25', icon: 'text-yellow-400', badge: 'bg-yellow-500/15 text-yellow-400' },
+  trend:   { bg: 'bg-green-500/8',  border: 'border-green-500/25',  icon: 'text-green-400',  badge: 'bg-green-500/15 text-green-400' },
 };
 
-const BADGE_LABELS = { tip: 'Savjet', warning: 'Upozorenje', prediction: 'Predikcija', trend: 'Trend' };
+const BADGE_LABELS = { tip: 'Savjet', warning: 'Upozorenje', trend: 'Trend' };
 
 function InsightCard({ insight, index }) {
   const type = insight.type || 'tip';
@@ -48,17 +46,7 @@ function InsightCard({ insight, index }) {
           {insight.detail && (
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{insight.detail}</p>
           )}
-          {insight.confidence && (
-            <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-1.5 rounded-full bg-card overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${c.icon.replace('text-', 'bg-')}`}
-                  style={{ width: `${insight.confidence}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-muted-foreground font-semibold">{insight.confidence}% pouzdanost</span>
-            </div>
-          )}
+
         </div>
       </div>
     </motion.div>
@@ -83,7 +71,7 @@ function LockedOverlay() {
   );
 }
 
-export default function AIInsightsWidget({ myPicks, contestMap, activeContests }) {
+export default function AIInsightsWidget({ myPicks, contestMap }) {
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
@@ -93,7 +81,6 @@ export default function AIInsightsWidget({ myPicks, contestMap, activeContests }
   const locked = false;
 
   const buildContext = () => {
-    // Sport win rates
     const sportMap = {};
     myPicks.forEach(p => {
       const sport = contestMap[p.contest_id]?.sport || 'Ostalo';
@@ -111,20 +98,11 @@ export default function AIInsightsWidget({ myPicks, contestMap, activeContests }
       netProfit: s.tokensWon - s.tokensSpent,
     }));
 
-    // Recent form (last 10 picks)
     const recent = myPicks.slice(0, 10);
     const recentWins = recent.filter(p => p.status === 'won').length;
     const recentForm = recent.length > 0 ? Math.round((recentWins / recent.length) * 100) : 0;
 
-    // Upcoming contests
-    const upcoming = activeContests.slice(0, 5).map(c => ({
-      title: c.title,
-      sport: c.sport,
-      prize_pool: c.prize_pool,
-      entry_cost: c.entry_cost,
-    }));
-
-    return { sportStats, recentForm, totalPicks: myPicks.length, upcoming };
+    return { sportStats, recentForm, totalPicks: myPicks.length };
   };
 
   const generate = async () => {
@@ -133,29 +111,29 @@ export default function AIInsightsWidget({ myPicks, contestMap, activeContests }
 
     const ctx = buildContext();
 
-    const prompt = `Si AI sportski analitičar za ScopeFantasy fantasy sports platformu. 
-Analiziraj podatke ovog korisnika i vrati 4-5 korisnih uvida na HRVATSKOM jeziku.
+    const prompt = `Si AI sportski coach za ScopeFantasy fantasy sports platformu. 
+Analiziraj korisnikove DOSADAŠNJE rezultate i vrati 4-5 korisnih uvida na HRVATSKOM jeziku.
+
+VAŽNO: NE predviđaj ishode nadolazećih utakmica. NE daj savjete "koga kladiti" za buduće događaje. Fokus je na korisnikovoj DOSADAŠNJOJ igri.
 
 Podaci korisnika:
 - Ukupno odigranih natjecanja: ${ctx.totalPicks}
 - Forma zadnjih 10 listića: ${ctx.recentForm}% pobjeda
 - Win rate po sportu: ${JSON.stringify(ctx.sportStats)}
-- Nadolazeća natjecanja: ${JSON.stringify(ctx.upcoming)}
 
 Vrati JSON objekt s poljem "insights" koji je array od 4-5 objekata, svaki s:
-- type: "tip" | "warning" | "prediction" | "trend"
+- type: "tip" | "warning" | "trend"
 - title: kratki naslov (maks 60 znakova)
 - detail: dulje objašnjenje (maks 120 znakova)
 - sport: (opcionalno) koji sport se tiče
-- confidence: (samo za prediction) broj 60-95
 
-Primjeri tipova:
-- "tip": savjet za poboljšanje strategije
-- "warning": upozorenje na lošu naviku ili trend
-- "prediction": predikcija za nadolazeće natjecanje
+Tipovi:
+- "tip": savjet za poboljšanje strategije/discipline (npr. "Igraš previše parlay-a kad si u gubitku")
+- "warning": upozorenje na lošu naviku ili negativni trend
 - "trend": pozitivan ili negativan trend iz podataka
 
-Budi konkretan, koristi stvarne podatke korisnika. Ne budi generičan.`;
+NE daj predikcije za buduće utakmice. NE preporučuj koga kladiti.
+Budi konkretan, koristi stvarne podatke korisnika.`;
 
     const result = await base44.integrations.Core.InvokeLLM({
       prompt,
@@ -171,7 +149,6 @@ Budi konkretan, koristi stvarne podatke korisnika. Ne budi generičan.`;
                 title: { type: 'string' },
                 detail: { type: 'string' },
                 sport: { type: 'string' },
-                confidence: { type: 'number' },
               },
             },
           },
