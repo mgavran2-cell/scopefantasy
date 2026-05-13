@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { TrendingUp, Trophy, Target, Coins, Users, BarChart2 } from 'lucide-react';
+import DailyLoginBonusWidget from '../components/dashboard/DailyLoginBonusWidget';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Legend, Area, AreaChart,
@@ -24,7 +25,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function Dashboard() {
-  const { tokenBalance } = useOutletContext();
+  const { tokenBalance, loadBalance } = useOutletContext();
   const [loading, setLoading]         = useState(true);
   const [user, setUser]               = useState(null);
   const [weeklyData, setWeeklyData]   = useState([]);
@@ -142,6 +143,11 @@ export default function Dashboard() {
         <h1 className="text-3xl font-black mb-1">Dashboard</h1>
         <p className="text-muted-foreground text-sm">Analitika tvojih rezultata i usporedba s platformom</p>
       </motion.div>
+
+      {/* Daily Login Bonus */}
+      <div className="mb-8">
+        <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
+      </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
