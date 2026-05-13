@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { TrendingUp, Trophy, Target, Coins, Users, BarChart2 } from 'lucide-react';
 import DailyLoginBonusWidget from '../components/dashboard/DailyLoginBonusWidget';
+import AIInsightsWidget from '../components/dashboard/AIInsightsWidget';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Legend, Area, AreaChart,
@@ -33,6 +34,9 @@ export default function Dashboard() {
   const [sportBreakdown, setSportBreakdown] = useState([]);
   const [globalStats, setGlobalStats] = useState({ avgWinRate: 0, avgTokens: 0 });
   const [myStats, setMyStats]         = useState({ winRate: 0, tokensWon: 0, total: 0, won: 0 });
+  const [myPicksData, setMyPicksData] = useState([]);
+  const [contestMapData, setContestMapData] = useState({});
+  const [activeContests, setActiveContests] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -51,6 +55,9 @@ export default function Dashboard() {
     allContests.forEach(c => { contestMap[c.id] = c; });
 
     const myPicks = allPicks.filter(p => (p.user_email || p.created_by) === me.email);
+    setMyPicksData(myPicks);
+    setContestMapData(contestMap);
+    setActiveContests(allContests.filter(c => c.status === 'active').slice(0, 5));
 
     // --- My stats ---
     let won = 0, tokensWon = 0;
@@ -148,6 +155,13 @@ export default function Dashboard() {
       <div className="mb-8">
         <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
       </div>
+
+      {/* AI Insights */}
+      <AIInsightsWidget
+        myPicks={myPicksData}
+        contestMap={contestMapData}
+        activeContests={activeContests}
+      />
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
