@@ -77,6 +77,7 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
   const [generated, setGenerated] = useState(false);
   const [lastGeneratedDate, setLastGeneratedDate] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userLoaded, setUserLoaded] = useState(false);
 
   // Locked ako je subscription_active eksplicitno false (novi korisnici).
   // Postojeći korisnici (undefined/null) → slobodan pristup u beta fazi.
@@ -94,10 +95,11 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
   };
 
   useEffect(() => {
-    const loadCache = async () => {
+    const init = async () => {
       const user = await base44.auth.me().catch(() => null);
-      if (!user) return;
       setCurrentUser(user);
+      setUserLoaded(true);
+      if (!user) return;
       const records = await base44.entities.AICoachInsight.filter({ user_email: user.email });
       if (!records.length) return;
       const latest = records.sort((a, b) => new Date(b.generated_date) - new Date(a.generated_date))[0];
@@ -107,7 +109,7 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
         setLastGeneratedDate(latest.generated_date);
       }
     };
-    loadCache();
+    init();
   }, []);
 
   const buildContext = () => {
@@ -188,10 +190,9 @@ Budi konkretan, koristi stvarne podatke korisnika.`;
 
     const newInsights = result?.insights || [];
     const now = new Date().toISOString();
-    const user = await base44.auth.me().catch(() => null);
 
-    if (user) {
-      const records = await base44.entities.AICoachInsight.filter({ user_email: user.email });
+    if (currentUser) {
+      const records = await base44.entities.AICoachInsight.filter({ user_email: currentUser.email });
       const existingToday = records.find(r => new Date(r.generated_date) >= getTodayStart());
       if (existingToday) {
         await base44.entities.AICoachInsight.update(existingToday.id, {
@@ -201,7 +202,7 @@ Budi konkretan, koristi stvarne podatke korisnika.`;
         });
       } else {
         await base44.entities.AICoachInsight.create({
-          user_email: user.email,
+          user_email: currentUser.email,
           insights_json: JSON.stringify(newInsights),
           generated_date: now,
           picks_count_at_generation: myPicks.length,
@@ -216,6 +217,8 @@ Budi konkretan, koristi stvarne podatke korisnika.`;
   };
 
   const hasEnoughData = myPicks.length >= 3;
+
+  if (!userLoaded) return null;
 
   return (
     <motion.div
