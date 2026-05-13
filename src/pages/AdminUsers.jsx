@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Users, ShieldAlert, Trash2, Play, RefreshCw } from 'lucide-react';
+import { Users, ShieldAlert, Trash2, Play, RefreshCw, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 
@@ -10,6 +10,7 @@ export default function AdminUsers() {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cronRunning, setCronRunning] = useState(false);
+  const [digestRunning, setDigestRunning] = useState(false);
 
   useEffect(() => { init(); }, []);
 
@@ -25,6 +26,17 @@ export default function AdminUsers() {
   const loadUsers = async () => {
     const data = await base44.entities.User.list('-created_date', 500);
     setAllUsers(data);
+  };
+
+  const handleRunDigest = async () => {
+    setDigestRunning(true);
+    const res = await base44.functions.invoke('feedActivityDigest', {});
+    if (res.data?.error) {
+      toast.error(res.data.error);
+    } else {
+      toast.success(`✓ Poslano ${res.data?.digests_sent ?? 0} digesta (od ${res.data?.target_users ?? 0} kandidata)`);
+    }
+    setDigestRunning(false);
   };
 
   const handleRunCleanup = async () => {
@@ -96,16 +108,28 @@ export default function AdminUsers() {
           ))}
         </div>
 
-        <button
-          onClick={handleRunCleanup}
-          disabled={cronRunning}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-yellow-500/60 text-yellow-400 text-sm font-bold hover:bg-yellow-500/10 transition-all disabled:opacity-60"
-        >
-          {cronRunning
-            ? <><RefreshCw className="w-4 h-4 animate-spin" /> Pokrećem cleanup...</>
-            : <><Play className="w-4 h-4" /> Pokreni cleanup cron sada (test)</>
-          }
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleRunCleanup}
+            disabled={cronRunning}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-yellow-500/60 text-yellow-400 text-sm font-bold hover:bg-yellow-500/10 transition-all disabled:opacity-60"
+          >
+            {cronRunning
+              ? <><RefreshCw className="w-4 h-4 animate-spin" /> Pokrećem cleanup...</>
+              : <><Play className="w-4 h-4" /> Pokreni cleanup cron sada (test)</>
+            }
+          </button>
+          <button
+            onClick={handleRunDigest}
+            disabled={digestRunning}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-yellow-400/60 text-yellow-300 text-sm font-bold hover:bg-yellow-400/10 transition-all disabled:opacity-60"
+          >
+            {digestRunning
+              ? <><RefreshCw className="w-4 h-4 animate-spin" /> Šaljem digeste...</>
+              : <><Mail className="w-4 h-4" /> Pokreni feed digest cron sada (test)</>
+            }
+          </button>
+        </div>
       </div>
 
       {/* Warned users list */}

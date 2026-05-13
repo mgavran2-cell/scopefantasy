@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Bell, Trophy, Flame, Users, Settings, Monitor } from 'lucide-react';
+import { Bell, Trophy, Flame, Users, Settings, Monitor, Mail, Newspaper } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useBrowserNotifications } from '../../hooks/useBrowserNotifications';
 
@@ -33,6 +33,20 @@ const PREFS = [
     icon: Settings,
     color: 'text-muted-foreground',
   },
+  {
+    key: 'weekly_digest',
+    label: 'Tjedni digest prijatelja',
+    desc: 'Recap aktivnosti prijatelja kad si neaktivan 3+ dana',
+    icon: Newspaper,
+    color: 'text-blue-400',
+  },
+  {
+    key: 'email_digest',
+    label: 'Email digest',
+    desc: 'Primi tjedni digest i na email (zadano isključeno)',
+    icon: Mail,
+    color: 'text-green-400',
+  },
 ];
 
 export default function NotificationPreferences({ user, onSaved }) {
@@ -44,6 +58,8 @@ export default function NotificationPreferences({ user, onSaved }) {
     social: true,
     system: true,
     browser_push: false,
+    weekly_digest: true,
+    email_digest: false,
     ...((user?.notification_preferences) || {}),
   };
 

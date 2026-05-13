@@ -65,6 +65,11 @@
       "type": "string",
       "format": "date-time",
       "description": "GDPR: when the inactivity warning was sent"
+    },
+    "last_digest_sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Anti-spam: last time weekly digest was sent to this user"
     }
   },
   "required": []

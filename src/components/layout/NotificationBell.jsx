@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Bell, Trophy, Star, X, CheckCheck, Swords, Zap, TrendingUp, CheckCircle2, Users, Flame, Gift, Settings } from 'lucide-react';
+import { Bell, Trophy, Star, X, CheckCheck, Swords, Zap, TrendingUp, CheckCircle2, Users, Flame, Gift, Settings, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -16,6 +16,7 @@ const typeConfig = {
   duel_declined: { icon: Swords,      color: 'text-destructive',   bg: 'bg-destructive/15',   label: 'Social' },
   new_challenge: { icon: Zap,         color: 'text-orange-400',    bg: 'bg-orange-400/15',    label: 'Daily' },
   rank_change:   { icon: TrendingUp,  color: 'text-primary',       bg: 'bg-primary/15',       label: 'Sustav' },
+  weekly_digest: { icon: Newspaper,   color: 'text-blue-400',      bg: 'bg-blue-400/15',      label: 'Digest' },
 };
 
 // Map notification type → route
@@ -30,6 +31,7 @@ const typeRoute = {
   duel_declined: '/dueli',
   new_contest:   '/natjecanja',
   rank_change:   '/ljestvica',
+  weekly_digest: '/feed',
 };
 
 function getDateGroup(date) {
