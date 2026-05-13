@@ -33,6 +33,7 @@ const TABS = [
   { key: 'referral',      label: '🎁 Referali' },
   { key: 'settings',      label: '⚙️ Postavke' },
   { key: 'notif_settings',label: '🔔 Obavijesti' },
+  { key: 'voucheri',      label: '🎁 Voucheri' },
 ];
 
 export default function Profile() {
@@ -320,6 +321,17 @@ export default function Profile() {
             user={user}
             onSaved={(prefs) => setUser(prev => ({ ...prev, notification_preferences: prefs }))}
           />
+        </div>
+      )}
+
+      {activeTab === 'voucheri' && (
+        <div className="mb-8">
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 mb-4 text-sm text-muted-foreground">
+            🎁 Ovdje se prikazuju svi partneri voucheri koje si osvojio kroz natjecanja i posebne nagrade.
+          </div>
+          <Link to="/moji-voucheri" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all">
+            Otvori moje vouchere →
+          </Link>
         </div>
       )}
     </div>

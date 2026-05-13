@@ -1,0 +1,108 @@
+{
+  "name": "PartnerVoucher",
+  "type": "object",
+  "properties": {
+    "partner_id": {
+      "type": "string"
+    },
+    "partner_name": {
+      "type": "string"
+    },
+    "voucher_code": {
+      "type": "string"
+    },
+    "voucher_value": {
+      "type": "number"
+    },
+    "voucher_type": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "product",
+        "discount"
+      ]
+    },
+    "voucher_description": {
+      "type": "string"
+    },
+    "issued_to_email": {
+      "type": "string"
+    },
+    "issued_to_name": {
+      "type": "string"
+    },
+    "issued_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "issued",
+        "redeemed",
+        "expired",
+        "cancelled"
+      ],
+      "default": "issued"
+    },
+    "redeemed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tokens_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "contest_id": {
+      "type": "string"
+    },
+    "partner_webhook_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "partner_webhook_response": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "partner_id",
+    "partner_name",
+    "voucher_code",
+    "voucher_value",
+    "voucher_type",
+    "issued_to_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.issued_to_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

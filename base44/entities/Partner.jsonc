@@ -1,0 +1,59 @@
+{
+  "name": "Partner",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "webhook_url": {
+      "type": "string"
+    },
+    "webhook_secret": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_vouchers_issued": {
+      "type": "number",
+      "default": 0
+    },
+    "total_value_issued": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name",
+    "contact_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

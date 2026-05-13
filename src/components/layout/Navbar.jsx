@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown, Ticket, Handshake } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +21,7 @@ const moreNav = [
   { path: '/dueli', label: 'Dueli', icon: Swords },
   { path: '/prijatelji', label: 'Prijatelji', icon: Heart },
   { path: '/profil', label: 'Profil', icon: User },
+  { path: '/moji-voucheri', label: 'Moji Voucheri', icon: Ticket },
 ];
 
 const allNav = [...primaryNav, ...moreNav];
@@ -143,6 +144,14 @@ export default function Navbar({ tokenBalance }) {
                     }`}
                   >
                     <Shield className="w-4 h-4" /> Admin
+                  </Link>
+                  <Link
+                    to="/admin/partneri"
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      location.pathname === '/admin/partneri' ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
+                    }`}
+                  >
+                    <Handshake className="w-4 h-4" /> Partneri
                   </Link>
                 </div>
               )}

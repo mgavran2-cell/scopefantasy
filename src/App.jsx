@@ -32,6 +32,8 @@ import DuelStats from './pages/DuelStats';
 import AdminUsers from './pages/AdminUsers';
 import Analitika from './pages/Analitika';
 import LegalPage from './pages/LegalPage';
+import AdminPartneri from './pages/AdminPartneri';
+import MojiVoucheri from './pages/MojiVoucheri';
 import PublicProfile from './pages/PublicProfile';
 
 const AuthenticatedApp = () => {
@@ -89,6 +91,8 @@ const AuthenticatedApp = () => {
         <Route path="/kako-igrati" element={<LegalPage />} />
         <Route path="/korisnik/:userId" element={<PublicProfile />} />
         <Route path="/admin/korisnici" element={<AdminUsers />} />
+        <Route path="/admin/partneri" element={<AdminPartneri />} />
+        <Route path="/moji-voucheri" element={<MojiVoucheri />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
