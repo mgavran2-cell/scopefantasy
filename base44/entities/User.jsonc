@@ -50,6 +50,22 @@
       "type": "number",
       "default": 0,
       "description": "Experience points for level progression"
+    },
+    "last_active_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time user was active in the app"
+    },
+    "inactive_warning_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "GDPR: warning email sent for inactivity"
+    },
+    "inactive_warning_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "GDPR: when the inactivity warning was sent"
     }
-  }
+  },
+  "required": []
 }

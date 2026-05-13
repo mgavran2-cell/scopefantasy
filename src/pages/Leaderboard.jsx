@@ -15,10 +15,15 @@ const topIcons  = [Crown, Trophy, Medal];
 const topColors = ['text-yellow-400', 'text-gray-300', 'text-amber-600'];
 const topBg     = ['bg-yellow-400/10 border-yellow-400/30', 'bg-gray-300/10 border-gray-300/30', 'bg-amber-600/10 border-amber-600/30'];
 
+function isDeletedUser(email) {
+  return email && email.startsWith('deleted_user_');
+}
+
 function aggregatePicks(picks) {
   const userStats = {};
   picks.forEach(pick => {
     const email = pick.user_email || pick.created_by;
+    if (isDeletedUser(email)) return; // skip deleted users
     if (!userStats[email]) {
       userStats[email] = { email, name: pick.user_name || email, wins: 0, total: 0, tokensWon: 0 };
     }

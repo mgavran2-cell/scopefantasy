@@ -29,6 +29,7 @@ import WelcomeChallenge from './pages/WelcomeChallenge';
 import AdminWelcomeChallenge from './pages/AdminWelcomeChallenge';
 import Duels from './pages/Duels';
 import DuelStats from './pages/DuelStats';
+import AdminUsers from './pages/AdminUsers';
 import LegalPage from './pages/LegalPage';
 import PublicProfile from './pages/PublicProfile';
 
@@ -86,6 +87,7 @@ const AuthenticatedApp = () => {
         <Route path="/privatnost" element={<LegalPage />} />
         <Route path="/kako-igrati" element={<LegalPage />} />
         <Route path="/korisnik/:userId" element={<PublicProfile />} />
+        <Route path="/admin/korisnici" element={<AdminUsers />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -61,6 +61,13 @@ export default function AppLayout() {
     setCurrentUser(finalUser);
     setTokenBalance(finalUser.token_balance ?? 0);
 
+    // GDPR: track last active date (throttled — only update if not set today)
+    const today = new Date().toISOString().split('T')[0];
+    const lastActive = finalUser.last_active_date?.split('T')[0];
+    if (lastActive !== today) {
+      base44.auth.updateMe({ last_active_date: new Date().toISOString() });
+    }
+
     return user;
   };
 

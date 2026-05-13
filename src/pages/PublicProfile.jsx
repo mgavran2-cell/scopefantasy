@@ -49,10 +49,11 @@ export default function PublicProfile() {
     );
   }
 
-  if (!profileUser) {
+  if (!profileUser || profileUser.email?.startsWith('deleted_user_')) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <p className="text-muted-foreground">Korisnik nije pronađen.</p>
+        <p className="text-muted-foreground text-lg font-bold">Korisnik nije pronađen.</p>
+        <p className="text-muted-foreground text-sm mt-1">Ovaj profil ne postoji ili je obrisan.</p>
         <Link to="/" className="inline-flex items-center gap-2 mt-4 text-primary text-sm font-semibold">
           <ArrowLeft className="w-4 h-4" /> Povratak
         </Link>

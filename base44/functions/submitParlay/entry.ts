@@ -101,8 +101,11 @@ Deno.serve(async (req) => {
       risk_level: calcRiskLevel(play_type, numPicks),
     });
 
-    // Deduct tokens
-    await base44.asServiceRole.entities.User.update(userRecord.id, { token_balance: newBalance });
+    // Deduct tokens + update last_active_date
+    await base44.asServiceRole.entities.User.update(userRecord.id, {
+      token_balance: newBalance,
+      last_active_date: new Date().toISOString(),
+    });
 
     // Audit log
     await base44.entities.TokenTransaction.create({
