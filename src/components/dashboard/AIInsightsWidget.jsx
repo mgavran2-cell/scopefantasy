@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Lock, RefreshCw, ChevronRight, TrendingUp, AlertTriangle, Lightbulb } from 'lucide-react';
@@ -75,10 +75,36 @@ export default function AIInsightsWidget({ myPicks, contestMap }) {
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
+  const [lastGeneratedDate, setLastGeneratedDate] = useState(null);
 
-  // For now always show as premium (locked = false means it's shown but requires click to generate)
-  // Set locked = true when you want hard paywall
   const locked = false;
+
+  const getTodayStart = () => {
+    const d = new Date();
+    d.setUTCHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const canRefresh = () => {
+    if (!lastGeneratedDate) return true;
+    return new Date(lastGeneratedDate) < getTodayStart();
+  };
+
+  useEffect(() => {
+    const loadCache = async () => {
+      const user = await base44.auth.me().catch(() => null);
+      if (!user) return;
+      const records = await base44.entities.AICoachInsight.filter({ user_email: user.email });
+      if (!records.length) return;
+      const latest = records.sort((a, b) => new Date(b.generated_date) - new Date(a.generated_date))[0];
+      if (new Date(latest.generated_date) >= getTodayStart()) {
+        setInsights(JSON.parse(latest.insights_json));
+        setGenerated(true);
+        setLastGeneratedDate(latest.generated_date);
+      }
+    };
+    loadCache();
+  }, []);
 
   const buildContext = () => {
     const sportMap = {};
@@ -156,8 +182,32 @@ Budi konkretan, koristi stvarne podatke korisnika.`;
       },
     });
 
-    setInsights(result?.insights || []);
+    const newInsights = result?.insights || [];
+    const now = new Date().toISOString();
+    const user = await base44.auth.me().catch(() => null);
+
+    if (user) {
+      const records = await base44.entities.AICoachInsight.filter({ user_email: user.email });
+      const existingToday = records.find(r => new Date(r.generated_date) >= getTodayStart());
+      if (existingToday) {
+        await base44.entities.AICoachInsight.update(existingToday.id, {
+          insights_json: JSON.stringify(newInsights),
+          generated_date: now,
+          picks_count_at_generation: myPicks.length,
+        });
+      } else {
+        await base44.entities.AICoachInsight.create({
+          user_email: user.email,
+          insights_json: JSON.stringify(newInsights),
+          generated_date: now,
+          picks_count_at_generation: myPicks.length,
+        });
+      }
+    }
+
+    setInsights(newInsights);
     setGenerated(true);
+    setLastGeneratedDate(now);
     setLoading(false);
   };
 
@@ -187,10 +237,15 @@ Budi konkretan, koristi stvarne podatke korisnika.`;
           </div>
         </div>
         {generated && (
-          <button onClick={generate} disabled={loading}
-            className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div title={!canRefresh() ? 'Već generirano danas. Sutra možeš opet.' : 'Osvježi (1x dnevno)'}>
+            <button
+              onClick={() => canRefresh() && !loading && generate()}
+              disabled={loading || !canRefresh()}
+              className={`p-2 rounded-lg transition-colors text-muted-foreground ${canRefresh() && !loading ? 'hover:bg-secondary hover:text-foreground' : 'opacity-40 cursor-not-allowed'}`}
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         )}
       </div>
 

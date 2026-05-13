@@ -1,0 +1,59 @@
+{
+  "name": "AICoachInsight",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "generated_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "insights_json": {
+      "type": "string"
+    },
+    "picks_count_at_generation": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_email",
+    "generated_date",
+    "insights_json"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
