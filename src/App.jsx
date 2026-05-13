@@ -89,7 +89,6 @@ const AuthenticatedApp = () => {
         <Route path="/kako-igrati" element={<LegalPage />} />
         <Route path="/korisnik/:userId" element={<PublicProfile />} />
         <Route path="/admin/korisnici" element={<AdminUsers />} />
-        <Route path="/analitika" element={<Analitika />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown, BarChart2 } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,6 @@ const primaryNav = [
 ];
 
 const moreNav = [
-  { path: '/analitika', label: 'Analitika', icon: BarChart2 },
   { path: '/statistika', label: 'Moja Statistika', icon: Activity },
   { path: '/predictor', label: 'AI Predictor', icon: Sparkles },
   { path: '/streak', label: 'Daily Streak', icon: Flame },
