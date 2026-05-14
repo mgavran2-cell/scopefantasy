@@ -309,7 +309,7 @@ export default function Profile() {
         <div className="mb-8 space-y-4">
           {user?.role === 'admin' && (
             <Link
-              to="/admin/natjecanja"
+              to="/admin"
               className="flex items-center gap-3 w-full px-5 py-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/15 transition-all"
             >
               <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center shrink-0">
