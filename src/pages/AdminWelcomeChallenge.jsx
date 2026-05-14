@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, CheckCircle2, Star } from 'lucide-react';
 
@@ -95,7 +96,7 @@ export default function AdminWelcomeChallenge() {
   const updateNewPick = (i, key, val) => setNewPicks(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
 
   if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" /></div>;
-  if (user?.role !== 'admin') return <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>;
+  if (!isOwner(user)) return <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">

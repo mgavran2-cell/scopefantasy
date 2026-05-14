@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, Trophy, ChevronDown, ChevronUp, Star, Play, AlertTriangle, Archive } from 'lucide-react';
 import ContestWinnersPanel from '../components/admin/ContestWinnersPanel';
@@ -160,7 +161,7 @@ export default function AdminContests() {
     </div>
   );
 
-  if (user?.role !== 'admin') return (
+  if (!isOwner(user)) return (
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 

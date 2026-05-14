@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion } from 'framer-motion';
 import { Handshake, Ticket, Webhook, Plus, ToggleLeft, ToggleRight, Send, RefreshCw, Copy, CheckCircle2, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -173,7 +174,7 @@ export default function AdminPartneri() {
   const init = async () => {
     const me = await base44.auth.me();
     setUser(me);
-    if (me?.role === 'admin') await loadData();
+    if (isOwner(me)) await loadData();
     setLoading(false);
   };
 
@@ -231,7 +232,7 @@ export default function AdminPartneri() {
   };
 
   if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" /></div>;
-  if (user?.role !== 'admin') return <div className="text-center py-20 text-muted-foreground">Nemaš pristup.</div>;
+  if (!isOwner(user)) return <div className="text-center py-20 text-muted-foreground">Nemaš pristup.</div>;
 
   const filteredVouchers = vouchers.filter(v => {
     if (voucherFilter !== 'all' && v.status !== voucherFilter) return false;

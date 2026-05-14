@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion } from 'framer-motion';
 import { Users, ShieldAlert, Trash2, Play, RefreshCw, Mail, Star } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,7 +18,7 @@ export default function AdminUsers() {
   const init = async () => {
     const me = await base44.auth.me();
     setUser(me);
-    if (me?.role === 'admin') {
+    if (isOwner(me)) {
       await loadUsers();
     }
     setLoading(false);
@@ -58,7 +59,7 @@ export default function AdminUsers() {
     </div>
   );
 
-  if (user?.role !== 'admin') return (
+  if (!isOwner(user)) return (
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 

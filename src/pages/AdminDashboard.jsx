@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Trophy, Gift, Flame, Star, Users, Handshake,
@@ -143,7 +144,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     base44.auth.me().then(me => {
       setUser(me);
-      if (me?.role !== 'admin') navigate('/');
+      if (!isOwner(me)) navigate('/');
       setLoading(false);
     });
   }, []);
@@ -154,7 +155,7 @@ export default function AdminDashboard() {
     </div>
   );
 
-  if (user?.role !== 'admin') return (
+  if (!isOwner(user)) return (
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 

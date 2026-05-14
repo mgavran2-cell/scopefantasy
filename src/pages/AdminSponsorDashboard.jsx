@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion } from 'framer-motion';
 import { Star, MousePointerClick, Users, TrendingUp, ExternalLink, Trophy } from 'lucide-react';
 
@@ -45,7 +46,7 @@ export default function AdminSponsorDashboard() {
     </div>
   );
 
-  if (user?.role !== 'admin') return (
+  if (!isOwner(user)) return (
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 

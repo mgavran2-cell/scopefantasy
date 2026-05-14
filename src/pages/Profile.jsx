@@ -13,6 +13,7 @@ import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import XPProgressBar, { LevelBadge } from '../components/profile/XPProgressBar';
 import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
 import { CheckCircle, Clock, Coins, Trophy, XCircle, BarChart2, Shield } from 'lucide-react';
+import { isOwner } from '@/lib/permissions';
 import Analitika from './Analitika';
 import moment from 'moment';
 
@@ -307,7 +308,7 @@ export default function Profile() {
 
       {activeTab === 'settings' && (
         <div className="mb-8 space-y-4">
-          {user?.role === 'admin' && (
+          {isOwner(user) && (
             <Link
               to="/admin"
               className="flex items-center gap-3 w-full px-5 py-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/15 transition-all"

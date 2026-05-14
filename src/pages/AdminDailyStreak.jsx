@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isOwner } from '@/lib/permissions';
 import { motion } from 'framer-motion';
 import { Plus, CheckCircle2, XCircle, Users, Calendar, Database, Play } from 'lucide-react';
 import { toast } from 'sonner';
@@ -185,7 +186,7 @@ export default function AdminDailyStreak() {
     </div>
   );
 
-  if (user?.role !== 'admin') return (
+  if (!isOwner(user)) return (
     <div className="text-center py-20 text-muted-foreground">Nemaš pristup ovoj stranici.</div>
   );
 
