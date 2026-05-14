@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
+import RootPage from './pages/RootPage';
 import Contests from './pages/Contests';
 import ContestDetail from './pages/ContestDetail';
 import MyPicks from './pages/MyPicks';
@@ -66,7 +67,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<RootPage />} />
         <Route path="/natjecanja" element={<Contests />} />
         <Route path="/natjecanje/:id" element={<ContestDetail />} />
         <Route path="/moji-odabiri" element={<MyPicks />} />
