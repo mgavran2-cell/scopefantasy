@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { TrendingUp, Trophy, Target, Coins, Users, BarChart2 } from 'lucide-react';
+import { TrendingUp, Trophy, Target, Coins, Users, BarChart2, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import DailyLoginBonusWidget from '../components/dashboard/DailyLoginBonusWidget';
-import AIInsightsWidget from '../components/dashboard/AIInsightsWidget';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Legend, Area, AreaChart,
@@ -36,7 +36,6 @@ export default function Dashboard() {
   const [myStats, setMyStats]         = useState({ winRate: 0, tokensWon: 0, total: 0, won: 0 });
   const [myPicksData, setMyPicksData] = useState([]);
   const [contestMapData, setContestMapData] = useState({});
-  const [activeContests, setActiveContests] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +56,6 @@ export default function Dashboard() {
     const myPicks = allPicks.filter(p => (p.user_email || p.created_by) === me.email);
     setMyPicksData(myPicks);
     setContestMapData(contestMap);
-    setActiveContests(allContests.filter(c => c.status === 'active').slice(0, 5));
 
     // --- My stats ---
     let won = 0, tokensWon = 0;
@@ -156,11 +154,38 @@ export default function Dashboard() {
         <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
       </div>
 
-      {/* AI Insights */}
-      <AIInsightsWidget
-        myPicks={myPicksData}
-        contestMap={contestMapData}
-      />
+      {/* Premium Card */}
+      <Link to="/premium" className="block mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl p-5 bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 border border-primary/25 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-base">✨ Premium</span>
+                  {user?.subscription_active === true && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">✓ Aktivno</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">Tvoj AI Coach + AI Analiza + više</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-primary font-bold text-sm shrink-0">
+              {user?.subscription_active !== true && (
+                <span className="text-xs text-muted-foreground mr-1">Saznaj više</span>
+              )}
+              <span>→</span>
+            </div>
+          </div>
+        </motion.div>
+      </Link>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

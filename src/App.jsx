@@ -37,6 +37,7 @@ import AdminPartneri from './pages/AdminPartneri';
 import MojiVoucheri from './pages/MojiVoucheri';
 import PublicProfile from './pages/PublicProfile';
 import Povijest from './pages/Povijest';
+import Premium from './pages/Premium';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -97,6 +98,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/partneri" element={<AdminPartneri />} />
         <Route path="/moji-voucheri" element={<MojiVoucheri />} />
         <Route path="/povijest" element={<Povijest />} />
+        <Route path="/premium" element={<Premium />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

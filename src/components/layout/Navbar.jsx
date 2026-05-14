@@ -16,7 +16,7 @@ const primaryNav = [
 const moreNav = [
   { path: '/profil',      label: 'Profil',    icon: User },
   { path: '/prijatelji',  label: 'Prijatelji', icon: Heart },
-  { path: '/predictor',   label: 'Premium',   icon: Sparkles },
+  { path: '/premium',     label: 'Premium',   icon: Sparkles },
 ];
 
 export default function Navbar({ tokenBalance }) {
