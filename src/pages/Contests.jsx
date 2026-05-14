@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Search, Layers, Zap, ListChecks, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import { Trophy, Search, Layers, Zap, ListChecks, SlidersHorizontal, X, ChevronDown, Flame, Swords } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useOutletContext } from 'react-router-dom';
 import ContestCard from '../components/contests/ContestCard';
@@ -8,6 +8,8 @@ import ParlayBuilder from './ParlayBuilder';
 import DailyChallengePage from './DailyChallengePage';
 import HokejComingSoon from '../components/sports/HokejComingSoon';
 import PikadoComingSoon from '../components/sports/PikadoComingSoon';
+import DailyStreakPanel from '../components/panels/DailyStreakPanel';
+import DuelsPanel from '../components/panels/DuelsPanel';
 
 const sportFilters = ['Svi', 'Nogomet', 'Košarka', 'Tenis', 'Formula 1', 'MMA', 'Hokej', 'Pikado'];
 const COMING_SOON_SPORTS = ['Hokej', 'Pikado'];
@@ -26,9 +28,11 @@ const TAG_STYLE = {
 };
 
 const TABS = [
-  { key: 'pickem', label: 'Pick\'em', icon: ListChecks, desc: 'Predvidi ishode igrača' },
-  { key: 'parlay', label: 'Parlay', icon: Layers, desc: 'Kombinirani listić' },
-  { key: 'izazovi', label: 'Izazovi', icon: Zap, desc: 'Dnevni zadaci' },
+  { key: 'pickem',       label: 'Pick\'em',     icon: ListChecks, emoji: '🎯' },
+  { key: 'parlay',       label: 'Parlay',       icon: Layers,     emoji: '🔗' },
+  { key: 'izazovi',      label: 'Izazovi',      icon: Zap,        emoji: '⚡' },
+  { key: 'daily-streak', label: 'Daily Streak', icon: Flame,      emoji: '🔥' },
+  { key: 'dueli',        label: 'Dueli',        icon: Swords,     emoji: '⚔️' },
 ];
 
 const STAKE_RANGES = [
@@ -253,42 +257,54 @@ function PickEmTab() {
 }
 
 export default function Contests() {
-  const [activeTab, setActiveTab] = useState('pickem');
+  const { loadBalance } = useOutletContext();
+
+  // Read ?tab= from URL, default to 'pickem'
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = TABS.find(t => t.key === urlParams.get('tab'))?.key || 'pickem';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    const url = new URL(window.location);
+    url.searchParams.set('tab', key);
+    window.history.replaceState({}, '', url);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black mb-2">Igraj</h1>
-        <p className="text-muted-foreground">Odaberi način igre i kreni!</p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-black mb-1">Igraj</h1>
+        <p className="text-muted-foreground text-sm">Odaberi način igre i kreni!</p>
       </div>
 
-      {/* Mode tabs */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      {/* Tab bar — horizontally scrollable */}
+      <div className="flex gap-2 mb-8 overflow-x-auto pb-1">
         {TABS.map(tab => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.key;
           return (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-all font-semibold ${
+              onClick={() => handleTabChange(tab.key)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
                 isActive
-                  ? 'bg-primary/10 border-primary/40 text-primary'
-                  : 'bg-card border-border/40 text-muted-foreground hover:text-foreground hover:border-border'
+                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-sm font-bold">{tab.label}</span>
-              <span className="text-xs opacity-70 hidden sm:block">{tab.desc}</span>
+              <span>{tab.emoji}</span>
+              {tab.label}
             </button>
           );
         })}
       </div>
 
       {/* Tab content */}
-      {activeTab === 'pickem' && <PickEmTab />}
-      {activeTab === 'parlay' && <ParlayBuilder embedded />}
-      {activeTab === 'izazovi' && <DailyChallengePage embedded />}
+      {activeTab === 'pickem'       && <PickEmTab />}
+      {activeTab === 'parlay'       && <ParlayBuilder embedded />}
+      {activeTab === 'izazovi'      && <DailyChallengePage embedded />}
+      {activeTab === 'daily-streak' && <DailyStreakPanel loadBalance={loadBalance} />}
+      {activeTab === 'dueli'        && <DuelsPanel loadBalance={loadBalance} />}
     </div>
   );
 }
