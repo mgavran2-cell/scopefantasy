@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { TrendingUp, Trophy, Target, Coins, Users, BarChart2, Sparkles } from 'lucide-react';
+import { TrendingUp, Trophy, Target, Coins, Users, BarChart2, Sparkles, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DailyLoginBonusWidget from '../components/dashboard/DailyLoginBonusWidget';
+import DailyStreakMiniWidget from '../components/dashboard/DailyStreakMiniWidget';
+import ContestCard from '../components/contests/ContestCard';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Legend, Area, AreaChart,
@@ -34,8 +36,7 @@ export default function Dashboard() {
   const [sportBreakdown, setSportBreakdown] = useState([]);
   const [globalStats, setGlobalStats] = useState({ avgWinRate: 0, avgTokens: 0 });
   const [myStats, setMyStats]         = useState({ winRate: 0, tokensWon: 0, total: 0, won: 0 });
-  const [myPicksData, setMyPicksData] = useState([]);
-  const [contestMapData, setContestMapData] = useState({});
+  const [activeContests, setActiveContests] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -46,6 +47,10 @@ export default function Dashboard() {
       ]);
       setUser(me);
       processData(me, allPicks, allContests);
+
+      // Top active contests
+      const active = allContests.filter(c => c.status === 'active').slice(0, 5);
+      setActiveContests(active);
     })();
   }, []);
 
@@ -54,10 +59,7 @@ export default function Dashboard() {
     allContests.forEach(c => { contestMap[c.id] = c; });
 
     const myPicks = allPicks.filter(p => (p.user_email || p.created_by) === me.email);
-    setMyPicksData(myPicks);
-    setContestMapData(contestMap);
 
-    // --- My stats ---
     let won = 0, tokensWon = 0;
     myPicks.forEach(p => {
       if (p.status === 'won') won++;
@@ -66,7 +68,6 @@ export default function Dashboard() {
     const myWinRate = myPicks.length > 0 ? (won / myPicks.length) * 100 : 0;
     setMyStats({ winRate: myWinRate, tokensWon, total: myPicks.length, won });
 
-    // --- Global average win rate ---
     const userMap = {};
     allPicks.forEach(p => {
       const email = p.user_email || p.created_by;
@@ -80,36 +81,31 @@ export default function Dashboard() {
     const avgTokens  = users.length > 0 ? users.reduce((s, u) => s + u.tokensWon, 0) / users.length : 0;
     setGlobalStats({ avgWinRate, avgTokens });
 
-    // --- Weekly performance (last 8 weeks) ---
     const weeks = [];
     for (let i = 7; i >= 0; i--) {
       const start = moment().subtract(i, 'weeks').startOf('isoWeek');
       const end   = moment().subtract(i, 'weeks').endOf('isoWeek');
       const label = `T${moment().subtract(i, 'weeks').isoWeek()}`;
-
-      const myW = myPicks.filter(p => moment(p.created_date).isBetween(start, end));
+      const myW  = myPicks.filter(p => moment(p.created_date).isBetween(start, end));
       const allW = allPicks.filter(p => moment(p.created_date).isBetween(start, end));
-
-      const myWR  = myW.length > 0 ? (myW.filter(p => p.status === 'won').length / myW.length) * 100 : null;
+      const myWR  = myW.length > 0  ? (myW.filter(p => p.status === 'won').length / myW.length) * 100   : null;
       const allWR = allW.length > 0 ? (allW.filter(p => p.status === 'won').length / allW.length) * 100 : null;
-
       weeks.push({ label, 'Moj Win %': myWR, 'Prosjek %': allWR });
     }
     setWeeklyData(weeks);
 
-    // --- Daily token earnings (last 14 days) ---
     const days = [];
     for (let i = 13; i >= 0; i--) {
-      const day   = moment().subtract(i, 'days');
-      const label = day.format('DD.MM');
+      const day = moment().subtract(i, 'days');
       const dayPicks = myPicks.filter(p => moment(p.created_date).isSame(day, 'day'));
-      const earned   = dayPicks.reduce((s, p) => s + (p.tokens_won || 0), 0);
-      const spent    = dayPicks.reduce((s, p) => s + (p.tokens_spent || 0), 0);
-      days.push({ label, 'Zarađeno': earned, 'Potrošeno': spent });
+      days.push({
+        label: day.format('DD.MM'),
+        'Zarađeno': dayPicks.reduce((s, p) => s + (p.tokens_won || 0), 0),
+        'Potrošeno': dayPicks.reduce((s, p) => s + (p.tokens_spent || 0), 0),
+      });
     }
     setDailyTokens(days);
 
-    // --- Sport breakdown ---
     const sportMap = {};
     myPicks.forEach(p => {
       const sport = contestMap[p.contest_id]?.sport || 'Ostalo';
@@ -117,12 +113,13 @@ export default function Dashboard() {
       sportMap[sport].total++;
       if (p.status === 'won') sportMap[sport].wins++;
     });
-    const breakdown = Object.entries(sportMap).map(([sport, s]) => ({
-      sport,
-      'Win %': s.total > 0 ? parseFloat(((s.wins / s.total) * 100).toFixed(1)) : 0,
-      Igara: s.total,
-    })).sort((a, b) => b['Win %'] - a['Win %']);
-    setSportBreakdown(breakdown);
+    setSportBreakdown(
+      Object.entries(sportMap).map(([sport, s]) => ({
+        sport,
+        'Win %': s.total > 0 ? parseFloat(((s.wins / s.total) * 100).toFixed(1)) : 0,
+        Igara: s.total,
+      })).sort((a, b) => b['Win %'] - a['Win %'])
+    );
 
     setLoading(false);
   };
@@ -135,27 +132,75 @@ export default function Dashboard() {
     );
   }
 
+  // Welcome banner condition
+  const showWelcomeBanner = user?.welcome_bonus_eligible !== false && !user?.welcome_bonus_claimed;
+
   const statCards = [
-    { label: 'Moj Win Rate',    value: `${myStats.winRate.toFixed(1)}%`,   sub: `Prosjek: ${globalStats.avgWinRate.toFixed(1)}%`, icon: TrendingUp, color: 'text-primary' },
-    { label: 'Ukupno odigrano', value: myStats.total,                       sub: `${myStats.won} pobjeda`, icon: Target, color: 'text-accent' },
-    { label: 'Ukupno zarađeno', value: myStats.tokensWon.toLocaleString(),  sub: `Prosjek: ${Math.round(globalStats.avgTokens).toLocaleString()}`, icon: Coins, color: 'text-yellow-400' },
-    { label: 'Stanje tokena',   value: tokenBalance?.toLocaleString() ?? 0, sub: 'Trenutno stanje', icon: Trophy, color: 'text-fuchsia-400' },
+    { label: 'Stanje tokena',   value: tokenBalance?.toLocaleString() ?? 0, sub: 'Trenutno stanje',                                            icon: Trophy,    color: 'text-fuchsia-400' },
+    { label: 'Ukupno odigrano', value: myStats.total,                        sub: `${myStats.won} pobjeda`,                                     icon: Target,    color: 'text-accent' },
+    { label: 'Win Rate',        value: `${myStats.winRate.toFixed(1)}%`,     sub: `Prosjek: ${globalStats.avgWinRate.toFixed(1)}%`,             icon: TrendingUp, color: 'text-primary' },
+    { label: 'Ukupno zarađeno', value: myStats.tokensWon.toLocaleString(),   sub: `Prosjek: ${Math.round(globalStats.avgTokens).toLocaleString()}`, icon: Coins, color: 'text-yellow-400' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-black mb-1">Dashboard</h1>
-        <p className="text-muted-foreground text-sm">Analitika tvojih rezultata i usporedba s platformom</p>
-      </motion.div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-      {/* Daily Login Bonus */}
-      <div className="mb-8">
-        <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
+      {/* SEKCIJA 1: Welcome Banner */}
+      {showWelcomeBanner && (
+        <Link to="/welcome-challenge">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl p-5 bg-gradient-to-r from-yellow-500/20 via-orange-500/10 to-primary/15 border border-yellow-500/30 hover:border-yellow-500/60 hover:shadow-lg hover:shadow-yellow-500/10 transition-all"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">🎁</span>
+                <div>
+                  <p className="font-black text-base text-yellow-400">Welcome Challenge</p>
+                  <p className="text-sm text-muted-foreground">Osvoji 5 000 bonus tokena za početak!</p>
+                </div>
+              </div>
+              <span className="text-yellow-400 font-bold text-sm shrink-0 flex items-center gap-1">
+                Kreni <ChevronRight className="w-4 h-4" />
+              </span>
+            </div>
+          </motion.div>
+        </Link>
+      )}
+
+      {/* SEKCIJA 2: Dnevna aktivnost */}
+      <div>
+        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-3">Dnevna aktivnost</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
+          <DailyStreakMiniWidget />
+        </div>
       </div>
 
-      {/* Premium Card */}
-      <Link to="/premium" className="block mb-8">
+      {/* SEKCIJA 3: Brza statistika */}
+      <div>
+        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-3">Tvoja statistika</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {statCards.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="p-5 rounded-2xl bg-card border border-border/50"
+            >
+              <s.icon className={`w-5 h-5 mb-3 ${s.color}`} />
+              <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+              <p className="text-sm font-semibold mt-0.5">{s.label}</p>
+              <p className="text-xs text-muted-foreground mt-1">{s.sub}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* SEKCIJA 4: Premium CTA */}
+      <Link to="/premium">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,167 +232,170 @@ export default function Dashboard() {
         </motion.div>
       </Link>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {statCards.map((s, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="p-5 rounded-2xl bg-card border border-border/50"
-          >
-            <s.icon className={`w-5 h-5 mb-3 ${s.color}`} />
-            <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-            <p className="text-sm font-semibold mt-0.5">{s.label}</p>
-            <p className="text-xs text-muted-foreground mt-1">{s.sub}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Win Rate Trend */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="rounded-2xl bg-card border border-border/50 p-6 mb-6"
-      >
-        <div className="flex items-center gap-2 mb-5">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h2 className="font-bold">Win Rate trend — zadnjih 8 tjedana</h2>
+      {/* SEKCIJA 5: Aktivna natjecanja */}
+      {activeContests.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Aktivna natjecanja</h2>
+            <Link to="/natjecanja" className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
+              Vidi sve <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {activeContests.map((contest, i) => (
+              <ContestCard key={contest.id} contest={contest} index={i} />
+            ))}
+          </div>
         </div>
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={weeklyData} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="label" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-            <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} unit="%" domain={[0, 100]} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
-            <Line type="monotone" dataKey="Moj Win %" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(var(--primary))' }} connectNulls />
-            <Line type="monotone" dataKey="Prosjek %" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="5 5" dot={false} connectNulls />
-          </LineChart>
-        </ResponsiveContainer>
-      </motion.div>
+      )}
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
-        {/* Daily Token Flow */}
+      {/* Grafovi */}
+      <div>
+        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-4">Analitika</h2>
+
+        {/* Win Rate Trend */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="rounded-2xl bg-card border border-border/50 p-6"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="rounded-2xl bg-card border border-border/50 p-6 mb-6"
         >
           <div className="flex items-center gap-2 mb-5">
-            <Coins className="w-5 h-5 text-yellow-400" />
-            <h2 className="font-bold">Token aktivnost — zadnjih 14 dana</h2>
+            <TrendingUp className="w-5 h-5 text-primary" />
+            <h3 className="font-bold">Win Rate trend — zadnjih 8 tjedana</h3>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={dailyTokens} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
-              <defs>
-                <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={weeklyData} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="label" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-              <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+              <XAxis dataKey="label" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
+              <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} unit="%" domain={[0, 100]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Area type="monotone" dataKey="Zarađeno" stroke="hsl(var(--primary))" fill="url(#earnGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="Potrošeno" stroke="hsl(var(--destructive))" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" />
-            </AreaChart>
+              <Line type="monotone" dataKey="Moj Win %" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(var(--primary))' }} connectNulls />
+              <Line type="monotone" dataKey="Prosjek %" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="5 5" dot={false} connectNulls />
+            </LineChart>
           </ResponsiveContainer>
         </motion.div>
 
-        {/* Sport Breakdown */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          {/* Daily Token Flow */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="rounded-2xl bg-card border border-border/50 p-6"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Coins className="w-5 h-5 text-yellow-400" />
+              <h3 className="font-bold">Token aktivnost — zadnjih 14 dana</h3>
+            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={dailyTokens} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
+                <defs>
+                  <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="label" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Area type="monotone" dataKey="Zarađeno" stroke="hsl(var(--primary))" fill="url(#earnGrad)" strokeWidth={2} />
+                <Area type="monotone" dataKey="Potrošeno" stroke="hsl(var(--destructive))" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </motion.div>
+
+          {/* Sport Breakdown */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="rounded-2xl bg-card border border-border/50 p-6"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <BarChart2 className="w-5 h-5 text-accent" />
+              <h3 className="font-bold">Win % po sportu</h3>
+            </div>
+            {sportBreakdown.length === 0 ? (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">Nema podataka</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={sportBreakdown} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="sport" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                  <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} unit="%" domain={[0, 100]} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <ReferenceLine y={globalStats.avgWinRate} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" label={{ value: 'Prosjek', fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                  <Bar dataKey="Win %" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </motion.div>
+        </div>
+
+        {/* vs Platform comparison */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
           className="rounded-2xl bg-card border border-border/50 p-6"
         >
           <div className="flex items-center gap-2 mb-5">
-            <BarChart2 className="w-5 h-5 text-accent" />
-            <h2 className="font-bold">Win % po sportu</h2>
+            <Users className="w-5 h-5 text-fuchsia-400" />
+            <h3 className="font-bold">Usporedba s platformom</h3>
           </div>
-          {sportBreakdown.length === 0 ? (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
-              Nema podataka
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={sportBreakdown} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="sport" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-                <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} unit="%" domain={[0, 100]} />
-                <Tooltip content={<CustomTooltip />} />
-                <ReferenceLine y={globalStats.avgWinRate} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" label={{ value: 'Prosjek', fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-                <Bar dataKey="Win %" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
+          <div className="grid sm:grid-cols-2 gap-6">
+            {[
+              { label: 'Win Rate', mine: myStats.winRate, avg: globalStats.avgWinRate, unit: '%', color: 'hsl(var(--primary))' },
+              { label: 'Ukupno zarađeno (tokeni)', mine: myStats.tokensWon, avg: globalStats.avgTokens, unit: '', color: 'hsl(var(--accent))' },
+            ].map((item, i) => {
+              const max = Math.max(item.mine, item.avg, 1);
+              const myPct  = (item.mine / max) * 100;
+              const avgPct = (item.avg  / max) * 100;
+              const better = item.mine >= item.avg;
+              return (
+                <div key={i}>
+                  <p className="font-semibold text-sm mb-3">{item.label}</p>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="font-semibold">Ti</span>
+                        <span style={{ color: item.color }} className="font-black">
+                          {typeof item.mine === 'number' && item.unit === '%' ? item.mine.toFixed(1) : Math.round(item.mine).toLocaleString()}{item.unit}
+                        </span>
+                      </div>
+                      <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${myPct}%` }}
+                          transition={{ duration: 0.8, delay: 0.6 + i * 0.1 }}
+                          className="h-full rounded-full"
+                          style={{ background: item.color }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-muted-foreground">Prosjek platforme</span>
+                        <span className="text-muted-foreground font-semibold">
+                          {typeof item.avg === 'number' && item.unit === '%' ? item.avg.toFixed(1) : Math.round(item.avg).toLocaleString()}{item.unit}
+                        </span>
+                      </div>
+                      <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${avgPct}%` }}
+                          transition={{ duration: 0.8, delay: 0.7 + i * 0.1 }}
+                          className="h-full rounded-full bg-muted-foreground/50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p className={`text-xs mt-2 font-semibold ${better ? 'text-primary' : 'text-destructive'}`}>
+                    {better ? '↑ Iznad prosjeka' : '↓ Ispod prosjeka'}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
       </div>
 
-      {/* vs Platform comparison */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        className="rounded-2xl bg-card border border-border/50 p-6"
-      >
-        <div className="flex items-center gap-2 mb-5">
-          <Users className="w-5 h-5 text-fuchsia-400" />
-          <h2 className="font-bold">Usporedba s platformom</h2>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-6">
-          {[
-            { label: 'Win Rate', mine: myStats.winRate, avg: globalStats.avgWinRate, unit: '%', color: 'hsl(var(--primary))' },
-            { label: 'Ukupno zarađeno (tokeni)', mine: myStats.tokensWon, avg: globalStats.avgTokens, unit: '', color: 'hsl(var(--accent))' },
-          ].map((item, i) => {
-            const max = Math.max(item.mine, item.avg, 1);
-            const myPct  = (item.mine / max) * 100;
-            const avgPct = (item.avg  / max) * 100;
-            const better = item.mine >= item.avg;
-            return (
-              <div key={i}>
-                <p className="font-semibold text-sm mb-3">{item.label}</p>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="font-semibold">Ti</span>
-                      <span style={{ color: item.color }} className="font-black">
-                        {typeof item.mine === 'number' && item.unit === '%' ? item.mine.toFixed(1) : Math.round(item.mine).toLocaleString()}{item.unit}
-                      </span>
-                    </div>
-                    <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${myPct}%` }}
-                        transition={{ duration: 0.8, delay: 0.6 + i * 0.1 }}
-                        className="h-full rounded-full"
-                        style={{ background: item.color }}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Prosjek platforme</span>
-                      <span className="text-muted-foreground font-semibold">
-                        {typeof item.avg === 'number' && item.unit === '%' ? item.avg.toFixed(1) : Math.round(item.avg).toLocaleString()}{item.unit}
-                      </span>
-                    </div>
-                    <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${avgPct}%` }}
-                        transition={{ duration: 0.8, delay: 0.7 + i * 0.1 }}
-                        className="h-full rounded-full bg-muted-foreground/50"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <p className={`text-xs mt-2 font-semibold ${better ? 'text-primary' : 'text-destructive'}`}>
-                  {better ? '↑ Iznad prosjeka' : '↓ Ispod prosjeka'}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </motion.div>
     </div>
   );
 }
