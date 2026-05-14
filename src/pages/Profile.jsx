@@ -12,7 +12,7 @@ import ReferralSection from '../components/profile/ReferralSection';
 import WelcomeBonusBanner from '../components/profile/WelcomeBonusBanner';
 import XPProgressBar, { LevelBadge } from '../components/profile/XPProgressBar';
 import { awardXP, XP_REWARDS } from '@/lib/xpSystem';
-import { CheckCircle, Clock, Coins, Trophy, XCircle, BarChart2 } from 'lucide-react';
+import { CheckCircle, Clock, Coins, Trophy, XCircle, BarChart2, Shield } from 'lucide-react';
 import Analitika from './Analitika';
 import moment from 'moment';
 
@@ -306,7 +306,22 @@ export default function Profile() {
       )}
 
       {activeTab === 'settings' && (
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
+          {user?.role === 'admin' && (
+            <Link
+              to="/admin/natjecanja"
+              className="flex items-center gap-3 w-full px-5 py-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/15 transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center shrink-0">
+                <Shield className="w-5 h-5 text-yellow-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-black text-yellow-400 text-sm">Admin Panel</p>
+                <p className="text-xs text-muted-foreground">Upravljaj natjecanjima, korisnicima i platformom</p>
+              </div>
+              <span className="text-yellow-400/60 text-lg">→</span>
+            </Link>
+          )}
           <ProfileSettings
             user={user}
             onSaved={handleSettingsSaved}

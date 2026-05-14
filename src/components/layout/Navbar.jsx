@@ -1,42 +1,29 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Activity, Sparkles, Wallet, Heart, Flame, Rss, Shield, Star, Swords, ChevronDown, Ticket, Handshake, History } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Sparkles, Heart, Rss, ChevronDown } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 
 const primaryNav = [
-  { path: '/', label: 'Početna', icon: Home },
-  { path: '/natjecanja', label: 'Natjecanja', icon: Trophy },
-  { path: '/moji-odabiri', label: 'Odabiri', icon: ListChecks },
-  { path: '/ljestvica', label: 'Ljestvica', icon: Users },
-  { path: '/feed', label: 'Zajednica', icon: Rss },
-  { path: '/novcanik', label: 'Novčanik', icon: Wallet },
+  { path: '/',            label: 'Početna',  icon: Home },
+  { path: '/natjecanja',  label: 'Igraj',    icon: Trophy },
+  { path: '/moji-odabiri', label: 'Listići', icon: ListChecks },
+  { path: '/ljestvica',   label: 'Ljestvica', icon: Users },
+  { path: '/feed',        label: 'Zajednica', icon: Rss },
 ];
 
 const moreNav = [
-  { path: '/statistika', label: 'Moja Statistika', icon: Activity },
-  { path: '/predictor', label: 'AI Analiza statistike', icon: Sparkles },
-  { path: '/streak', label: 'Daily Streak', icon: Flame },
-  { path: '/dueli', label: 'Dueli', icon: Swords },
-  { path: '/prijatelji', label: 'Prijatelji', icon: Heart },
-  { path: '/profil', label: 'Profil', icon: User },
-  { path: '/moji-voucheri', label: 'Moji Voucheri', icon: Ticket },
-  { path: '/povijest', label: 'Povijest listića', icon: History },
+  { path: '/profil',      label: 'Profil',    icon: User },
+  { path: '/prijatelji',  label: 'Prijatelji', icon: Heart },
+  { path: '/predictor',   label: 'Premium',   icon: Sparkles },
 ];
-
-const allNav = [...primaryNav, ...moreNav];
 
 export default function Navbar({ tokenBalance }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const moreRef = useRef(null);
-
-  useEffect(() => {
-    base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
-  }, []);
 
   // Close "More" dropdown when clicking outside
   useEffect(() => {
@@ -107,7 +94,7 @@ export default function Navbar({ tokenBalance }) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 6, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
+                      className="absolute top-full right-0 mt-2 w-44 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
                     >
                       {moreNav.map(item => {
                         const Icon = item.icon;
@@ -136,30 +123,11 @@ export default function Navbar({ tokenBalance }) {
 
             {/* Right side */}
             <div className="flex items-center gap-2 shrink-0">
-              {isAdmin && (
-                <div className="hidden md:flex items-center gap-1">
-                  <Link
-                    to="/admin/natjecanja"
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      location.pathname.startsWith('/admin') ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
-                    }`}
-                  >
-                    <Shield className="w-4 h-4" /> Admin
-                  </Link>
-                  <Link
-                    to="/admin/partneri"
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      location.pathname === '/admin/partneri' ? 'bg-yellow-500/20 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-500/10'
-                    }`}
-                  >
-                    <Handshake className="w-4 h-4" /> Partneri
-                  </Link>
-                </div>
-              )}
               <NotificationBell />
               <Link
                 to="/novcanik"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/25 hover:bg-primary/25 transition-all"
+                title="Otvori Novčanik"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/25 hover:bg-primary/25 transition-all cursor-pointer"
               >
                 <Coins className="w-4 h-4 text-primary" />
                 <span className="font-bold text-primary text-sm">{tokenBalance?.toLocaleString() ?? 0}</span>
@@ -185,20 +153,7 @@ export default function Navbar({ tokenBalance }) {
             className="fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border md:hidden max-h-[80vh] overflow-y-auto"
           >
             <div className="p-4 space-y-1">
-              {isAdmin && (
-                <>
-                  <Link
-                    to="/admin/natjecanja"
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                      location.pathname.startsWith('/admin') ? 'bg-yellow-500/10 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400 hover:bg-secondary'
-                    }`}
-                  >
-                    <Shield className="w-5 h-5" /> Admin Panel
-                  </Link>
-                </>
-              )}
-              {allNav.map(item => {
+              {[...primaryNav, ...moreNav].map(item => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
                 return (
