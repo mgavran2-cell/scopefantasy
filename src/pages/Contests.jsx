@@ -288,7 +288,7 @@ export default function Contests() {
       </div>
 
       {/* Tab bar — horizontally scrollable */}
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-1">
+      <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map(tab => {
           const isActive = activeTab === tab.key;
           return (

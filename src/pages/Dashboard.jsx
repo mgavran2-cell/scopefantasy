@@ -172,7 +172,7 @@ export default function Dashboard() {
       {/* SEKCIJA 2: Dnevna aktivnost */}
       <div>
         <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-3">Dnevna aktivnost</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DailyLoginBonusWidget onBalanceUpdate={loadBalance} />
           <DailyStreakMiniWidget />
         </div>
@@ -181,7 +181,7 @@ export default function Dashboard() {
       {/* SEKCIJA 3: Brza statistika */}
       <div>
         <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-3">Tvoja statistika</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {statCards.map((s, i) => (
             <motion.div
               key={i}
@@ -272,7 +272,7 @@ export default function Dashboard() {
             <TrendingUp className="w-5 h-5 text-primary" />
             <h3 className="font-bold">Win Rate trend — zadnjih 8 tjedana</h3>
           </div>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weeklyData} margin={{ top: 5, right: 10, bottom: 5, left: -10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="label" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
@@ -285,7 +285,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Daily Token Flow */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -349,7 +349,7 @@ export default function Dashboard() {
             <Users className="w-5 h-5 text-fuchsia-400" />
             <h3 className="font-bold">Usporedba s platformom</h3>
           </div>
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
               { label: 'Win Rate', mine: myStats.winRate, avg: globalStats.avgWinRate, unit: '%', color: 'hsl(var(--primary))' },
               { label: 'Ukupno zarađeno (tokeni)', mine: myStats.tokensWon, avg: globalStats.avgTokens, unit: '', color: 'hsl(var(--accent))' },

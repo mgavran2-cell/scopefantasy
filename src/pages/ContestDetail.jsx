@@ -211,7 +211,7 @@ export default function ContestDetail() {
 
       {/* Player picks */}
       {contest.players && contest.players.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-24 sm:mb-8">
           {contest.players.map((player, i) => (
             <PlayerPickCard
               key={player.name}

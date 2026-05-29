@@ -125,7 +125,7 @@ export default function DuelsPanel({ loadBalance }) {
       </div>
 
       {/* Filter chips */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+      <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {FILTERS.map(f => (
           <button
             key={f.key}

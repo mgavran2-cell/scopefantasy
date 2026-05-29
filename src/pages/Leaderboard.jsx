@@ -154,7 +154,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Main tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
         <button
           onClick={() => setTab('live')}
           className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${tab === 'live' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
@@ -178,7 +178,7 @@ export default function Leaderboard() {
       ) : (
         <>
           {/* Period filter */}
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
             {PERIODS.map(p => (
               <button
                 key={p.key}
@@ -204,7 +204,7 @@ export default function Leaderboard() {
             <>
               {/* Top 3 podium */}
               {entries.length >= 3 && (
-                <div className="grid grid-cols-3 gap-3 mb-8 items-end">
+                <div className="grid grid-cols-3 gap-2 mb-8 items-end">
                   {[1, 0, 2].map((rank) => {
                     const entry = entries[rank];
                     const Icon = topIcons[rank];
@@ -221,9 +221,9 @@ export default function Leaderboard() {
                         <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center mb-2">
                           <span className="font-black text-base">{entry.name?.charAt(0).toUpperCase()}</span>
                         </div>
-                        <p className="font-bold text-xs truncate max-w-full text-center">{entry.name}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{winRate}% pobjeda</p>
-                        <p className="flex items-center gap-1 mt-1.5 text-sm font-black text-accent">
+                        <p className="font-bold text-[10px] sm:text-xs truncate max-w-full text-center">{entry.name}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">{winRate}%</p>
+                        <p className="flex items-center gap-0.5 mt-1.5 text-xs sm:text-sm font-black text-accent">
                           <Coins className="w-3.5 h-3.5" /> {entry.tokensWon.toLocaleString()}
                         </p>
                       </motion.div>
@@ -252,24 +252,26 @@ export default function Leaderboard() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.02 }}
-                      className={`flex items-center gap-4 p-4 rounded-xl border border-border/50 ${
+                      className={`flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl border border-border/50 ${
                         isMe ? 'bg-primary/5 border-primary/20' : 'bg-card'
                       }`}
                     >
-                      <span className="w-8 text-center font-black text-muted-foreground text-sm">{rank}</span>
-                      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                        <span className="font-bold text-sm">{entry.name?.charAt(0).toUpperCase()}</span>
+                      <span className="w-6 sm:w-8 text-center font-black text-muted-foreground text-xs sm:text-sm shrink-0">{rank}</span>
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                        <span className="font-bold text-xs sm:text-sm">{entry.name?.charAt(0).toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm truncate">
+                        <p className="font-bold text-xs sm:text-sm truncate">
                           {entry.name} {isMe && <span className="text-primary text-xs">(Ti)</span>}
                         </p>
-                        <p className="text-xs text-muted-foreground">{entry.wins} pobjeda · {entry.total} listića</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">{entry.wins}W · {entry.total}</p>
                       </div>
                       {!isMe && (
-                        <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />
+                        <div className="hidden sm:block">
+                          <FollowButton targetEmail={entry.email} targetName={entry.name} currentUserEmail={currentUser?.email} />
+                        </div>
                       )}
-                      <p className="flex items-center gap-1 font-bold text-primary text-sm w-20 justify-end">
+                      <p className="flex items-center gap-0.5 font-bold text-primary text-xs sm:text-sm shrink-0 justify-end">
                         <Coins className="w-3.5 h-3.5 shrink-0" /> {entry.tokensWon.toLocaleString()}
                       </p>
                     </motion.div>
