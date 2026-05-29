@@ -150,20 +150,23 @@ export default function Profile() {
       />
 
       {/* C) Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              activeTab === t.key
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="relative mb-6">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          {TABS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+                activeTab === t.key
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="absolute top-0 right-0 bottom-1 w-10 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Tab: Moji Odabiri */}

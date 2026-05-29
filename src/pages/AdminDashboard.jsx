@@ -173,8 +173,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tab bar — horizontally scrollable on mobile */}
-      <div className="overflow-x-auto pb-1 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 min-w-max">
+      <div className="relative mb-6">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {TABS.map(t => {
             const Icon = t.icon;
             const isActive = activeTab === t.key;
@@ -182,18 +182,19 @@ export default function AdminDashboard() {
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
                     : 'bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {t.label}
               </button>
             );
           })}
         </div>
+        <div className="absolute top-0 right-0 bottom-1 w-10 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Tab content */}

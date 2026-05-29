@@ -288,24 +288,27 @@ export default function Contests() {
       </div>
 
       {/* Tab bar — horizontally scrollable */}
-      <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
-        {TABS.map(tab => {
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => handleTabChange(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                isActive
-                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                  : 'bg-secondary text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span>{tab.emoji}</span>
-              {tab.label}
-            </button>
-          );
-        })}
+      <div className="relative mb-8">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          {TABS.map(tab => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                    : 'bg-secondary text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{tab.emoji}</span>
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="absolute top-0 right-0 bottom-1 w-10 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Tab content */}
