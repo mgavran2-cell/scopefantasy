@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Sparkles, Heart, Rss, ChevronDown } from 'lucide-react';
+import { Home, Trophy, ListChecks, Users, User, Coins, Menu, X, Sparkles, Heart, Rss, ChevronDown, HelpCircle } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -123,6 +123,13 @@ export default function Navbar({ tokenBalance }) {
 
             {/* Right side */}
             <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/faq"
+                title="Pomoć i česta pitanja"
+                className="hidden md:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Link>
               <NotificationBell />
               <Link
                 to="/novcanik"
@@ -153,7 +160,7 @@ export default function Navbar({ tokenBalance }) {
             className="fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border md:hidden max-h-[80vh] overflow-y-auto"
           >
             <div className="p-4 space-y-1">
-              {[...primaryNav, ...moreNav].map(item => {
+              {[...primaryNav, ...moreNav, { path: '/faq', label: 'Pomoć / FAQ', icon: HelpCircle }].map(item => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
                 return (

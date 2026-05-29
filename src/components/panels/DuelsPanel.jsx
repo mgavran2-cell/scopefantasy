@@ -155,6 +155,7 @@ export default function DuelsPanel({ loadBalance }) {
           <Swords className="w-12 h-12 mx-auto mb-4 opacity-20" />
           <p className="font-semibold">Nema dvoboja ovdje</p>
           <p className="text-sm mt-1">Idi na natjecanje i izazovi prijatelja!</p>
+          <a href="/faq" className="text-xs text-primary/70 hover:text-primary transition-colors mt-3 inline-block">Kako funkcioniraju dvoboji? →</a>
         </div>
       ) : (
         <div className="space-y-3">

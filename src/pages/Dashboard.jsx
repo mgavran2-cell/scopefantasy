@@ -232,6 +232,16 @@ export default function Dashboard() {
         </motion.div>
       </Link>
 
+      {/* Help link za nove korisnike */}
+      {myStats.total < 5 && (
+        <p className="text-xs text-muted-foreground text-center -mt-2">
+          Novi si?{' '}
+          <a href="/faq" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">
+            Pogledaj često postavljana pitanja →
+          </a>
+        </p>
+      )}
+
       {/* SEKCIJA 5: Aktivna natjecanja */}
       {activeContests.length > 0 && (
         <div>

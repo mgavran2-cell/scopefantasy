@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Search, Layers, Zap, ListChecks, SlidersHorizontal, X, ChevronDown, Flame, Swords } from 'lucide-react';
+import { Trophy, Search, Layers, Zap, ListChecks, SlidersHorizontal, X, ChevronDown, Flame, Swords, HelpCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useOutletContext } from 'react-router-dom';
 import ContestCard from '../components/contests/ContestCard';
@@ -273,9 +273,18 @@ export default function Contests() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-black mb-1">Igraj</h1>
-        <p className="text-muted-foreground text-sm">Odaberi način igre i kreni!</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black mb-1">Igraj</h1>
+          <p className="text-muted-foreground text-sm">Odaberi način igre i kreni!</p>
+        </div>
+        <a
+          href="/faq"
+          title="Kako funkcioniraju načini igre?"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:text-foreground text-xs font-semibold transition-all shrink-0 mt-1"
+        >
+          <HelpCircle className="w-3.5 h-3.5" /> Pomoć
+        </a>
       </div>
 
       {/* Tab bar — horizontally scrollable */}

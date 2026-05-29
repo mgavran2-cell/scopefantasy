@@ -71,6 +71,7 @@ export default function MyPicks() {
           <ListChecks className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="text-lg font-bold mb-2">Nema odabira</h3>
           <p className="text-muted-foreground">Sudjeluj u natjecanju i tvoji odabiri će se pojaviti ovdje.</p>
+          <a href="/faq#igranje" className="text-xs text-primary/70 hover:text-primary transition-colors mt-3 inline-block">Kako funkcionira Pick'em? →</a>
         </div>
       ) : (
         <div className="space-y-3">
