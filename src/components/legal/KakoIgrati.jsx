@@ -126,6 +126,11 @@ export default function KakoIgrati() {
           <a href="mailto:marko.gavran@outlook.com" className="text-primary underline underline-offset-2 hover:opacity-80">marko.gavran@outlook.com</a>
           {' '}(uskoro: info@scopefantasy.hr)
         </p>
+        <p className="mt-3">
+          <a href="/faq" className="text-primary underline underline-offset-2 hover:opacity-80">
+            → Pogledaj često postavljana pitanja (FAQ)
+          </a>
+        </p>
       </Section>
     </div>
   );

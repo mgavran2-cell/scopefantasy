@@ -111,6 +111,8 @@ export default function AppLayout() {
           <span className="text-border">|</span>
           <a href="/kako-igrati" className="hover:text-foreground transition-colors underline underline-offset-2">Kako igrati</a>
           <span className="text-border">|</span>
+          <a href="/faq" className="hover:text-foreground transition-colors underline underline-offset-2">FAQ</a>
+          <span className="text-border">|</span>
           Kontakt:{' '}
           <a href="mailto:marko.gavran@outlook.com" className="hover:text-foreground transition-colors underline underline-offset-2">
             marko.gavran@outlook.com

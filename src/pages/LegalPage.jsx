@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import PravilaKoristenja from '../components/legal/PravilaKoristenja';
 import PravilaPrivatnosti from '../components/legal/PravilaPrivatnosti';
 import KakoIgrati from '../components/legal/KakoIgrati';
+import FAQ from '../components/legal/FAQ';
 
 const CURRENT_DATE = '8. svibnja 2026.';
 
@@ -9,6 +10,7 @@ const PAGES = {
   '/pravila':     { title: 'Pravila korištenja',    version: 'Beta v0.1', Content: PravilaKoristenja },
   '/privatnost':  { title: 'Pravila o privatnosti', version: 'Beta v0.1', Content: PravilaPrivatnosti },
   '/kako-igrati': { title: 'Kako igrati',           version: 'Beta v0.1', Content: KakoIgrati },
+  '/faq':         { title: 'FAQ',                   version: 'Beta v0.1', Content: FAQ },
 };
 
 function Placeholder() {

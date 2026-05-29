@@ -97,6 +97,17 @@ export default function ProfileSettings({ user, onSaved, onAvatarClick }) {
         </button>
       </div>
 
+      {/* Help & FAQ */}
+      <div className="rounded-2xl bg-card border border-border/50 p-5">
+        <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wide mb-3">Pomoć</h3>
+        <a
+          href="/faq"
+          className="flex items-center gap-2 text-sm text-primary hover:opacity-80 transition-opacity underline underline-offset-2"
+        >
+          Pomoć i FAQ →
+        </a>
+      </div>
+
       {/* Danger zone */}
       <div className="rounded-2xl bg-card border border-destructive/20 p-5 space-y-3">
         <h3 className="font-bold text-sm text-destructive uppercase tracking-wide">Opasna zona</h3>

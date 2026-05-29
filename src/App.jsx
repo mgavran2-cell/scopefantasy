@@ -93,6 +93,7 @@ const AuthenticatedApp = () => {
         <Route path="/pravila" element={<LegalPage />} />
         <Route path="/privatnost" element={<LegalPage />} />
         <Route path="/kako-igrati" element={<LegalPage />} />
+        <Route path="/faq" element={<LegalPage />} />
         <Route path="/korisnik/:userId" element={<PublicProfile />} />
         <Route path="/admin/korisnici" element={<AdminUsers />} />
         <Route path="/admin" element={<AdminDashboard />} />
