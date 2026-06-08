@@ -6,6 +6,7 @@ import { TrendingUp, Trophy, Target, Coins, Users, BarChart2, Sparkles, ChevronR
 import { Link } from 'react-router-dom';
 import DailyLoginBonusWidget from '../components/dashboard/DailyLoginBonusWidget';
 import DailyStreakMiniWidget from '../components/dashboard/DailyStreakMiniWidget';
+import DailyReminderBanner from '../components/dashboard/DailyReminderBanner';
 import ContestCard from '../components/contests/ContestCard';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -168,6 +169,9 @@ export default function Dashboard() {
           </motion.div>
         </Link>
       )}
+
+      {/* Večernji podsjetnik za dnevni bonus */}
+      <DailyReminderBanner />
 
       {/* SEKCIJA 2: Dnevna aktivnost */}
       <div>
