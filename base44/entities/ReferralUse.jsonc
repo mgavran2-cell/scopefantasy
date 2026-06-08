@@ -1,0 +1,50 @@
+{
+  "name": "ReferralUse",
+  "type": "object",
+  "properties": {
+    "referrer_email": {
+      "type": "string"
+    },
+    "referred_email": {
+      "type": "string"
+    },
+    "referred_name": {
+      "type": "string"
+    },
+    "bonus_tokens": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "referrer_email",
+    "referred_email"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "data.referrer_email": "{{user.email}}"
+        },
+        {
+          "data.referred_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

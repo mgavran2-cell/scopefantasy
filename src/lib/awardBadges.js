@@ -6,14 +6,15 @@ import { BADGE_DEFINITIONS } from './badgeDefinitions';
  * Call this after significant user actions (new pick, win, parlay, referral, etc.)
  * Returns array of newly awarded badges.
  */
-export async function awardBadges(user, { picks = null, parlays = null, referrals = null } = {}) {
+export async function awardBadges(user, { picks = null, parlays = null, referrals = null, duels = null } = {}) {
   if (!user?.email) return [];
 
   // Fetch data needed for evaluation
-  const [allPicks, allParlays, allReferrals, existingBadges] = await Promise.all([
+  const [allPicks, allParlays, allReferrals, allDuels, existingBadges] = await Promise.all([
     picks !== null ? Promise.resolve(picks) : base44.entities.Pick.filter({ user_email: user.email }),
     parlays !== null ? Promise.resolve(parlays) : base44.entities.Parlay.filter({ user_email: user.email }),
     referrals !== null ? Promise.resolve(referrals) : base44.entities.ReferralUse.filter({ referrer_email: user.email }),
+    duels !== null ? Promise.resolve(duels) : base44.entities.Duel.filter({ challenger_email: user.email }),
     base44.entities.UserBadge.filter({ user_email: user.email }),
   ]);
 
@@ -23,7 +24,29 @@ export async function awardBadges(user, { picks = null, parlays = null, referral
   const winsCount = allPicks.filter(p => p.status === 'won').length;
   const tokensWon = allPicks.reduce((sum, p) => sum + (p.tokens_won || 0), 0);
   const parlayCount = allParlays.length;
+  const parlayWins = allParlays.filter(p => p.status === 'won').length;
   const referralCount = allReferrals.length;
+  const duelCount = allDuels.length;
+  const duelWins = allDuels.filter(d => d.status === 'finished' && d.winner_email === user.email).length;
+  const winRate = picksCount > 0 ? (winsCount / picksCount) * 100 : 0;
+
+  // Detect "night owl" — last pick submitted between 00:00 and 05:00
+  const isNightOwl = allPicks.some(p => {
+    const h = new Date(p.created_date).getHours();
+    return h >= 0 && h < 5;
+  });
+
+  // Detect "comeback kid" — win after 3 consecutive losses (sorted by date)
+  let isComeback = false;
+  const sortedPicks = [...allPicks].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+  let lossStreak = 0;
+  for (const p of sortedPicks) {
+    if (p.status === 'lost') { lossStreak++; }
+    else if (p.status === 'won') {
+      if (lossStreak >= 3) { isComeback = true; break; }
+      lossStreak = 0;
+    }
+  }
 
   const newlyAwarded = [];
 
@@ -33,11 +56,19 @@ export async function awardBadges(user, { picks = null, parlays = null, referral
 
     let met = false;
     switch (badge.condition_type) {
-      case 'picks_count':   met = picksCount >= badge.condition_value; break;
-      case 'wins_count':    met = winsCount >= badge.condition_value; break;
-      case 'tokens_won':    met = tokensWon >= badge.condition_value; break;
-      case 'parlay_count':  met = parlayCount >= badge.condition_value; break;
+      case 'picks_count':    met = picksCount >= badge.condition_value; break;
+      case 'wins_count':     met = winsCount >= badge.condition_value; break;
+      case 'tokens_won':     met = tokensWon >= badge.condition_value; break;
+      case 'parlay_count':   met = parlayCount >= badge.condition_value; break;
+      case 'parlay_wins':    met = parlayWins >= badge.condition_value; break;
       case 'referral_count': met = referralCount >= badge.condition_value; break;
+      case 'duel_count':     met = duelCount >= badge.condition_value; break;
+      case 'duel_wins':      met = duelWins >= badge.condition_value; break;
+      case 'win_rate_60':    met = picksCount >= 10 && winRate >= 60; break;
+      case 'win_rate_70':    met = picksCount >= 20 && winRate >= 70; break;
+      case 'win_rate_80':    met = picksCount >= 20 && winRate >= 80; break;
+      case 'night_owl':      met = isNightOwl; break;
+      case 'comeback':       met = isComeback; break;
       // streak_days is awarded separately by streak system
     }
 

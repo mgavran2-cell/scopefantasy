@@ -1,6 +1,7 @@
 // All badge definitions — used for auto-award logic and display
 export const BADGE_DEFINITIONS = [
-  // --- PICKS ---
+
+  // ── PICKS ────────────────────────────────────────────────────────────────
   {
     key: 'first_pick',
     title: 'Početnik',
@@ -45,7 +46,19 @@ export const BADGE_DEFINITIONS = [
     condition_value: 100,
     reward_tokens: 5000,
   },
-  // --- WINS ---
+  {
+    key: 'picks_200',
+    title: 'Besmrtnik',
+    description: 'Sudjeluj u 200 natjecanja',
+    emoji: '🌌',
+    category: 'picks',
+    rarity: 'legendary',
+    condition_type: 'picks_count',
+    condition_value: 200,
+    reward_tokens: 10000,
+  },
+
+  // ── WINS ─────────────────────────────────────────────────────────────────
   {
     key: 'first_win',
     title: 'Prva pobjeda',
@@ -56,6 +69,17 @@ export const BADGE_DEFINITIONS = [
     condition_type: 'wins_count',
     condition_value: 1,
     reward_tokens: 200,
+  },
+  {
+    key: 'wins_5',
+    title: 'Na dobrom putu',
+    description: 'Osvoji 5 natjecanja',
+    emoji: '🌟',
+    category: 'picks',
+    rarity: 'common',
+    condition_type: 'wins_count',
+    condition_value: 5,
+    reward_tokens: 300,
   },
   {
     key: 'wins_10',
@@ -69,6 +93,17 @@ export const BADGE_DEFINITIONS = [
     reward_tokens: 500,
   },
   {
+    key: 'wins_25',
+    title: 'Top prognozer',
+    description: 'Osvoji 25 natjecanja — pravi ekspert za statistiku!',
+    emoji: '📊',
+    category: 'picks',
+    rarity: 'rare',
+    condition_type: 'wins_count',
+    condition_value: 25,
+    reward_tokens: 1500,
+  },
+  {
     key: 'wins_50',
     title: 'Nepobjedivi',
     description: 'Osvoji 50 natjecanja',
@@ -79,7 +114,65 @@ export const BADGE_DEFINITIONS = [
     condition_value: 50,
     reward_tokens: 3000,
   },
-  // --- TOKENS ---
+  {
+    key: 'wins_100',
+    title: 'Osvajač',
+    description: 'Osvoji 100 natjecanja — vrh platforme!',
+    emoji: '🎖️',
+    category: 'picks',
+    rarity: 'legendary',
+    condition_type: 'wins_count',
+    condition_value: 100,
+    reward_tokens: 8000,
+  },
+
+  // ── WIN RATE ─────────────────────────────────────────────────────────────
+  {
+    key: 'winrate_60',
+    title: 'Oštro oko',
+    description: 'Postizi win rate od 60%+ (min. 10 igara)',
+    emoji: '🎯',
+    category: 'picks',
+    rarity: 'rare',
+    condition_type: 'win_rate_60',
+    condition_value: 60,
+    reward_tokens: 1000,
+  },
+  {
+    key: 'winrate_70',
+    title: 'Snajper',
+    description: 'Postizi win rate od 70%+ (min. 20 igara)',
+    emoji: '🔭',
+    category: 'picks',
+    rarity: 'epic',
+    condition_type: 'win_rate_70',
+    condition_value: 70,
+    reward_tokens: 2500,
+  },
+  {
+    key: 'winrate_80',
+    title: 'Oracle',
+    description: 'Postizi win rate od 80%+ (min. 20 igara) — gotovo nemoguće!',
+    emoji: '🔮',
+    category: 'picks',
+    rarity: 'legendary',
+    condition_type: 'win_rate_80',
+    condition_value: 80,
+    reward_tokens: 7500,
+  },
+
+  // ── TOKENS ───────────────────────────────────────────────────────────────
+  {
+    key: 'tokens_5k',
+    title: 'Prvi koraci',
+    description: 'Osvoji ukupno 5.000 tokena',
+    emoji: '💵',
+    category: 'tokens',
+    rarity: 'common',
+    condition_type: 'tokens_won',
+    condition_value: 5000,
+    reward_tokens: 200,
+  },
   {
     key: 'tokens_10k',
     title: 'Bogataš',
@@ -92,6 +185,17 @@ export const BADGE_DEFINITIONS = [
     reward_tokens: 500,
   },
   {
+    key: 'tokens_50k',
+    title: 'Kapitalista',
+    description: 'Osvoji ukupno 50.000 tokena',
+    emoji: '🤑',
+    category: 'tokens',
+    rarity: 'rare',
+    condition_type: 'tokens_won',
+    condition_value: 50000,
+    reward_tokens: 2000,
+  },
+  {
     key: 'tokens_100k',
     title: 'Milijunaš',
     description: 'Osvoji ukupno 100.000 tokena',
@@ -102,7 +206,19 @@ export const BADGE_DEFINITIONS = [
     condition_value: 100000,
     reward_tokens: 5000,
   },
-  // --- STREAK ---
+  {
+    key: 'tokens_500k',
+    title: 'Tajkun',
+    description: 'Osvoji ukupno 500.000 tokena — titan platforme!',
+    emoji: '🏦',
+    category: 'tokens',
+    rarity: 'legendary',
+    condition_type: 'tokens_won',
+    condition_value: 500000,
+    reward_tokens: 25000,
+  },
+
+  // ── STREAK ───────────────────────────────────────────────────────────────
   {
     key: 'streak_3',
     title: 'Na tragu',
@@ -115,6 +231,17 @@ export const BADGE_DEFINITIONS = [
     reward_tokens: 300,
   },
   {
+    key: 'streak_5',
+    title: 'Vrući niz',
+    description: 'Pogodi 5 dana zaredom u Daily Streak-u',
+    emoji: '🌶️',
+    category: 'streak',
+    rarity: 'rare',
+    condition_type: 'streak_days',
+    condition_value: 5,
+    reward_tokens: 800,
+  },
+  {
     key: 'streak_7',
     title: 'Tjedan bez greške',
     description: 'Pogodi svih 7 dana u Daily Streak-u',
@@ -125,7 +252,8 @@ export const BADGE_DEFINITIONS = [
     condition_value: 7,
     reward_tokens: 2000,
   },
-  // --- PARLAY ---
+
+  // ── PARLAY ───────────────────────────────────────────────────────────────
   {
     key: 'first_parlay',
     title: 'Parlay igrač',
@@ -148,7 +276,76 @@ export const BADGE_DEFINITIONS = [
     condition_value: 10,
     reward_tokens: 750,
   },
-  // --- SOCIAL ---
+  {
+    key: 'parlay_win',
+    title: 'Rizičar',
+    description: 'Pobijedi u barem jednom Parlayju',
+    emoji: '🎲',
+    category: 'picks',
+    rarity: 'rare',
+    condition_type: 'parlay_wins',
+    condition_value: 1,
+    reward_tokens: 500,
+  },
+  {
+    key: 'parlay_wins_5',
+    title: 'Parlay majstor',
+    description: 'Pobijedi u 5 Parlaya',
+    emoji: '🃏',
+    category: 'picks',
+    rarity: 'epic',
+    condition_type: 'parlay_wins',
+    condition_value: 5,
+    reward_tokens: 3000,
+  },
+
+  // ── DUELI ─────────────────────────────────────────────────────────────────
+  {
+    key: 'first_duel',
+    title: 'Duelist',
+    description: 'Sudjeluj u svom prvom dvoboju',
+    emoji: '⚔️',
+    category: 'social',
+    rarity: 'common',
+    condition_type: 'duel_count',
+    condition_value: 1,
+    reward_tokens: 200,
+  },
+  {
+    key: 'duel_win_1',
+    title: 'Pobjednik dvoboja',
+    description: 'Pobijedi u dvoboju',
+    emoji: '🗡️',
+    category: 'social',
+    rarity: 'rare',
+    condition_type: 'duel_wins',
+    condition_value: 1,
+    reward_tokens: 500,
+  },
+  {
+    key: 'duel_wins_5',
+    title: 'Ratnik',
+    description: 'Pobijedi u 5 dvoboja',
+    emoji: '🛡️',
+    category: 'social',
+    rarity: 'epic',
+    condition_type: 'duel_wins',
+    condition_value: 5,
+    reward_tokens: 2000,
+  },
+  {
+    key: 'duel_wins_10',
+    title: 'Gladijator',
+    description: 'Pobijedi u 10 dvoboja — neporažen na areni!',
+    emoji: '🏟️',
+    category: 'social',
+    rarity: 'legendary',
+    condition_type: 'duel_wins',
+    condition_value: 10,
+    reward_tokens: 5000,
+  },
+
+  // ── SOCIAL ───────────────────────────────────────────────────────────────
   {
     key: 'first_referral',
     title: 'Ambasador',
@@ -170,6 +367,85 @@ export const BADGE_DEFINITIONS = [
     condition_type: 'referral_count',
     condition_value: 5,
     reward_tokens: 2500,
+  },
+  {
+    key: 'referrals_10',
+    title: 'Recruiter',
+    description: 'Pozovi 10 prijatelja na platformu',
+    emoji: '🌐',
+    category: 'social',
+    rarity: 'legendary',
+    condition_type: 'referral_count',
+    condition_value: 10,
+    reward_tokens: 7500,
+  },
+
+  // ── SPECIAL ──────────────────────────────────────────────────────────────
+  {
+    key: 'early_adopter',
+    title: 'Early Adopter',
+    description: 'Jedan si od prvih igrača na platformi',
+    emoji: '🚀',
+    category: 'special',
+    rarity: 'legendary',
+    condition_type: 'special',
+    condition_value: 0,
+    reward_tokens: 2000,
+  },
+  {
+    key: 'welcome_challenge',
+    title: 'Welcome Champion',
+    description: 'Završio si Welcome Challenge',
+    emoji: '🎊',
+    category: 'special',
+    rarity: 'rare',
+    condition_type: 'special',
+    condition_value: 0,
+    reward_tokens: 500,
+  },
+  {
+    key: 'week_winner',
+    title: 'Pobjednik tjedna',
+    description: 'Završio si na vrhu ljestvice za tjedan',
+    emoji: '🏅',
+    category: 'special',
+    rarity: 'epic',
+    condition_type: 'special',
+    condition_value: 0,
+    reward_tokens: 3000,
+  },
+  {
+    key: 'perfect_week',
+    title: 'Savršen tjedan',
+    description: '7/7 u Daily Streak-u — čisto savršenstvo!',
+    emoji: '💯',
+    category: 'special',
+    rarity: 'legendary',
+    condition_type: 'special',
+    condition_value: 0,
+    reward_tokens: 5000,
+  },
+  {
+    key: 'night_owl',
+    title: 'Noćna ptica',
+    description: 'Igraš nakon ponoći — pravi nocturnal igrač',
+    emoji: '🦉',
+    category: 'special',
+    rarity: 'common',
+    condition_type: 'night_owl',
+    condition_value: 0,
+    reward_tokens: 150,
+  },
+  {
+    key: 'comeback_kid',
+    title: 'Comeback Kid',
+    description: 'Pobijedio si nakon 3 uzastopna poraza',
+    emoji: '🔄',
+    category: 'special',
+    rarity: 'rare',
+    condition_type: 'comeback',
+    condition_value: 3,
+    reward_tokens: 750,
   },
 ];
 

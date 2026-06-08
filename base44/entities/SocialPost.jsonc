@@ -1,0 +1,75 @@
+{
+  "name": "SocialPost",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "contest_id": {
+      "type": "string"
+    },
+    "contest_title": {
+      "type": "string"
+    },
+    "pick_id": {
+      "type": "string"
+    },
+    "pick_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "won",
+        "lost",
+        "partial"
+      ]
+    },
+    "tokens_won": {
+      "type": "number"
+    },
+    "correct_picks": {
+      "type": "number"
+    },
+    "total_picks": {
+      "type": "number"
+    },
+    "likes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "pick_result"
+      ],
+      "default": "post"
+    }
+  },
+  "required": [
+    "user_email",
+    "content"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}
