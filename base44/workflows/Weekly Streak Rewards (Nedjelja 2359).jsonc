@@ -1,0 +1,44 @@
+{
+  "name": "Weekly Streak Rewards (Nedjelja 23:59)",
+  "description": "Automatski ispla\u0107uje Daily Streak nagrade svim korisnicima svake nedjelje u 23:59 UTC. Idempotent \u2014 reward_claimed flag spre\u010dava duplo pla\u0107anje.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "59 23 * * 0",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "weekly_streak_rewards_nedjelja_23_59",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "weeklyStreakRewards",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "weeklyStreakRewards"
+  }
+}
